@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-graphite: #1a222b;
+  --color-green-start: #8fc603;
+  --color-green-end: #1e9e3d;
+  --color-dark-green-start: #1a3a26;
+  --color-dark-green-end: #0f2419;
+  --color-light-surface: #f8f6f6;
+  --color-white: #ffffff;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-light-surface text-graphite;
+  }
+}
+
+@layer utilities {
+  .text-gradient-green {
+    background: linear-gradient(135deg, #8fc603, #1e9e3d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .bg-green-gradient {
+    background: linear-gradient(135deg, #8fc603, #1e9e3d);
+  }
+
+  .bg-dark-green-gradient {
+    background: linear-gradient(135deg, #1a3a26, #0f2419);
+  }
+
+  /* Fixed aspect ratio helpers */
+  .aspect-cover {
+    aspect-ratio: 16 / 10;
+  }
+
+  .aspect-gallery {
+    aspect-ratio: 4 / 3;
+  }
+}

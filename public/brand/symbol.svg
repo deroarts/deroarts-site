@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 72" fill="none" role="img" aria-label="DeroArts symbol">
+  <!-- Feather quill body -->
+  <path d="M36 4 C50 4, 62 14, 58 32 C54 50, 38 60, 22 64 C26 52, 28 40, 26 28 C24 16, 18 8, 36 4Z"
+        fill="url(#symGradient)" opacity="0.95"/>
+  <!-- Feather spine/shaft -->
+  <path d="M36 4 L16 68" stroke="#1E9E3D" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- Feather tip -->
+  <path d="M16 68 C14 70, 10 72, 8 70 C11 65, 14 63, 16 68Z"
+        fill="#1A222B"/>
+  <!-- Vane lines left -->
+  <path d="M30 16 C22 18, 16 24, 14 32" stroke="#fff" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+  <path d="M28 26 C20 28, 14 34, 12 42" stroke="#fff" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+  <!-- Vane lines right -->
+  <path d="M30 16 C40 12, 52 16, 56 26" stroke="#fff" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+  <path d="M28 26 C36 22, 46 24, 50 34" stroke="#fff" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+  <path d="M25 36 C32 32, 42 33, 46 42" stroke="#fff" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+  <path d="M22 46 C28 43, 36 44, 40 50" stroke="#fff" stroke-width="1" stroke-linecap="round" opacity="0.3"/>
+
+  <defs>
+    <linearGradient id="symGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8FC603"/>
+      <stop offset="100%" stop-color="#1E9E3D"/>
+    </linearGradient>
+  </defs>
+</svg>

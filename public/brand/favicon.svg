@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Dark rounded background -->
+  <rect width="32" height="32" rx="6" fill="#1A222B"/>
+  <!-- Feather quill -->
+  <path d="M20 3 C25 3, 30 7, 28 15 C26 23, 18 28, 10 30 C12 24, 13 18, 12 12 C11 6, 8 3, 20 3Z"
+        fill="url(#favGradient)"/>
+  <path d="M20 3 L8 31" stroke="#8FC603" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M8 31 C7 32, 5 33, 4 32 C5 29, 7 28, 8 31Z" fill="#F8F6F6"/>
+  <defs>
+    <linearGradient id="favGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8FC603"/>
+      <stop offset="100%" stop-color="#1E9E3D"/>
+    </linearGradient>
+  </defs>
+</svg>
