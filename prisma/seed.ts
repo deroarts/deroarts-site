@@ -2,6 +2,18 @@ import { PrismaClient, ProjectStatus, ActionType } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+// Placeholder image URLs used until real uploads are provided via the admin.
+const PLACEHOLDER = {
+  cover1: "https://placehold.co/800x500/1A222B/8FC603?text=Gestionale+per+Agenzie",
+  cover2: "https://placehold.co/800x500/1A222B/8FC603?text=MoneyBox",
+  cover3: "https://placehold.co/800x500/1A222B/8FC603?text=Scanner+Documenti",
+  gallery1a: "https://placehold.co/800x600/1A3A26/F8F6F6?text=Schermata+1",
+  gallery1b: "https://placehold.co/800x600/1A3A26/F8F6F6?text=Schermata+2",
+  gallery2a: "https://placehold.co/800x600/1A3A26/F8F6F6?text=Riepilogo+spese",
+  gallery2b: "https://placehold.co/800x600/1A3A26/F8F6F6?text=Obiettivi",
+  gallery3a: "https://placehold.co/800x600/1A3A26/F8F6F6?text=Scansione",
+};
+
 async function main() {
   console.log("🌱 Seeding DeroArts database...");
 
@@ -29,9 +41,8 @@ async function main() {
 
   console.log("  ✓ 2 categorie create");
 
-  // ── Projects ─────────────────────────────────────────────────────────────────
+  // ── Project 1 — Gestionale per Agenzie ──────────────────────────────────────
 
-  // Project 1 — Gestionale per Agenzie
   const proj1 = await prisma.project.upsert({
     where: { slug: "gestionale-agenzie" },
     update: {},
@@ -48,8 +59,17 @@ async function main() {
       },
       status: ProjectStatus.demo_available,
       category_id: catGestionali.id,
-      cover_image_url: null,
-      gallery: [],
+      cover_image_url: PLACEHOLDER.cover1,
+      gallery: [
+        {
+          url: PLACEHOLDER.gallery1a,
+          alt: { it: "Schermata del calendario commesse", en: "Jobs calendar view" },
+        },
+        {
+          url: PLACEHOLDER.gallery1b,
+          alt: { it: "Report fatturazione mensile", en: "Monthly billing report" },
+        },
+      ],
       published: true,
       sort_order: 0,
       from_email: null,
@@ -78,7 +98,8 @@ async function main() {
     ],
   });
 
-  // Project 2 — MoneyBox
+  // ── Project 2 — MoneyBox ─────────────────────────────────────────────────────
+
   const proj2 = await prisma.project.upsert({
     where: { slug: "moneybox" },
     update: {},
@@ -95,8 +116,17 @@ async function main() {
       },
       status: ProjectStatus.available,
       category_id: catUtilita.id,
-      cover_image_url: null,
-      gallery: [],
+      cover_image_url: PLACEHOLDER.cover2,
+      gallery: [
+        {
+          url: PLACEHOLDER.gallery2a,
+          alt: { it: "Riepilogo spese mensili", en: "Monthly expense summary" },
+        },
+        {
+          url: PLACEHOLDER.gallery2b,
+          alt: { it: "Pannello obiettivi di risparmio", en: "Savings goals panel" },
+        },
+      ],
       published: true,
       sort_order: 1,
       from_email: null,
@@ -125,7 +155,8 @@ async function main() {
     ],
   });
 
-  // Project 3 — Scanner Documenti (coming soon)
+  // ── Project 3 — Scanner Documenti (coming soon) ───────────────────────────────
+
   const proj3 = await prisma.project.upsert({
     where: { slug: "scanner-documenti" },
     update: {},
@@ -142,8 +173,13 @@ async function main() {
       },
       status: ProjectStatus.coming_soon,
       category_id: catUtilita.id,
-      cover_image_url: null,
-      gallery: [],
+      cover_image_url: PLACEHOLDER.cover3,
+      gallery: [
+        {
+          url: PLACEHOLDER.gallery3a,
+          alt: { it: "Scansione documento in corso", en: "Document scanning in progress" },
+        },
+      ],
       published: true,
       sort_order: 2,
       from_email: null,
@@ -153,22 +189,31 @@ async function main() {
   await prisma.projectAction.deleteMany({ where: { project_id: proj3.id } });
   await prisma.projectAction.createMany({
     data: [
+      // Demo disabled — app not yet available; predisposed for when it launches
+      {
+        project_id: proj3.id,
+        type: ActionType.demo,
+        label: { it: "Prova la demo", en: "Try demo" },
+        url: null,
+        enabled: false,
+        sort_order: 0,
+      },
       {
         project_id: proj3.id,
         type: ActionType.request_info,
         label: { it: "Richiedi informazioni", en: "Request info" },
         url: null,
         enabled: true,
-        sort_order: 0,
+        sort_order: 1,
       },
-      // Predisposed — will be enabled when app launches
+      // Predisposed store links — enabled once the app is published
       {
         project_id: proj3.id,
         type: ActionType.app_store,
         label: { it: "App Store", en: "App Store" },
         url: null,
         enabled: false,
-        sort_order: 1,
+        sort_order: 2,
       },
       {
         project_id: proj3.id,
@@ -176,12 +221,12 @@ async function main() {
         label: { it: "Google Play", en: "Google Play" },
         url: null,
         enabled: false,
-        sort_order: 2,
+        sort_order: 3,
       },
     ],
   });
 
-  console.log("  ✓ 3 progetti creati con azioni");
+  console.log("  ✓ 3 progetti creati con copertine, gallerie e azioni");
   console.log("✅ Seed completato con successo.");
 }
 

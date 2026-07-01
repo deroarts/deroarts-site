@@ -41,7 +41,14 @@ export class LocalStorageAdapter implements StorageAdapter {
 
   async delete(url: string): Promise<void> {
     const filename = url.replace(/^\/uploads\//, "");
-    const filePath = path.join(this.uploadDir, filename);
+    const filePath = path.resolve(this.uploadDir, filename);
+
+    // Guard against path traversal — resolved path must stay inside uploadDir.
+    if (!filePath.startsWith(path.resolve(this.uploadDir) + path.sep)) {
+      console.warn("[LocalStorageAdapter] delete() rejected unsafe path:", url);
+      return;
+    }
+
     try {
       await fs.promises.unlink(filePath);
     } catch {
