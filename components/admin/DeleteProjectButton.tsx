@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteProjectAction } from "@/app/admin/(shell)/progetti/actions";
+import { deleteProjectAction } from "@/app/admina/(shell)/progetti/actions";
 
 interface DeleteProjectButtonProps {
   id: string;

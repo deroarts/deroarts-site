@@ -27,6 +27,11 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# App Control / MCP (secrets — never commit)
+.agent/
+.mcp.json
+scratch_ac/
+
 # local env files
 .env
 .env.local
@@ -44,9 +49,13 @@ next-env.d.ts
 # uploads (local dev storage)
 /public/uploads/
 
-# Replit
+# local cache / state
 .cache/
 .local/
+.config/
+
+# local backups (never commit)
+/BACKUP/
 
 # IDEs
 /.idea

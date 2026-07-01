@@ -4,11 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { logoutAction } from "@/app/admin/login/actions";
+import { logoutAction } from "@/app/admina/login/actions";
 
 const NAV_ITEMS = [
   {
-    href: "/admin/progetti",
+    href: "/admina/progetti",
     label: "Progetti",
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -17,7 +17,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: "/admin/categorie",
+    href: "/admina/categorie",
     label: "Categorie",
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -26,7 +26,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: "/admin/richieste",
+    href: "/admina/richieste",
     label: "Richieste",
     badge: true, // receives unreadCount
     icon: (
@@ -36,7 +36,7 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: "/admin/impostazioni",
+    href: "/admina/impostazioni",
     label: "Impostazioni",
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -87,10 +87,10 @@ function NavLinks({
       {/* Dev Outbox — only in development */}
       {isDev && (
         <Link
-          href="/admin/dev-outbox"
+          href="/admina/dev-outbox"
           onClick={onNavigate}
           className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-            pathname.startsWith("/admin/dev-outbox")
+            pathname.startsWith("/admina/dev-outbox")
               ? "bg-green-start/20 text-green-start"
               : "text-white/40 hover:text-white/80 hover:bg-white/10"
           }`}
@@ -235,7 +235,7 @@ export default function AdminShell({
           {/* Unread bell — mobile */}
           {unreadCount > 0 && (
             <Link
-              href="/admin/richieste?status=new"
+              href="/admina/richieste?status=new"
               className="relative text-gray-400 hover:text-graphite transition-colors"
               title={`${unreadCount} richiesta/e nuove`}
             >

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import Link from "next/link";
-import { saveProjectAction } from "@/app/admin/(shell)/progetti/actions";
+import { saveProjectAction } from "@/app/admina/(shell)/progetti/actions";
 import { ACTION_LABELS } from "@/lib/i18n";
 import ImageFrameEditor from "./ImageFrameEditor";
 import GalleryEditor, { type GalleryItem } from "./GalleryEditor";
@@ -459,7 +459,7 @@ export default function ProjectForm({ project, categories }: ProjectFormProps) {
           )}
         </div>
         <Link
-          href="/admin/progetti"
+          href="/admina/progetti"
           className="text-sm text-gray-400 hover:text-graphite transition-colors"
         >
           Annulla

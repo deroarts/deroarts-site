@@ -6,8 +6,15 @@ import { SESSION_COOKIE } from "@/lib/auth/session";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Let the login page through — everything else under /admin requires auth
-  if (pathname === "/admin/login") {
+  // DEV-ONLY: when DEV_UA_SWITCH=true the U/A DevSwitcher must move freely
+  // between user and admin views WITHOUT any login. This bypass is gated by the
+  // flag (absent in production) and must never be coupled to auth/security logic.
+  if (process.env.DEV_UA_SWITCH === "true") {
+    return NextResponse.next();
+  }
+
+  // Let the login page through — everything else under /admina requires auth
+  if (pathname === "/admina/login") {
     return NextResponse.next();
   }
 
@@ -29,10 +36,10 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  const loginUrl = new URL("/admin/login", request.url);
+  const loginUrl = new URL("/admina/login", request.url);
   return NextResponse.redirect(loginUrl);
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admina/:path*"],
 };

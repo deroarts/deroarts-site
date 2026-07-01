@@ -1,0 +1,32 @@
+# 04 — Infrastruttura
+
+## Repository
+- **GitHub:** `github.com/deroarts/deroarts-site` (branch operativa: `main`).
+- Il remote `origin` locale usa il token del progetto (da App Control). Esiste anche un remote `gitsafe-backup` (backup locale).
+- **Un push su `main` = deploy in produzione** (vedi [[02-regole]]).
+
+## Database — Supabase
+- Progetto Supabase ref: `spzwpoxylmpmalzxhrsh` (`https://spzwpoxylmpmalzxhrsh.supabase.co`).
+- Connessione app: via **pooler** `aws-1-eu-central-1.pooler.supabase.com:5432` (region EU).
+- Accesso app: **solo Prisma** come ruolo owner. L'app NON usa le API REST/Realtime di Supabase.
+- RLS attiva su tutte le tabelle (deny-by-default). Auth Supabase non usato (l'app usa iron-session).
+- Migrazioni versionate in `prisma/migrations/`. Verifica stato reale con `npx prisma migrate status`.
+
+## Deploy — Render
+- Provider: **Render** (deploy unico front+back). Procedura in [[05-deploy]].
+- **URL produzione: DA COMPLETARE** — non ancora deployato (deploy_url vuoto in App Control). Dominio previsto: `deroarts.com`.
+- **URL admin: DA COMPLETARE** — sarà `<url-prod>/admina` una volta deployato.
+
+## Dominio & email — deroarts.com
+- Registrar + DNS: **Cloudflare** (DNSSEC attivo, SSL full, HTTPS forzato). Non modificare registrar/nameserver/DNSSEC.
+- Email: **Zoho Mail** (EU), casella `info@deroarts.com`. SPF/DKIM/DMARC PASS. SMTP: `smtp.zoho.eu:465` (serve app-password Zoho, non la password account).
+- Scheda dominio completa: in App Control (`operational_notes` del progetto).
+
+## App Control
+- Sync di segreti/variabili via `.agent/app-control.json` (ignorato da git). Rigenera `.env`/`.mcp.json`.
+- Le 9 variabili canoniche vivono lì. `RENDER_API_KEY`, `LINK_DEPLOY`, `LINK_DEPLOY ADMIN` sono **vuote** finché non si deploya.
+
+## Limiti free tier
+- **Supabase:** DB 500MB, Storage 1GB, banda 5GB/mese. **Pausa dopo ~1 settimana di inattività** → serve keepalive ogni 1-3 giorni. Usare sempre l'URL pooler.
+- **Render:** spegnimento dopo 15min inattività (cold start ~30s), 500 build-min/mese, 100GB banda.
+- Segnalare prima di implementare funzioni che avvicinano questi limiti.
