@@ -1,0 +1,248 @@
+# DeroArts — Build Brief & Replit Agent Execution Prompt
+
+> **Single source of truth** for building the DeroArts website: a public **showcase** of small
+> software/apps plus a private **admin**. This document has two layers:
+> **(A) Working Brief** — human-readable, keep it updated as the project evolves.
+> **(B) Executive Prompt** — what the Replit Agent reads and executes, **module by module**.
+>
+> Language of this document: English (for the Agent). Language of the product UI: **Italian**
+> (public content is multilingual-ready, see A.5).
+
+---
+
+## 0. How to run this (for the human)
+
+1. Attach the files listed in **§ ASSETS TO ATTACH** to the Replit chat.
+2. Paste **section B** into the Replit Agent.
+3. The Agent works one module at a time: **Plan Mode first → wait for your approval → Build → checkpoint.**
+4. After each module, test what was built before moving on.
+
+---
+
+# A. WORKING BRIEF (context & confirmed decisions — keep updated)
+
+## A.1 What DeroArts is
+A public **showcase / storefront** where non-technical visitors browse small software and apps
+("gestionali" and utilities), read about each one, **try a live demo** via a link, and **request
+information**. Plus a private **admin** (only the owner) to publish projects and manage the
+incoming requests. Official domain: **deroarts.com**.
+
+## A.2 Audience & tone
+- Visitors are **non-technical, small/medium users**. Zero jargon. Simple Italian labels.
+- Public site must be **beautiful, welcoming, intuitive** — a real modern showcase, **NOT** a
+  clone of the admin (the admin is a management tool).
+
+## A.3 Scope
+**In scope (this build, on Replit):** full public site + admin + "request info" flow with
+**fake email** in dev; portable, standard code; DB schema and handoff docs shaped for Supabase.
+**Out of scope (done later, in Devin/Claude):** GitHub, real Supabase, Render deploy, real Zoho
+email wiring, and the owner's separate governance/DNA/responsive prompts. **Do not add those here.**
+
+## A.4 Confirmed decisions
+- **Public pages:** Home · Projects (filterable grid) · Project detail · Contact/Info.
+- **Project fields:** title, short description, long description, cover image, gallery, category,
+  status, actions (buttons).
+- **Actions (buttons)** with friendly IT labels: `demo` → "Prova la demo"; `request_info` →
+  "Richiedi informazioni" (opens the form). Future, predisposed but hidden until filled:
+  `download`, `app_store`, `play_store`. Data model supports **multiple actions per project**;
+  the UI shows only friendly buttons (never technical terms like GitHub/repo).
+- **Request info flow:** in-site form → saves a request (status `new`/`read`/`handled`, linked to
+  the project) → sends notification to owner + **auto-reply** to the user (with the project's
+  identity). Admin shows per-project request counts and an **unread bell**.
+- **Admin (`/admin`, single owner):** left **sidebar on desktop**, **slide-in drawer on mobile**;
+  visual language inspired by "App Control" but a bit more professional (more whitespace, cleaner
+  type). Login **email + password**, **"remember me" persistent** by default.
+- **Categories:** a **managed list** (own table); create/rename in admin, pick from a menu on a
+  project; used for public filtering.
+- **Images:** fixed, consistent **aspect-ratio placeholders** (identical in admin and public);
+  on upload, an **in-frame editor** to **zoom + reposition (drag, 360°)** so the crop is perfect;
+  what the admin sees is exactly what the user sees.
+- **Preview:** an **"Anteprima" button** that opens the public preview of the project being edited
+  (structure ready to evolve into a side-by-side live preview later).
+- **Dev U/A switch:** a fixed, always-visible button to jump between **User** and **Admin** during
+  development, outside login/privacy — **isolated, env-gated, removable** (see B rules). Owner
+  removes it once the project is consolidated.
+- **Language:** UI is Italian. **Public content is multilingual-ready (it/en) in the schema**
+  (English fields empty for now). **Admin is Italian only** — no multilingual UI in admin.
+
+## A.5 Data model (Postgres / Supabase-ready)
+Translatable text fields use a **JSONB** shape `{ "it": "...", "en": "" }` (admin fills `it`;
+`en` stays empty; UI reads `it` with fallback). This is the multilingual-ready design.
+
+- **categories**: `id`, `name` (jsonb), `slug`, `sort_order`, `created_at`.
+- **projects**: `id`, `slug`, `title` (jsonb), `short_description` (jsonb), `long_description`
+  (jsonb), `status` (`available` | `coming_soon` | `demo_available`), `category_id` (fk),
+  `cover_image_url`, `gallery` (jsonb array of `{ url, alt (jsonb) }`), `published` (bool),
+  `sort_order`, `from_email` (nullable; default `info@deroarts.com` — per-project alias hook),
+  `created_at`, `updated_at`.
+- **project_actions**: `id`, `project_id` (fk), `type` (`demo`|`request_info`|`download`|
+  `app_store`|`play_store`|`external`), `label` (jsonb), `url` (nullable; null for `request_info`),
+  `enabled` (bool), `sort_order`.
+- **requests**: `id`, `project_id` (nullable fk — null = general contact from Contact/Info page),
+  `name`, `email`, `message`, `status` (`new`|`read`|`handled`), `created_at`, `handled_at`
+  (nullable).
+- **dev_outbox** (dev only): `id`, `to`, `from`, `subject`, `body`, `created_at` — lets the admin
+  view the fake emails during development.
+
+Images: files live in **storage** (local folder in dev, Supabase Storage in prod); the DB stores
+only the **URL/path**.
+
+## A.6 Non-negotiable constraints
+- **Free-tier friendly:** target Supabase Free + Render Free. Optimize/compress images on upload,
+  lazy-load, no always-on background processes, lightweight code (Render Free sleeps when idle).
+- **No vendor lock-in to Replit:** standard, portable code only. No Replit-only libraries/magic.
+- **No PWA. No Expo / React Native.** Public site is a **normal responsive website** (mobile feel
+  achieved with standard CSS/responsive). `/admin` is just a protected route (not installable).
+- **DB is the single source of truth** for content; admin and public read the same data.
+- **Adapters** for DB, storage, and email so dev→prod is a config/adapter swap, not a rewrite.
+
+---
+
+# B. EXECUTIVE PROMPT FOR REPLIT AGENT
+
+You are building **DeroArts**, described above. Follow these rules and build **module by module**.
+
+## B.0 Global rules (read first, apply throughout)
+- **Work in modules, in order.** For each module: switch to **Plan Mode**, propose a short plan,
+  **wait for my approval**, then Build. **Create a checkpoint** after each module.
+- **Build exactly this spec. Do not add features that aren't requested.** If something is
+  genuinely ambiguous, ask **at most 2 questions**, otherwise proceed.
+- **Positive constraints:** keep files small and modular, reuse logic, clear naming.
+- Keep the code **portable and standard** (no Replit-only dependencies).
+- **Do not** set up GitHub, real Supabase, Render, real email, or any governance/DNA files — those
+  are handled later. Your job is the app + Supabase-ready schema + handoff docs.
+
+## B.1 Fixed tech stack
+- **Next.js (App Router, React, TypeScript)** — one full-stack app serving both public and `/admin`.
+- **Prisma ORM + PostgreSQL.** In dev, use the **Postgres provided by Replit** via `DATABASE_URL`.
+  In prod, the same schema points to **Supabase Postgres** (only `DATABASE_URL` changes).
+  > Use **Postgres from the start (not SQLite)** so the multilingual JSONB fields and JSON gallery
+  > migrate to Supabase with **zero rework**.
+- **Tailwind CSS** for styling, with brand tokens (see B.2).
+- **Adapters (interfaces + swappable implementations):**
+  - *Storage:* `local` (writes to a served uploads folder, stores the URL in DB) now → `supabase`
+    (Supabase Storage) later. Selected by `STORAGE_MODE`.
+  - *Mail:* `fake` (logs to console + writes to `dev_outbox`, viewable in admin) now → `smtp`
+    (Zoho) later. Selected by `MAIL_MODE`.
+  - *Auth:* email+password with a signed session cookie now → Supabase Auth later.
+- All secrets/config via **environment variables** (provide a documented `.env.example`).
+
+## B.2 Brand & design direction
+- **Palette:** graphite `#1A222B`; green gradient `#8FC603 → #1E9E3D` (accent); dark green surface
+  `#1A3A26 → #0F2419`; light surface `#F8F6F6`. **Font: Poppins.**
+- **Public site:** modern, attractive **showcase** — hero, curated **card grid**, large images,
+  light micro-interactions, generous spacing. Distinct and appealing, **not** an admin clone.
+- **Admin:** **sidebar on desktop**, **slide-in drawer on mobile**, "App Control" style but more
+  professional/clean. Use the attached App Control screenshot as the reference.
+- Use the attached logo/symbol/favicon assets (see § ASSETS).
+
+## B.3 Module 0 — Plan & scaffold
+Plan, then scaffold the Next.js + TypeScript + Tailwind + Prisma project. Configure Prisma with
+the Postgres `DATABASE_URL`. Add the brand tokens (colors, Poppins). Set up the folder structure
+(public routes, `/admin` routes, `lib/` for adapters, `prisma/`). No features yet.
+**Checkpoint.**
+
+## B.4 Module 1 — Data model & adapters
+Create the Prisma schema for **all tables in A.5** (Postgres/JSONB, relations, indexes, enums for
+`status` and action `type`). Run the first migration. Implement the **storage adapter (local)**,
+**mail adapter (fake → console + `dev_outbox`)**, and a small **seed** with 3 example projects,
+2 categories, and sample actions (seed only, never hardcoded in runtime). **Checkpoint.**
+
+## B.5 Module 2 — Public site (showcase)
+Build the four pages using data from the DB:
+- **Home:** brand hero + a few **featured projects**.
+- **Projects:** responsive **card grid**, **filter by category** (from the managed list).
+- **Project detail:** title, long description, **gallery**, status badge, and the **action
+  buttons** (friendly IT labels; `request_info` opens the form from Module 4).
+- **Contact/Info:** about DeroArts + a **general contact form** (saves a `request` with
+  `project_id = null`).
+Fixed image aspect ratios (identical to admin placeholders): **cover 16:10**, **gallery 4:3**.
+Fully responsive (standard CSS), mobile-native feel, no PWA. **Checkpoint.**
+
+## B.6 Module 3 — Admin shell, auth & content management
+- **Auth:** email + password, hashed; signed **httpOnly session cookie**, **long-lived
+  "remember me"** by default. Credentials from `ADMIN_EMAIL` / `ADMIN_PASSWORD`. Protect all
+  `/admin` pages and admin APIs with middleware. (Designed to swap to Supabase Auth later.)
+- **Admin shell:** sidebar (desktop) + drawer (mobile), sections: **Progetti**, **Categorie**,
+  **Richieste**, **Impostazioni**.
+- **Projects CRUD** and **Categories CRUD** (managed list). Admin UI is **Italian only**; it edits
+  the `it` value of the JSONB translatable fields.
+**Checkpoint.**
+
+## B.7 Module 4 — Request Info flow + fake mail
+- The `request_info` action and the general contact form open a form (**name, email, message**).
+- On submit: **save a `request`** (status `new`, linked to project or general) → **send two
+  emails** via the mail adapter (fake in dev): a **notification to the owner** and an **auto-reply
+  to the user**, both carrying the **project identity** (subject/sender use the project's
+  `from_email`, default `info@deroarts.com`).
+- **Admin › Richieste:** list + filter by status (`new`/`read`/`handled`), detail view, mark
+  status, **per-project request counts**, and an **unread bell** in the admin header. A dev view
+  to inspect `dev_outbox` (the fake emails). **Checkpoint.**
+
+## B.8 Module 5 — Smart image handling
+- Reusable **fixed-ratio placeholders** used in **both** admin and public (cover 16:10, gallery 4:3).
+- On upload: an **in-frame editor** to **zoom and reposition (drag, 360°)** within the target
+  frame; save the **framed/optimized result** (compressed for Free tier) via the storage adapter,
+  store its URL in the DB. What the admin frames is exactly what the public shows.
+**Checkpoint.**
+
+## B.9 Module 6 — Preview, dev U/A switch, SEO basics, polish
+- **Preview button** in the project editor: opens the **public preview** of that project
+  (structure ready to become a side-by-side live preview later).
+- **Dev U/A switch:** a single isolated component `DevSwitcher`, rendered **only when
+  `DEV_UA_SWITCH=true`** (default in dev, **false/absent in production**). It lets me jump
+  User↔Admin without login **in dev only**; admin auth is enforced whenever `DEV_UA_SWITCH` is
+  false. Keep it in one file, clearly marked as removable.
+- **SEO basics:** per-page `<title>` + meta description + Open Graph tags (brand OG image) +
+  `sitemap.xml` + `robots.txt`. (Advanced SEO/schema.org later, in Devin.)
+- Responsive polish and empty/error states. **Checkpoint.**
+
+## B.10 Module 7 — Handoff docs for the next phase (Devin)
+Generate a `/docs` folder with concise, accurate files (state only what code can't trivially show):
+- **`docs/SUPABASE.md`** — the **exact DB schema** (tables, fields, types, relations, indexes,
+  enums), the **storage bucket plan**, and how migration works (swap `DATABASE_URL`; move storage
+  to Supabase Storage). Note where RLS/policies will be defined later.
+- **`docs/DEPLOY.md`** — **single Render web service** deploy notes, full **env var list**, how to
+  flip `STORAGE_MODE`, `MAIL_MODE`, and auth from dev→prod, **Zoho SMTP** wiring
+  (`info@deroarts.com`), and **Free-tier notes** (Render sleep, Supabase limits, image sizes).
+- **`.env.example`** — every env var with a short description, **no secrets**.
+Do **not** create governance/DNA/CLAUDE.md files — those are added later, in Devin.
+**Checkpoint. Then run the app locally and confirm public + admin work end-to-end.**
+
+## B.11 Environment variables (document in `.env.example`)
+`DATABASE_URL` · `SESSION_SECRET` · `ADMIN_EMAIL` · `ADMIN_PASSWORD` · `DEV_UA_SWITCH` ·
+`MAIL_MODE` (`fake`|`smtp`) · `SMTP_HOST` · `SMTP_PORT` · `SMTP_USER` · `SMTP_PASS` · `MAIL_FROM`
+(`info@deroarts.com`) · `STORAGE_MODE` (`local`|`supabase`) · `SUPABASE_URL` ·
+`SUPABASE_ANON_KEY` · `SUPABASE_SERVICE_ROLE_KEY` · `SUPABASE_STORAGE_BUCKET` · `NEXT_PUBLIC_SITE_URL`.
+
+---
+
+## FINAL CONSTRAINTS RECAP (read again before you finish)
+- **Postgres + Prisma from day one** (not SQLite) → frictionless Supabase migration.
+- **Free-tier friendly** (Render Free / Supabase Free): optimized images, lightweight, no always-on jobs.
+- **No Replit lock-in**, **no PWA**, **no Expo/native**; public = normal responsive site; `/admin` = protected route.
+- **Adapters** for DB/storage/mail so dev→prod is a swap, not a rewrite.
+- **Dev U/A switch** is env-gated (`DEV_UA_SWITCH`) — it must be **impossible** to leave admin open in production.
+- **DB is the single source of truth**; admin and public read the same data.
+- **Do NOT** set up GitHub, real Supabase, Render, real email, or governance/DNA — leave clean handoff docs for Devin.
+- Build **only** what's specified; work in **modules with Plan Mode + checkpoints**.
+
+---
+
+## ASSETS TO ATTACH (from the DeroArts brand kit)
+1. **App Control screenshot** — visual reference for the **admin** (sidebar + card style).
+2. **`logo/logo-horizontal-on-light.svg`** and **`logo/logo-horizontal-on-dark.svg`** — main logo
+   (dark bg version for the admin sidebar).
+3. **`logo/symbol.svg`** — the feather mark alone (compact headers, loading).
+4. **`browser-tab/favicon.svg`** — favicon.
+5. **`manifest.json` / `README.md`** from the kit — palette + font reference.
+6. *(Optional)* 1–2 screenshots of software showcases you like — inspiration for the **public** layout.
+> You do NOT need screenshots of individual projects — those are uploaded from the admin.
+
+## DOMAIN & EMAIL FACTS
+- **Domain:** `deroarts.com` (Cloudflare registrar + DNS; use `deroarts.com`, never `dero-arts.com`).
+- **Email provider:** Zoho Mail (Free). Main mailbox: **`info@deroarts.com`** (SPF/DKIM/DMARC PASS).
+- **Per-project aliases** (e.g. `info-barnode@deroarts.com`) are **predisposed in the schema**
+  (`projects.from_email`) but created later on Zoho; default sender is `info@deroarts.com`.
+- On Replit, email is **fake** (`MAIL_MODE=fake`). On Render, switch to **Zoho SMTP**
+  (`MAIL_MODE=smtp`). Do not use Cloudflare Email Routing.
