@@ -34,6 +34,26 @@ export async function deleteProjectAction(id: string) {
   revalidatePath("/admin/progetti");
 }
 
+export async function moveProjectAction(id: string, dir: "up" | "down") {
+  const projects = await prisma.project.findMany({
+    orderBy: { sort_order: "asc" },
+    select: { id: true, sort_order: true },
+  });
+  const idx = projects.findIndex((p) => p.id === id);
+  if (idx < 0) return;
+  const swapIdx = dir === "up" ? idx - 1 : idx + 1;
+  if (swapIdx < 0 || swapIdx >= projects.length) return;
+
+  const current = projects[idx];
+  const swap = projects[swapIdx];
+
+  await prisma.$transaction([
+    prisma.project.update({ where: { id: current.id }, data: { sort_order: swap.sort_order } }),
+    prisma.project.update({ where: { id: swap.id }, data: { sort_order: current.sort_order } }),
+  ]);
+  revalidatePath("/admin/progetti");
+}
+
 export async function saveProjectAction(
   _prev: ProjectFormState,
   formData: FormData
@@ -74,13 +94,7 @@ export async function saveProjectAction(
     return { error: "Dati galleria o azioni non validi." };
   }
 
-  // Ensure slug uniqueness when creating
-  if (!id) {
-    const existing = await prisma.project.findUnique({ where: { slug } });
-    if (existing) slug = `${slug}-${Date.now()}`;
-  }
-
-  const projectData = {
+  const sharedData = {
     title: { it: titleIt, en: "" },
     short_description: { it: shortDescIt, en: "" },
     long_description: { it: longDescIt, en: "" },
@@ -95,13 +109,22 @@ export async function saveProjectAction(
 
   let project;
   if (id) {
+    // For updates: check if slug changed; if so, ensure it's still unique
+    const current = await prisma.project.findUnique({ where: { id }, select: { slug: true } });
+    if (current && current.slug !== slug) {
+      const conflict = await prisma.project.findUnique({ where: { slug } });
+      if (conflict) slug = `${slug}-${Date.now()}`;
+    }
     project = await prisma.project.update({
       where: { id },
-      data: projectData,
+      data: { ...sharedData, slug },
     });
   } else {
+    // For creates: ensure slug uniqueness
+    const existing = await prisma.project.findUnique({ where: { slug } });
+    if (existing) slug = `${slug}-${Date.now()}`;
     project = await prisma.project.create({
-      data: { ...projectData, slug },
+      data: { ...sharedData, slug },
     });
   }
 

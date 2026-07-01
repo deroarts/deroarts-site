@@ -52,6 +52,26 @@ export async function renameCategoryAction(
   revalidatePath("/admin/progetti");
 }
 
+export async function moveCategoryAction(id: string, dir: "up" | "down") {
+  const categories = await prisma.category.findMany({
+    orderBy: { sort_order: "asc" },
+    select: { id: true, sort_order: true },
+  });
+  const idx = categories.findIndex((c) => c.id === id);
+  if (idx < 0) return;
+  const swapIdx = dir === "up" ? idx - 1 : idx + 1;
+  if (swapIdx < 0 || swapIdx >= categories.length) return;
+
+  const current = categories[idx];
+  const swap = categories[swapIdx];
+
+  await prisma.$transaction([
+    prisma.category.update({ where: { id: current.id }, data: { sort_order: swap.sort_order } }),
+    prisma.category.update({ where: { id: swap.id }, data: { sort_order: current.sort_order } }),
+  ]);
+  revalidatePath("/admin/categorie");
+}
+
 export async function deleteCategoryAction(id: string) {
   const count = await prisma.project.count({ where: { category_id: id } });
   if (count > 0) {
