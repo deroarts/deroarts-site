@@ -39,8 +39,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: `${title} | DeroArts`,
       description: desc,
       images: project.cover_image_url
-        ? [{ url: project.cover_image_url, alt: title }]
-        : [],
+        ? [{ url: project.cover_image_url, width: 1280, height: 800, alt: title }]
+        : [{ url: "/brand/og-image.png", width: 1200, height: 630, alt: "DeroArts" }],
     },
   };
 }
