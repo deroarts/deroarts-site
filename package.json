@@ -2,6 +2,9 @@
   "name": "deroarts",
   "version": "0.1.0",
   "private": true,
+  "prisma": {
+    "seed": "ts-node --project tsconfig.seed.json prisma/seed.ts"
+  },
   "scripts": {
     "dev": "next dev --port ${PORT:-3000}",
     "build": "next build",
