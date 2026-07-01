@@ -27,6 +27,14 @@ export const metadata: Metadata = {
     siteName: "DeroArts",
     locale: "it_IT",
     type: "website",
+    images: [
+      {
+        url: "/brand/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "DeroArts — Software che semplifica la vita",
+      },
+    ],
   },
 };
 

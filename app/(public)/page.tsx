@@ -15,10 +15,10 @@ export const metadata: Metadata = {
     siteName: "DeroArts",
     images: [
       {
-        url: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://deroarts.com"}/brand/logo-horizontal-on-dark.svg`,
-        width: 400,
-        height: 104,
-        alt: "DeroArts",
+        url: "/brand/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "DeroArts — Software che semplifica la vita",
       },
     ],
   },

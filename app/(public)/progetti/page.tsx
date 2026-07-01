@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Progetti | DeroArts",
     description: "Esplora i software DeroArts — semplici, potenti, italiani.",
+    images: [{ url: "/brand/og-image.png", width: 1200, height: 630, alt: "DeroArts" }],
   },
 };
 
