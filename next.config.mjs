@@ -2,7 +2,12 @@
 const nextConfig = {
   output: "standalone",
   images: {
-    remotePatterns: [],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "placehold.co",
+      },
+    ],
     formats: ["image/avif", "image/webp"],
   },
   experimental: {
