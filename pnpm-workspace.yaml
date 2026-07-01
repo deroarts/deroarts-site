@@ -34,11 +34,10 @@ minimumReleaseAgeExclude:
   - '@replit/*'
   - stripe-replit-sync
 
-packages:
-  - artifacts/*
-  - lib/*
-  - lib/integrations/*
-  - scripts
+# Workspace packages intentionally cleared — DeroArts is a standalone
+# Next.js app at the repository root, not a monorepo member.
+# The workspace runner settings below remain for security (release age check).
+packages: []
 
 catalog:
   '@replit/vite-plugin-cartographer': ^0.5.21
