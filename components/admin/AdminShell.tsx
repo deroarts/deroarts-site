@@ -28,6 +28,7 @@ const NAV_ITEMS = [
   {
     href: "/admin/richieste",
     label: "Richieste",
+    badge: true, // receives unreadCount
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -39,19 +40,28 @@ const NAV_ITEMS = [
     label: "Impostazioni",
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>
     ),
   },
 ];
 
-function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
+function NavLinks({
+  onNavigate,
+  unreadCount,
+}: {
+  onNavigate?: () => void;
+  unreadCount: number;
+}) {
   const pathname = usePathname();
+  const isDev = process.env.NODE_ENV !== "production";
+
   return (
     <nav className="flex-1 px-3 py-4 space-y-1">
       {NAV_ITEMS.map((item) => {
         const active = pathname.startsWith(item.href);
+        const showBadge = item.badge && unreadCount > 0;
+
         return (
           <Link
             key={item.href}
@@ -64,10 +74,36 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             }`}
           >
             <span className={active ? "text-green-start" : ""}>{item.icon}</span>
-            {item.label}
+            <span className="flex-1">{item.label}</span>
+            {showBadge && (
+              <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center leading-none">
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </span>
+            )}
           </Link>
         );
       })}
+
+      {/* Dev Outbox — only in development */}
+      {isDev && (
+        <Link
+          href="/admin/dev-outbox"
+          onClick={onNavigate}
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            pathname.startsWith("/admin/dev-outbox")
+              ? "bg-green-start/20 text-green-start"
+              : "text-white/40 hover:text-white/80 hover:bg-white/10"
+          }`}
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+          <span className="flex-1">Dev Outbox</span>
+          <span className="text-[10px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded font-mono">
+            DEV
+          </span>
+        </Link>
+      )}
     </nav>
   );
 }
@@ -75,16 +111,20 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 interface AdminShellProps {
   children: React.ReactNode;
   adminEmail?: string;
+  unreadCount?: number;
 }
 
-export default function AdminShell({ children, adminEmail }: AdminShellProps) {
+export default function AdminShell({
+  children,
+  adminEmail,
+  unreadCount = 0,
+}: AdminShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
     <div className="flex h-screen bg-light-surface overflow-hidden">
       {/* ── Desktop sidebar ─────────────────────────────────────────────── */}
       <aside className="hidden md:flex flex-col w-60 bg-dark-green-gradient flex-shrink-0 shadow-xl">
-        {/* Logo */}
         <div className="flex items-center gap-2 px-5 py-5 border-b border-white/10">
           <Image
             src="/brand/logo-horizontal-on-dark.svg"
@@ -95,9 +135,8 @@ export default function AdminShell({ children, adminEmail }: AdminShellProps) {
           />
         </div>
 
-        <NavLinks />
+        <NavLinks unreadCount={unreadCount} />
 
-        {/* Admin info + logout */}
         <div className="px-3 pb-4 border-t border-white/10 pt-4">
           {adminEmail && (
             <p className="text-xs text-white/40 px-3 mb-3 truncate">{adminEmail}</p>
@@ -148,7 +187,10 @@ export default function AdminShell({ children, adminEmail }: AdminShellProps) {
           </button>
         </div>
 
-        <NavLinks onNavigate={() => setDrawerOpen(false)} />
+        <NavLinks
+          unreadCount={unreadCount}
+          onNavigate={() => setDrawerOpen(false)}
+        />
 
         <div className="px-3 pb-4 border-t border-white/10 pt-4">
           {adminEmail && (
@@ -188,7 +230,23 @@ export default function AdminShell({ children, adminEmail }: AdminShellProps) {
             height={28}
             className="h-7 w-7"
           />
-          <span className="text-sm font-semibold text-graphite">Admin</span>
+          <span className="text-sm font-semibold text-graphite flex-1">Admin</span>
+
+          {/* Unread bell — mobile */}
+          {unreadCount > 0 && (
+            <Link
+              href="/admin/richieste?status=new"
+              className="relative text-gray-400 hover:text-graphite transition-colors"
+              title={`${unreadCount} richiesta/e nuove`}
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-0.5 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center leading-none">
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </span>
+            </Link>
+          )}
         </header>
 
         <main className="flex-1 p-6">{children}</main>
