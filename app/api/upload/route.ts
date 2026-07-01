@@ -4,12 +4,7 @@ import { getStorageAdapter } from "@/lib/adapters";
 
 export const dynamic = "force-dynamic";
 
-const ALLOWED_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/gif",
-];
+const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 const PURPOSE_CONFIG = {
   cover: { maxWidth: 1920, quality: 82 },
@@ -32,9 +27,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Nessun file fornito." }, { status: 400 });
     }
 
-    const isImage =
-      ALLOWED_TYPES.includes(file.type) || file.type.startsWith("image/");
-    if (!isImage) {
+    if (!ALLOWED_TYPES.has(file.type)) {
       return NextResponse.json(
         { error: "Tipo di file non supportato. Usa JPEG, PNG o WebP." },
         { status: 400 }
