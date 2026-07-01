@@ -35,9 +35,25 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const showDevSwitcher = process.env.DEV_UA_SWITCH === "true";
+
   return (
     <html lang="it" className={poppins.variable}>
-      <body className="font-sans antialiased">{children}</body>
+      <body className="font-sans antialiased">
+        {children}
+        {showDevSwitcher && (
+          // DevSwitcher is imported lazily so it is completely absent from the
+          // production bundle when DEV_UA_SWITCH is false/unset.
+          <DevSwitcherLoader />
+        )}
+      </body>
     </html>
   );
+}
+
+// Inline async server component — avoids a top-level dynamic import that
+// would run even when the switcher is disabled.
+async function DevSwitcherLoader() {
+  const { default: DevSwitcher } = await import("@/components/DevSwitcher");
+  return <DevSwitcher />;
 }

@@ -5,15 +5,17 @@ import AspectImage from "@/components/AspectImage";
 import StatusBadge from "@/components/StatusBadge";
 import ActionButtons from "@/components/ActionButtons";
 import { t, parseGallery } from "@/lib/i18n";
+import { verifyPreviewToken } from "@/lib/preview-token";
 import type { Metadata } from "next";
 
 interface PageProps {
   params: { slug: string };
+  searchParams: { preview_token?: string };
 }
 
-async function getProject(slug: string) {
+async function getProject(slug: string, allowUnpublished = false) {
   return prisma.project.findFirst({
-    where: { slug, published: true },
+    where: allowUnpublished ? { slug } : { slug, published: true },
     include: {
       category: true,
       actions: {
@@ -43,8 +45,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function ProjectDetailPage({ params }: PageProps) {
-  const project = await getProject(params.slug);
+export default async function ProjectDetailPage({ params, searchParams }: PageProps) {
+  const previewToken = searchParams.preview_token;
+  const isValidPreview =
+    previewToken != null &&
+    verifyPreviewToken(previewToken) === params.slug;
+
+  const project = await getProject(params.slug, isValidPreview);
   if (!project) notFound();
 
   const title = t(project.title);
