@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import Link from "next/link";
 import { saveProjectAction } from "@/app/admin/(shell)/progetti/actions";
 import { ACTION_LABELS } from "@/lib/i18n";
+import ImageFrameEditor from "./ImageFrameEditor";
+import GalleryEditor, { type GalleryItem } from "./GalleryEditor";
 
 const PROJECT_STATUSES = [
   { value: "available", label: "Disponibile" },
@@ -20,11 +22,6 @@ const ACTION_TYPES = [
   { value: "play_store", label: "Google Play" },
   { value: "external", label: "Link esterno" },
 ];
-
-interface GalleryItem {
-  url: string;
-  alt_it: string;
-}
 
 interface ActionItem {
   type: string;
@@ -102,6 +99,10 @@ export default function ProjectForm({ project, categories }: ProjectFormProps) {
   const [slug, setSlug] = useState(isEdit ? project!.slug : "");
   const [slugManual, setSlugManual] = useState(isEdit);
 
+  const [coverImageUrl, setCoverImageUrl] = useState(
+    isEdit ? (project!.cover_image_url ?? "") : ""
+  );
+
   const [gallery, setGallery] = useState<GalleryItem[]>(
     isEdit
       ? ((project!.gallery as GalleryItem[]) ?? []).map((g) => ({
@@ -130,18 +131,6 @@ export default function ProjectForm({ project, categories }: ProjectFormProps) {
     if (!slugManual) {
       setSlug(slugify(v));
     }
-  }
-
-  function addGalleryItem() {
-    setGallery((g) => [...g, { url: "", alt_it: "" }]);
-  }
-
-  function updateGallery(i: number, key: keyof GalleryItem, val: string) {
-    setGallery((g) => g.map((item, idx) => (idx === i ? { ...item, [key]: val } : item)));
-  }
-
-  function removeGallery(i: number) {
-    setGallery((g) => g.filter((_, idx) => idx !== i));
   }
 
   function addAction() {
@@ -191,6 +180,7 @@ export default function ProjectForm({ project, categories }: ProjectFormProps) {
     <form action={formAction} className="space-y-8 max-w-3xl">
       {/* Hidden fields */}
       {isEdit && <input type="hidden" name="id" value={project!.id} />}
+      <input type="hidden" name="cover_image_url" value={coverImageUrl} />
       <input type="hidden" name="gallery_json" value={galleryJson} />
       <input type="hidden" name="actions_json" value={actionsJson} />
 
@@ -333,72 +323,31 @@ export default function ProjectForm({ project, categories }: ProjectFormProps) {
       </section>
 
       {/* ── Images ───────────────────────────────────────────────────────── */}
-      <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
+      <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-6">
         <h2 className="font-semibold text-graphite">Immagini</h2>
-        <p className="text-xs text-gray-400">
-          Inserisci gli URL delle immagini. L&apos;editor di upload/ritaglio sarà disponibile nel Modulo 5.
-        </p>
 
+        {/* Cover image — 16:10 */}
         <div>
-          <label className="block text-sm font-medium text-graphite mb-1.5">
-            Immagine di copertina (16:10) — URL
-          </label>
-          <input
-            type="url"
-            name="cover_image_url"
-            defaultValue={isEdit ? (project!.cover_image_url ?? "") : ""}
-            className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-end"
-            placeholder="https://…"
+          <p className="text-sm font-medium text-graphite mb-2">
+            Immagine di copertina{" "}
+            <span className="text-xs font-normal text-gray-400">(16:10)</span>
+          </p>
+          <ImageFrameEditor
+            ratio="cover"
+            currentUrl={coverImageUrl || null}
+            onChange={(url) => {
+              setCoverImageUrl(url);
+            }}
           />
         </div>
 
+        {/* Gallery — 4:3 each */}
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-medium text-graphite">
-              Galleria (4:3)
-            </label>
-            <button
-              type="button"
-              onClick={addGalleryItem}
-              className="text-xs text-green-end hover:underline font-medium"
-            >
-              + Aggiungi immagine
-            </button>
-          </div>
-          {gallery.length === 0 && (
-            <p className="text-xs text-gray-400">Nessuna immagine in galleria.</p>
-          )}
-          <div className="space-y-3">
-            {gallery.map((item, i) => (
-              <div key={i} className="flex gap-2 items-start">
-                <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <input
-                    type="url"
-                    value={item.url}
-                    onChange={(e) => updateGallery(i, "url", e.target.value)}
-                    placeholder="https://… (URL immagine)"
-                    className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-end"
-                  />
-                  <input
-                    type="text"
-                    value={item.alt_it}
-                    onChange={(e) => updateGallery(i, "alt_it", e.target.value)}
-                    placeholder="Testo alternativo (italiano)"
-                    className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-end"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => removeGallery(i)}
-                  className="text-gray-400 hover:text-red-500 transition-colors p-2 flex-shrink-0"
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            ))}
-          </div>
+          <p className="text-sm font-medium text-graphite mb-3">
+            Galleria{" "}
+            <span className="text-xs font-normal text-gray-400">(4:3)</span>
+          </p>
+          <GalleryEditor items={gallery} onChange={setGallery} />
         </div>
       </section>
 
