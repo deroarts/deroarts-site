@@ -1,5 +1,6 @@
 // DeroArts — Prisma schema (PostgreSQL / Supabase-ready)
-// JSONB fields use Json type for multilingual { "it": "...", "en": "" } shape.
+// Translatable text fields use Json type with shape { "it": "...", "en": "" }.
+// Gallery is a Json array with shape [{ url: string, alt: { it: string, en: string } }].
 
 generator client {
   provider = "prisma-client-js"
@@ -8,4 +9,108 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum ProjectStatus {
+  available
+  coming_soon
+  demo_available
+}
+
+enum ActionType {
+  demo
+  request_info
+  download
+  app_store
+  play_store
+  external
+}
+
+enum RequestStatus {
+  new
+  read
+  handled
+}
+
+// ─── Models ───────────────────────────────────────────────────────────────────
+
+model Category {
+  id         String    @id @default(cuid())
+  name       Json      // { it: string, en: string }
+  slug       String    @unique
+  sort_order Int       @default(0)
+  created_at DateTime  @default(now())
+  projects   Project[]
+
+  @@index([slug])
+  @@map("categories")
+}
+
+model Project {
+  id                String          @id @default(cuid())
+  slug              String          @unique
+  title             Json            // { it: string, en: string }
+  short_description Json            // { it: string, en: string }
+  long_description  Json            // { it: string, en: string }
+  status            ProjectStatus   @default(available)
+  category          Category?       @relation(fields: [category_id], references: [id], onDelete: SetNull)
+  category_id       String?
+  cover_image_url   String?
+  gallery           Json            @default("[]")
+  published         Boolean         @default(false)
+  sort_order        Int             @default(0)
+  from_email        String?
+  created_at        DateTime        @default(now())
+  updated_at        DateTime        @updatedAt
+  actions           ProjectAction[]
+  requests          Request[]
+
+  @@index([slug])
+  @@index([category_id])
+  @@index([status])
+  @@index([published])
+  @@map("projects")
+}
+
+model ProjectAction {
+  id         String     @id @default(cuid())
+  project    Project    @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  project_id String
+  type       ActionType
+  label      Json       // { it: string, en: string }
+  url        String?
+  enabled    Boolean    @default(true)
+  sort_order Int        @default(0)
+
+  @@index([project_id])
+  @@map("project_actions")
+}
+
+model Request {
+  id         String        @id @default(cuid())
+  project    Project?      @relation(fields: [project_id], references: [id], onDelete: SetNull)
+  project_id String?
+  name       String
+  email      String
+  message    String
+  status     RequestStatus @default(new)
+  created_at DateTime      @default(now())
+  handled_at DateTime?
+
+  @@index([project_id])
+  @@index([status])
+  @@map("requests")
+}
+
+model DevOutbox {
+  id         String   @id @default(cuid())
+  to         String
+  from       String
+  subject    String
+  body       String
+  created_at DateTime @default(now())
+
+  @@map("dev_outbox")
 }
