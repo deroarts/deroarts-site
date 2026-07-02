@@ -20,9 +20,15 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://deroarts.com"
   ),
   icons: {
-    icon: "/brand/favicon.svg",
+    icon: [
+      { url: "/brand/favicon.svg", type: "image/svg+xml" },
+      { url: "/brand/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/brand/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
     shortcut: "/brand/favicon.svg",
+    apple: "/brand/apple-touch-icon.png",
   },
+  manifest: "/manifest.webmanifest",
   openGraph: {
     siteName: "DeroArts",
     locale: "it_IT",

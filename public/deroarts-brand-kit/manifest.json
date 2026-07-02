@@ -1,0 +1,217 @@
+{
+  "brand": "DeroArts",
+  "version": "2.0.0",
+  "generated": "2026-07-01",
+  "font": {
+    "family": "Poppins",
+    "weight": "Medium",
+    "note": "Text is outlined to vector paths in all SVGs; installing the font is not required."
+  },
+  "palette": {
+    "graphite": "#1A222B",
+    "green_gradient": {
+      "from": "#8FC603",
+      "to": "#1E9E3D"
+    },
+    "icon_dark_gradient": {
+      "from": "#1A3A26",
+      "to": "#0F2419"
+    },
+    "surface_light": "#F8F6F6"
+  },
+  "naming_convention": {
+    "case": "kebab-case (lowercase, hyphen-separated)",
+    "-on-light": "artwork for use on LIGHT backgrounds (dark 'Dero' text)",
+    "-on-dark": "artwork for use on DARK backgrounds (white 'Dero' text)",
+    "app-icon-light / -dark": "icon's own theme (light squircle / dark squircle)",
+    "symbol": "the feather mark alone",
+    "wordmark": "the DeroArts text alone",
+    "logo-*": "full lockups (feather + text)"
+  },
+  "categories": [
+    {
+      "id": "home-screen",
+      "label": "Home screen app icon",
+      "has_background": true,
+      "assets": [
+        {
+          "file": "home-screen/app-icon-light.png",
+          "format": "png",
+          "transparent": false,
+          "size": "1024x1024",
+          "use": "iOS/Android launcher icon (light)",
+          "derive_sizes": [
+            180,
+            192,
+            512,
+            167,
+            152,
+            120
+          ]
+        },
+        {
+          "file": "home-screen/app-icon-dark.png",
+          "format": "png",
+          "transparent": false,
+          "size": "1024x1024",
+          "use": "iOS/Android launcher icon (dark theme)",
+          "derive_sizes": [
+            180,
+            192,
+            512,
+            167,
+            152,
+            120
+          ]
+        }
+      ]
+    },
+    {
+      "id": "browser-tab",
+      "label": "Browser tab favicon",
+      "has_background": true,
+      "assets": [
+        {
+          "file": "browser-tab/favicon.svg",
+          "format": "svg",
+          "transparent": false,
+          "use": "modern browsers (scalable)",
+          "derive": [
+            "favicon.ico",
+            "favicon-32x32.png",
+            "favicon-16x16.png",
+            "apple-touch-icon-180x180.png"
+          ]
+        },
+        {
+          "file": "browser-tab/favicon.png",
+          "format": "png",
+          "transparent": false,
+          "size": "512x512",
+          "use": "raster master for favicon derivation"
+        }
+      ]
+    },
+    {
+      "id": "instagram",
+      "label": "Instagram profile picture",
+      "has_background": true,
+      "assets": [
+        {
+          "file": "instagram/profile-picture.png",
+          "format": "png",
+          "transparent": false,
+          "size": "1080x1080",
+          "use": "profile avatar; centered with safe margin for circular crop"
+        }
+      ]
+    },
+    {
+      "id": "logo",
+      "label": "DeroArts logo (transparent)",
+      "has_background": false,
+      "assets": [
+        {
+          "file": "logo/logo-horizontal-on-light.svg",
+          "format": "svg",
+          "transparent": true,
+          "variant": "horizontal",
+          "on": "light"
+        },
+        {
+          "file": "logo/logo-horizontal-on-dark.svg",
+          "format": "svg",
+          "transparent": true,
+          "variant": "horizontal",
+          "on": "dark"
+        },
+        {
+          "file": "logo/logo-two-line-on-light.svg",
+          "format": "svg",
+          "transparent": true,
+          "variant": "two-line",
+          "on": "light",
+          "use": "feather left + Dero over Arts (App Control style)"
+        },
+        {
+          "file": "logo/logo-two-line-on-dark.svg",
+          "format": "svg",
+          "transparent": true,
+          "variant": "two-line",
+          "on": "dark"
+        },
+        {
+          "file": "logo/logo-stacked-on-light.svg",
+          "format": "svg",
+          "transparent": true,
+          "variant": "stacked",
+          "on": "light",
+          "use": "feather on top, single-line text"
+        },
+        {
+          "file": "logo/logo-stacked-on-dark.svg",
+          "format": "svg",
+          "transparent": true,
+          "variant": "stacked",
+          "on": "dark"
+        },
+        {
+          "file": "logo/wordmark-on-light.svg",
+          "format": "svg",
+          "transparent": true,
+          "variant": "wordmark",
+          "on": "light"
+        },
+        {
+          "file": "logo/wordmark-on-dark.svg",
+          "format": "svg",
+          "transparent": true,
+          "variant": "wordmark",
+          "on": "dark"
+        },
+        {
+          "file": "logo/symbol.svg",
+          "format": "svg",
+          "transparent": true,
+          "variant": "symbol",
+          "on": "any"
+        },
+        {
+          "file": "logo/symbol.png",
+          "format": "png",
+          "transparent": true,
+          "variant": "symbol",
+          "size": "585x744"
+        },
+        {
+          "file": "logo/logo-mono-black.svg",
+          "format": "svg",
+          "transparent": true,
+          "variant": "mono",
+          "color": "black"
+        },
+        {
+          "file": "logo/logo-mono-white.svg",
+          "format": "svg",
+          "transparent": true,
+          "variant": "mono",
+          "color": "white"
+        },
+        {
+          "file": "logo/symbol-mono-black.png",
+          "format": "png",
+          "transparent": true,
+          "variant": "symbol-mono",
+          "color": "black"
+        },
+        {
+          "file": "logo/symbol-mono-white.png",
+          "format": "png",
+          "transparent": true,
+          "variant": "symbol-mono",
+          "color": "white"
+        }
+      ]
+    }
+  ]
+}
