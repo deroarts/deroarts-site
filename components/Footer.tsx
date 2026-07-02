@@ -43,6 +43,11 @@ export default function Footer() {
                   Contatti
                 </Link>
               </li>
+              <li>
+                <Link href="/privacy" className="hover:text-white transition-colors">
+                  Privacy &amp; Cookie
+                </Link>
+              </li>
             </ul>
           </div>
 

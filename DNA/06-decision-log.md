@@ -15,3 +15,4 @@ Registro delle decisioni tecniche rilevanti. Una riga per decisione: data · dec
 | 2026-07-02 | Suite E2E/visual con Playwright in `tests/e2e/` | Verifica navigazione, flussi e regressioni visive; isolata (POST intercettati, nessuna scrittura DB), esclusa dal build. |
 | 2026-07-02 | ESLint config + CI di qualità (typecheck/lint/build su push+PR) | Progetto online: prevenire regressioni. `next lint` era interattivo/non configurato (rompeva la CI). |
 | 2026-07-02 | Integrazione brand kit v2.0: derivati (favicon multi-size, apple-touch, OG 1200x630, PWA icons) + manifest.webmanifest | Kit ufficiale in public/deroarts-brand-kit; risolve OG-in-SVG (crawler) e aggiunge PWA/favicon coerenti. |
+| 2026-07-02 | Informativa privacy (/privacy) + cookie banner minimale (GDPR EU) | Il form raccoglie PII (nome/email); conformità EU prima del traffico reale. Nessun tracker; consenso semplice via localStorage. |
