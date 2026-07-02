@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf '{\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"additionalContext\":\"Governance progetto DeroArts: leggi AGENTS.md (regole canoniche vincolanti) e DNA/00-indice.md (stato operativo) PRIMA di operare. Le regole sono vincoli, non suggerimenti: limite 300 righe/file, no logiche duplicate, DB unica fonte dati, no modifiche a DB/secrets/deploy senza ok, push su main = deploy in produzione.\"}}'"
+          }
+        ]
+      }
+    ]
+  }
+}
