@@ -20,7 +20,7 @@
 ## Dominio & email — deroarts.com
 - Registrar + DNS: **Cloudflare** (DNSSEC attivo, SSL full, HTTPS forzato). Non modificare registrar/nameserver/DNSSEC.
 - Email: **Zoho Mail** (EU), casella `info@deroarts.com`. SPF/DKIM/DMARC PASS. SMTP: `smtp.zoho.eu:465` (serve app-password Zoho, non la password account).
-- Scheda dominio completa: in App Control (`operational_notes` del progetto).
+- **Scheda completa** (record DNS, SSL, sottodomini, regole): [[07-dominio-email]].
 
 ## App Control
 - Sync di segreti/variabili via `.agent/app-control.json` (ignorato da git). Rigenera `.env`/`.mcp.json`.
