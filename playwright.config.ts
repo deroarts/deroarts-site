@@ -1,4 +1,16 @@
 import { defineConfig, devices } from "@playwright/test";
+import { readFileSync } from "node:fs";
+
+// Load .env into process.env for tests (SESSION_SECRET, ADMIN_EMAIL) without an
+// extra dependency. Values already set in the environment win.
+try {
+  for (const line of readFileSync(".env", "utf8").split("\n")) {
+    const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
+    if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^"(.*)"$/, "$1");
+  }
+} catch {
+  /* .env optional in CI */
+}
 
 // E2E / visual test config. Runs against the local dev server on :5001.
 // Reuses an already-running server; otherwise starts one. Never touches the
