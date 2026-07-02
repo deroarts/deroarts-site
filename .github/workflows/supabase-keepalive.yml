@@ -1,0 +1,57 @@
+# Supabase free-tier keepalive.
+# Reads one row from the dedicated `public.ping` table (RLS: SELECT-only for anon)
+# so the Postgres project stays active. No writes, no app logic.
+#
+# Runs: every 2 days (free project pauses after ~7 days of inactivity).
+# Also runnable manually from the Actions tab (workflow_dispatch).
+#
+# Secrets required (Settings → Secrets and variables → Actions):
+#   SUPABASE_URL       — https://<ref>.supabase.co
+#   SUPABASE_ANON_KEY  — low-privilege anon key (NEVER the service_role key)
+#
+# 60-day auto-disable mitigation: GitHub disables scheduled workflows after
+# 60 days of repo inactivity. This job re-arms itself by re-enabling the
+# workflow via the API on every run, so an active keepalive keeps the schedule
+# alive. Residual risk documented in DNA/04-infrastruttura.md.
+#
+# To disable: delete this file, or disable the workflow in the Actions tab.
+
+name: supabase-keepalive
+
+on:
+  schedule:
+    - cron: "17 6 */2 * *" # every 2 days at 06:17 UTC
+  workflow_dispatch: {}
+
+permissions:
+  actions: write # needed to re-enable the workflow (60-day mitigation)
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping Supabase (read-only, anon)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "Missing SUPABASE_URL / SUPABASE_ANON_KEY secrets"; exit 1
+          fi
+          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 \
+            "$SUPABASE_URL/rest/v1/ping?select=id&limit=1" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY")
+          echo "Ping HTTP $code"
+          [ "$code" = "200" ] || { echo "Keepalive ping failed"; exit 1; }
+          echo "Supabase keepalive OK"
+
+      - name: Re-arm schedule (60-day auto-disable mitigation)
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow enable "supabase-keepalive.yml" \
+            --repo "${{ github.repository }}" 2>/dev/null || true

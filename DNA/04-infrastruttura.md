@@ -27,6 +27,11 @@
 - Le 9 variabili canoniche vivono lì. `RENDER_API_KEY`, `LINK_DEPLOY`, `LINK_DEPLOY ADMIN` sono **vuote** finché non si deploya.
 
 ## Limiti free tier
-- **Supabase:** DB 500MB, Storage 1GB, banda 5GB/mese. **Pausa dopo ~1 settimana di inattività** → serve keepalive ogni 1-3 giorni. Usare sempre l'URL pooler.
+- **Supabase:** DB 500MB (uso attuale ~10MB), Storage 1GB, banda 5GB/mese. **Pausa dopo ~1 settimana di inattività** → keepalive attivo (sotto). Usare sempre l'URL pooler.
 - **Render:** spegnimento dopo 15min inattività (cold start ~30s), 500 build-min/mese, 100GB banda.
 - Segnalare prima di implementare funzioni che avvicinano questi limiti.
+
+## Keepalive Supabase
+- Workflow `.github/workflows/supabase-keepalive.yml`: ogni 2 giorni legge la tabella `public.ping` (RLS SELECT-only per anon) con la anon key. Nessuna scrittura, impatto trascurabile.
+- Secret GitHub richiesti: `SUPABASE_URL`, `SUPABASE_ANON_KEY` (mai service_role).
+- Rischio residuo: GitHub disabilita i workflow schedulati dopo 60gg di inattività del repo; il job si ri-abilita da solo ad ogni run (step "Re-arm schedule"). Disattivazione: elimina il file o disabilita dalla tab Actions.
