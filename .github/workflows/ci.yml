@@ -1,0 +1,40 @@
+# Quality CI: runs the project's own checks on every push/PR to main.
+# Type safety + lint + production build. No deploy here (Render auto-deploys on
+# push to main separately). Keeps the online project from regressing.
+
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm db:generate
+
+      - run: pnpm typecheck
+
+      - run: pnpm lint
+
+      # Build without a real DB: force-dynamic routes never query at build time.
+      - run: pnpm build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://deroarts.onrender.com
