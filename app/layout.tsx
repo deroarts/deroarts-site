@@ -49,7 +49,11 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const showDevSwitcher = process.env.DEV_UA_SWITCH === "true";
+  // Show the U/A pill everywhere (incl. prod) when the public flag is on, OR in
+  // local dev. It is navigation only — the auth bypass is a separate dev switch.
+  const showDevSwitcher =
+    process.env.NEXT_PUBLIC_SHOW_UA_SWITCH === "true" ||
+    process.env.DEV_UA_SWITCH === "true";
 
   return (
     <html lang="it" className={poppins.variable}>

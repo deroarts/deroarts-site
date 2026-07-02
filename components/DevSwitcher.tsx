@@ -1,10 +1,10 @@
 /* ==========================================================================
-   DEV-ONLY — DevSwitcher
-   Remove this component or set DEV_UA_SWITCH=false before going to production.
-   This component is only rendered when process.env.DEV_UA_SWITCH === "true".
-   PERMANENT RULE: this U/A switch is a development-only tool and must ALWAYS
-   remain independent from any auth / privacy / security / RLS logic — it must
-   never be blocked by them. It is temporary and will be removed before prod.
+   DevSwitcher — U/A navigation pill.
+   Visibility gate (in layout): NEXT_PUBLIC_SHOW_UA_SWITCH === "true" → shown
+   everywhere incl. production. It is ONLY a navigation shortcut between the
+   public site and /admina; it does NOT bypass auth. The auth bypass is a
+   SEPARATE, dev-only switch (DEV_UA_SWITCH in middleware) that is never enabled
+   in production — so in prod clicking "A" still requires the admin login.
    ========================================================================== */
 
 "use client";

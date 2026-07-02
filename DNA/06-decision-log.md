@@ -16,3 +16,5 @@ Registro delle decisioni tecniche rilevanti. Una riga per decisione: data · dec
 | 2026-07-02 | ESLint config + CI di qualità (typecheck/lint/build su push+PR) | Progetto online: prevenire regressioni. `next lint` era interattivo/non configurato (rompeva la CI). |
 | 2026-07-02 | Integrazione brand kit v2.0: derivati (favicon multi-size, apple-touch, OG 1200x630, PWA icons) + manifest.webmanifest | Kit ufficiale in public/deroarts-brand-kit; risolve OG-in-SVG (crawler) e aggiunge PWA/favicon coerenti. |
 | 2026-07-02 | Informativa privacy (/privacy) + cookie banner minimale (GDPR EU) | Il form raccoglie PII (nome/email); conformità EU prima del traffico reale. Nessun tracker; consenso semplice via localStorage. |
+| 2026-07-02 | Next.js 14.2.35 + header sicurezza (HSTS, X-Frame, nosniff, Referrer, Permissions) | Patch ramo 14 + hardening. CVE DoS residui accettati (fix solo in major 15/16, app in sviluppo). |
+| 2026-07-02 | U/A pill visibile in prod via NEXT_PUBLIC_SHOW_UA_SWITCH, bypass auth resta dev-only | Richiesta: pill sempre visibile. Separato dalla navigazione il bypass login (DEV_UA_SWITCH), mai attivo in prod → /admina resta protetto. |
