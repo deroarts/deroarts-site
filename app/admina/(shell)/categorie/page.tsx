@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db/client";
 import CategoryList from "./CategoryList";
+export const dynamic = "force-dynamic";
 
 export const metadata = { title: "Categorie | Admin DeroArts" };
 

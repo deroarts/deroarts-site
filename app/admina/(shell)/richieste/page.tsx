@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/db/client";
 import { t } from "@/lib/i18n";
 import type { RequestStatus } from "@prisma/client";
+export const dynamic = "force-dynamic";
 
 export const metadata = { title: "Richieste | Admin DeroArts" };
 

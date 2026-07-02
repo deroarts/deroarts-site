@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db/client";
 import { t } from "@/lib/i18n";
 import { updateRequestStatusAction } from "../actions";
 import type { RequestStatus } from "@prisma/client";
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: { id: string };

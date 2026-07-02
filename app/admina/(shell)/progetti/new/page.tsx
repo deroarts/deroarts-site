@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db/client";
 import ProjectForm from "@/components/admin/ProjectForm";
+export const dynamic = "force-dynamic";
 
 export const metadata = { title: "Nuovo progetto | Admin DeroArts" };
 

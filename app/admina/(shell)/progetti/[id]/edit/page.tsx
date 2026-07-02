@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db/client";
 import ProjectForm from "@/components/admin/ProjectForm";
 import { signPreviewToken } from "@/lib/preview-token";
+export const dynamic = "force-dynamic";
 
 export const metadata = { title: "Modifica progetto | Admin DeroArts" };
 

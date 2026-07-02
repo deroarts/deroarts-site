@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db/client";
+export const dynamic = "force-dynamic";
 
 export const metadata = { title: "Dev Outbox | Admin DeroArts" };
 

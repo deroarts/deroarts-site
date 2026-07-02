@@ -5,6 +5,7 @@ import StatusBadge from "@/components/StatusBadge";
 import AspectImage from "@/components/AspectImage";
 import { togglePublishedAction, moveProjectAction } from "./actions";
 import DeleteProjectButton from "@/components/admin/DeleteProjectButton";
+export const dynamic = "force-dynamic";
 
 export const metadata = { title: "Progetti | Admin DeroArts" };
 
