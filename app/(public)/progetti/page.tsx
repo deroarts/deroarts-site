@@ -4,6 +4,9 @@ import ProjectCard from "@/components/ProjectCard";
 import CategoryFilter from "@/components/CategoryFilter";
 import type { Metadata } from "next";
 
+// DB-backed page: render at request time, never prerender at build.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Progetti | DeroArts",
   description:

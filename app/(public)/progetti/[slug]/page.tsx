@@ -8,6 +8,9 @@ import { t, parseGallery } from "@/lib/i18n";
 import { verifyPreviewToken } from "@/lib/preview-token";
 import type { Metadata } from "next";
 
+// DB-backed page: render at request time, never prerender at build.
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   params: { slug: string };
   searchParams: { preview_token?: string };
