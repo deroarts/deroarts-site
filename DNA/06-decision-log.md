@@ -12,3 +12,4 @@ Registro delle decisioni tecniche rilevanti. Una riga per decisione: data · dec
 | 2026-07-02 | DevSwitcher = strumento solo-dev, mai vincolato da auth/sicurezza | Passaggio rapido user/admin in sviluppo; gated da `DEV_UA_SWITCH`, rimosso in prod (vedi [[02-regole]]). |
 | 2026-07-02 | Governance canonica in `AGENTS.md` che richiama `CLAUDE.md` + limite file 300 righe | Portabilità multi-agent; `CLAUDE.md` è universale e si riscarica dal sync, quindi le regole di progetto vivono in `AGENTS.md`. |
 | 2026-07-02 | Keepalive Supabase via GitHub Actions ogni 2gg su tabella `ping` dedicata | Free tier pausa dopo ~7gg. Tabella `ping` (RLS SELECT-only anon) evita di esporre service_role; il ping tocca Postgres (auth/health non basta). |
+| 2026-07-02 | Suite E2E/visual con Playwright in `tests/e2e/` | Verifica navigazione, flussi e regressioni visive; isolata (POST intercettati, nessuna scrittura DB), esclusa dal build. |

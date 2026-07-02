@@ -24,6 +24,8 @@
     "prisma/seed.ts",
     "lib/api-spec/**",
     "lib/api-client-react/**",
-    "lib/api-zod/**"
+    "lib/api-zod/**",
+    "tests/**",
+    "playwright.config.ts"
   ]
 }

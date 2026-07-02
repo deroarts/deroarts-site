@@ -57,6 +57,12 @@ next-env.d.ts
 # local backups (never commit)
 /BACKUP/
 
+# Playwright test artifacts (keep specs + snapshots, drop reports/results)
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
 # IDEs
 /.idea
 .vscode/*
