@@ -53,7 +53,7 @@ export default function Header() {
               href="/contatti"
               className="ml-2 px-4 py-1.5 rounded-full bg-green-gradient text-white text-sm font-semibold hover:opacity-90 transition-opacity"
             >
-              Contattaci
+              Contatti
             </Link>
           </nav>
 

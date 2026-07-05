@@ -48,10 +48,10 @@ export default async function ProgettiPage({ searchParams }: PageProps) {
       {/* Page header */}
       <div className="mb-10">
         <p className="text-green-end text-sm font-semibold uppercase tracking-wider mb-1">
-          Cosa facciamo
+          Il lavoro
         </p>
-        <h1 className="text-3xl md:text-4xl font-bold text-graphite mb-3">
-          I nostri progetti
+        <h1 className="font-serif text-3xl md:text-4xl text-graphite mb-3">
+          Progetti realizzati
         </h1>
         <p className="text-gray-500 max-w-xl">
           Software pensato per le persone. Ogni strumento nasce da una necessità

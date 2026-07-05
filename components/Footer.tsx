@@ -18,7 +18,7 @@ export default function Footer() {
               className="h-7 w-auto mb-3"
             />
             <p className="text-sm leading-relaxed">
-              Software semplice e potente per piccole e medie imprese. Qualità artigianale, pensata per le persone.
+              App, siti e software su misura. Qualità e prezzi, alla portata di tutti.
             </p>
           </div>
 

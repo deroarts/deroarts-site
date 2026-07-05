@@ -4,10 +4,10 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Contatti | DeroArts",
   description:
-    "Hai domande o vuoi saperne di più su DeroArts? Scrivici — risponderemo il prima possibile.",
+    "Hai domande o un progetto in mente? Scrivi a DeroArts — ogni messaggio riceve risposta.",
   openGraph: {
     title: "Contatti | DeroArts",
-    description: "Contatta DeroArts — siamo qui per aiutarti.",
+    description: "Contatti DeroArts — per domande e nuovi progetti.",
     images: [{ url: "/brand/og-image.png", width: 1200, height: 630, alt: "DeroArts" }],
   },
 };
@@ -19,24 +19,23 @@ export default function ContattiPage() {
         {/* Left — Brand info */}
         <div>
           <p className="text-green-end text-sm font-semibold uppercase tracking-wider mb-2">
-            Parla con noi
+            Mettiti in contatto
           </p>
-          <h1 className="text-3xl md:text-4xl font-bold text-graphite mb-6 leading-tight">
-            Come possiamo
+          <h1 className="font-serif text-3xl md:text-4xl text-graphite mb-6 leading-tight">
+            Parliamo del
             <br />
-            aiutarti?
+            tuo progetto.
           </h1>
 
           <p className="text-gray-500 leading-relaxed mb-6">
-            DeroArts nasce dalla passione per il software ben fatto. Creiamo
-            strumenti digitali pensati per le persone: semplici da usare,
-            affidabili nel tempo.
+            DeroArts nasce dalla passione per il software ben fatto: strumenti
+            digitali pensati per le persone, semplici da usare e affidabili nel
+            tempo.
           </p>
 
           <p className="text-gray-500 leading-relaxed mb-10">
-            Hai una domanda su uno dei nostri prodotti? Vuoi capire se
-            possiamo aiutare la tua azienda? Scrivici — leggiamo ogni
-            messaggio e rispondiamo con cura.
+            Una domanda su un prodotto o un progetto da avviare? Basta scrivere:
+            ogni messaggio viene letto con attenzione e riceve una risposta.
           </p>
 
           {/* Contact info */}

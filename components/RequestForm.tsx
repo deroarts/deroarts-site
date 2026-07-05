@@ -153,7 +153,7 @@ export default function RequestForm({
           rows={compact ? 4 : 5}
           className={`${inputClass} resize-none`}
           placeholder={
-            compact ? "Cosa vorresti sapere?" : "Come possiamo aiutarti?"
+            compact ? "Cosa vorresti sapere?" : "Descrivi la tua richiesta o il tuo progetto…"
           }
         />
         {state.fieldErrors.message && (

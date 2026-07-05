@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Poppins, Fraunces } from "next/font/google";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -9,13 +9,22 @@ const poppins = Poppins({
   display: "swap",
 });
 
+// Serif editoriale per i titoli (headline hero + sezioni).
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-fraunces",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: {
     default: "DeroArts — Software & Applicazioni",
     template: "%s | DeroArts",
   },
   description:
-    "DeroArts crea software e applicazioni per piccole e medie imprese. Scopri i nostri prodotti e richiedi informazioni.",
+    "DeroArts progetta app, siti e software su misura. Prodotti curati dall'idea al rilascio.",
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://deroarts.com"
   ),
@@ -56,7 +65,7 @@ export default function RootLayout({
     process.env.DEV_UA_SWITCH === "true";
 
   return (
-    <html lang="it" className={poppins.variable}>
+    <html lang="it" className={`${poppins.variable} ${fraunces.variable}`}>
       <body className="font-sans antialiased">
         {children}
         {showDevSwitcher && (

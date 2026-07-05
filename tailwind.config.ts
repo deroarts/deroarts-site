@@ -26,6 +26,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-poppins)", "system-ui", "sans-serif"],
+        serif: ["var(--font-fraunces)", "Georgia", "serif"],
       },
       backgroundImage: {
         "green-gradient": "linear-gradient(135deg, #8FC603, #1E9E3D)",
