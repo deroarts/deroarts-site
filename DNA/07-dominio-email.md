@@ -6,7 +6,7 @@ Scheda tecnica del dominio. Valori operativi reali — usarli, non reinventarli.
 ## Cloudflare (registrar + DNS)
 - Registrar **e** DNS provider: **Cloudflare** (piano Free). DNSSEC **attivo**.
 - Nameserver: `michael.ns.cloudflare.com`, `ziggy.ns.cloudflare.com`.
-- Record DNS totali attuali: 7 (solo email; nessun record web A/CNAME ancora).
+- Record DNS totali attuali: 10 (7 email + `www` + apex `@` verso Render + `stickers` progetto a parte).
 - SSL/TLS: mode **Full**, Universal + Wildcard `*.deroarts.com`, Always-Use-HTTPS on, TLS 1.2+ (1.3 on), HTTP/2+3 on, HSTS off, ACM non attivo.
 - Sicurezza: Managed Ruleset + DDoS + Browser Integrity + email obfuscation **on**; Bot Fight / Under Attack **off**. AI bots: ricerca+agente consenti, addestramento **blocca**.
 
@@ -26,6 +26,11 @@ Scheda tecnica del dominio. Valori operativi reali — usarli, non reinventarli.
 | TXT (SPF) | @ | `v=spf1 include:zohomail.eu ~all` | — |
 | TXT (DKIM) | `zmail._domainkey` | `v=DKIM1; k=rsa; p=MIGf...QIDAQAB` (chiave RSA completa in Cloudflare) | — |
 | TXT (DMARC) | `_dmarc` | `v=DMARC1; p=none; rua=mailto:info@deroarts.com` (monitoraggio; irrigidire solo dopo) | — |
+
+## Sito web → Render (collegato 2026-07-06)
+- **`www.deroarts.com`** → CNAME `deroarts.onrender.com` (Cloudflare, **Solo DNS** / proxy off). Verificato su Render (servizio `deroarts`, id `srv-d92qjlok1i2s73d15n0g`), SSL emesso da Render. Live: `https://www.deroarts.com`.
+- **`deroarts.com`** (apex) → CNAME `@` → `deroarts.onrender.com`, **Solo DNS**. Cloudflare fa CNAME-flattening (risolve a IP Render 216.24.57.x). Verificato su Render → **301 redirect a `www.deroarts.com`**. Il flattening **non tocca gli MX/TXT Zoho** (email intatte, verificato).
+- Entrambi i domini `verified` + certificato emesso su Render. Con o senza `www` → arrivi al sito.
 
 ## Struttura sottodomini (convenzione)
 `deroarts.com` (sito) · `demo.` · `docs.` · `status.` · `<app>.` (app/progetto) · `admin.<app>.` · `api.<app>.`

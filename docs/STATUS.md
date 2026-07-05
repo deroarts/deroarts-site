@@ -29,6 +29,7 @@
 | Tooling qualità (ESLint config + CI) | DONE | `.eslintrc.json`, `.github/workflows/ci.yml` (CI verde) |
 | Primo push GitHub | DONE | `github.com/deroarts/deroarts-site`, branch `main` |
 | Deploy Render (standalone + HOSTNAME fix) | DONE | `https://deroarts.onrender.com` HTTP 200 |
+| Dominio custom `www.deroarts.com` + apex 301 | DONE | Cloudflare CNAME Solo-DNS, SSL Render, email Zoho intatte |
 
 ---
 
@@ -59,7 +60,7 @@
 | Consolidamento — RLS | DONE |
 | Primo push GitHub | DONE |
 | Render deploy | DONE (`deroarts.onrender.com`) |
-| Dominio deroarts.com su Render | TODO |
+| Dominio deroarts.com su Render | DONE — `https://www.deroarts.com` (apex 301→www), SSL emesso |
 | Google Search Console | TODO |
 
 ---
@@ -70,7 +71,7 @@
 |----------|-------|
 | Build TypeScript | ✅ `pnpm typecheck` → 0 errori |
 | App locale | ✅ porta **5001**, home HTTP 200 |
-| App produzione | ✅ `https://deroarts.onrender.com` HTTP 200 |
+| App produzione | ✅ `https://www.deroarts.com` HTTP 200 (origin `deroarts.onrender.com`) |
 | Migrazioni applicate | ✅ `20260701220149_init`, `20260702000000_enable_rls`, `20260702010000_keepalive_ping` — "Database schema is up to date" |
 | Tabelle presenti | ✅ projects, categories, project_actions, requests, dev_outbox, ping (+ `_prisma_migrations`) |
 | Seed presente | ✅ projects=3, categories=2, project_actions=8; richieste reali=0 |
@@ -85,7 +86,7 @@
 ## 5. Problemi / rischi aperti
 
 - **Mail e storage in modalità dev** (`fake`/`local`): in produzione le email non partono davvero e le immagini caricate sono effimere (Render azzera il filesystem ai redeploy). Chiudere con gli adapter prod.
-- **Dominio non collegato**: il sito è su `deroarts.onrender.com`, non ancora su `deroarts.com` (DNS Cloudflare da puntare a Render).
+- ~~**Dominio non collegato**~~ RISOLTO 2026-07-06: dominio collegato → `https://www.deroarts.com` (apex `deroarts.com` 301→www). CNAME Cloudflare Solo-DNS, SSL Render. Email Zoho intatte.
 - **Free tier**: Render dorme dopo 15 min (cold start ~30s); Supabase protetto dal keepalive. Nessun rischio di saturazione (DB ~10MB/500MB).
 - **File oltre 300 righe** (governance): `components/admin/ProjectForm.tsx` (470), `ImageFrameEditor.tsx` (348) — da dividere quando toccati.
 - **Privacy EU**: manca cookie/informativa banner prima di traffico reale.

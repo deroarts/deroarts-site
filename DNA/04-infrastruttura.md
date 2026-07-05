@@ -13,9 +13,9 @@
 - Migrazioni versionate in `prisma/migrations/`. Verifica stato reale con `npx prisma migrate status`.
 
 ## Deploy — Render
-- Provider: **Render** (deploy unico front+back). Procedura in [[05-deploy]].
-- **URL produzione: DA COMPLETARE** — non ancora deployato (deploy_url vuoto in App Control). Dominio previsto: `deroarts.com`.
-- **URL admin: DA COMPLETARE** — sarà `<url-prod>/admina` una volta deployato.
+- Provider: **Render** (deploy unico front+back). Servizio `deroarts`, id `srv-d92qjlok1i2s73d15n0g`. Procedura in [[05-deploy]].
+- **URL produzione:** `https://www.deroarts.com` (custom domain su Render; origin `deroarts.onrender.com`). `deroarts.com` nudo → 301 a `www`.
+- **URL admin:** `https://www.deroarts.com/admina`.
 
 ## Dominio & email — deroarts.com
 - Registrar + DNS: **Cloudflare** (DNSSEC attivo, SSL full, HTTPS forzato). Non modificare registrar/nameserver/DNSSEC.
@@ -24,7 +24,7 @@
 
 ## App Control
 - Sync di segreti/variabili via `.agent/app-control.json` (ignorato da git). Rigenera `.env`/`.mcp.json`.
-- Le 9 variabili canoniche vivono lì. `RENDER_API_KEY`, `LINK_DEPLOY`, `LINK_DEPLOY ADMIN` sono **vuote** finché non si deploya.
+- Variabili canoniche in App Control. `LINK_DEPLOY` / `LINK_DEPLOY ADMIN` sono **manuali dell'utente**: dopo il collegamento del dominio vanno impostati a `https://www.deroarts.com` e `https://www.deroarts.com/admina`.
 
 ## Limiti free tier
 - **Supabase:** DB 500MB (uso attuale ~10MB), Storage 1GB, banda 5GB/mese. **Pausa dopo ~1 settimana di inattività** → keepalive attivo (sotto). Usare sempre l'URL pooler.
