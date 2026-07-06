@@ -3,6 +3,8 @@
 @tailwind utilities;
 
 :root {
+  /* altezza dell'header sticky — unica fonte di verità, usata da .hero-screen */
+  --header-h: 64px;
   --color-graphite: #1a222b;
   --color-green-start: #8fc603;
   --color-green-end: #1e9e3d;
@@ -24,6 +26,20 @@
 }
 
 @layer utilities {
+  /* .hero-screen — STANDARD DI PROGETTO per le sezioni hero (home e future).
+     Riempie la prima schermata sotto l'header sticky; il contenuto è ancorato
+     verso l'ALTO (non centrato) con un respiro proporzionato → parte in alto,
+     spazio sotto, e resta comunque tutto visibile senza scroll su desktop/laptop.
+     Applicare su <section>. Usa --header-h come unica fonte di verità. */
+  .hero-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: calc(100svh - var(--header-h));
+    padding-top: clamp(1.5rem, 4vh, 3rem);
+    padding-bottom: clamp(2rem, 6vh, 4rem);
+  }
+
   .text-gradient-green {
     background: linear-gradient(135deg, #8fc603, #1e9e3d);
     -webkit-background-clip: text;

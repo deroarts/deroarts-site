@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 // Static informational page — no DB access.
 export default function PrivacyPage() {
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-graphite">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 text-graphite">
       <h1 className="text-3xl font-semibold mb-2">Privacy &amp; Cookie</h1>
       <p className="text-sm text-gray-500 mb-10">Ultimo aggiornamento: luglio 2026</p>
 

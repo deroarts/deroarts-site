@@ -1,7 +1,5 @@
-import { Suspense } from "react";
 import { prisma } from "@/lib/db/client";
 import ProjectCard from "@/components/ProjectCard";
-import CategoryFilter from "@/components/CategoryFilter";
 import type { Metadata } from "next";
 
 // DB-backed page: render at request time, never prerender at build.
@@ -23,28 +21,23 @@ interface PageProps {
 }
 
 async function getPageData(categoriaSlug?: string) {
-  const [categories, projects] = await Promise.all([
-    prisma.category.findMany({ orderBy: { sort_order: "asc" } }),
-    prisma.project.findMany({
-      where: {
-        published: true,
-        ...(categoriaSlug
-          ? { category: { slug: categoriaSlug } }
-          : {}),
-      },
-      include: { category: true },
-      orderBy: { sort_order: "asc" },
-    }),
-  ]);
-  return { categories, projects };
+  const projects = await prisma.project.findMany({
+    where: {
+      published: true,
+      ...(categoriaSlug ? { category: { slug: categoriaSlug } } : {}),
+    },
+    include: { category: true },
+    orderBy: { sort_order: "asc" },
+  });
+  return { projects };
 }
 
 export default async function ProgettiPage({ searchParams }: PageProps) {
   const { categoria } = searchParams;
-  const { categories, projects } = await getPageData(categoria);
+  const { projects } = await getPageData(categoria);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
       {/* Page header */}
       <div className="mb-10">
         <p className="text-green-end text-sm font-semibold uppercase tracking-wider mb-1">
@@ -58,15 +51,6 @@ export default async function ProgettiPage({ searchParams }: PageProps) {
           reale e viene affinato nel tempo.
         </p>
       </div>
-
-      {/* Category filter */}
-      {categories.length > 0 && (
-        <div className="mb-8">
-          <Suspense>
-            <CategoryFilter categories={categories} />
-          </Suspense>
-        </div>
-      )}
 
       {/* Projects grid */}
       {projects.length === 0 ? (

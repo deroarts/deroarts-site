@@ -43,11 +43,13 @@ export default async function HomePage() {
   return (
     <>
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="bg-dark-green-gradient relative overflow-hidden">
+      {/* .hero-screen = standard di progetto: riempie la prima schermata sotto
+          l'header e centra il contenuto → hero + CTA sempre visibili (globals.css). */}
+      <section className="hero-screen bg-dark-green-gradient relative overflow-hidden">
         {/* alone decorativo */}
         <div className="absolute -bottom-24 -left-20 w-72 h-72 rounded-full bg-green-end/10 blur-3xl pointer-events-none" />
 
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-28 relative">
+        <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-8 items-center">
             {/* testo */}
             <div className="max-w-xl">

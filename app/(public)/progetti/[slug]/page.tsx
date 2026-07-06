@@ -65,7 +65,7 @@ export default async function ProjectDetailPage({ params, searchParams }: PagePr
   const enabledActions = project.actions.filter((a) => a.enabled);
 
   return (
-    <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-400 mb-8">
         <Link href="/" className="hover:text-graphite transition-colors">
