@@ -33,3 +33,10 @@ Campi testo tradotti = JSON `{ "it": "...", "en": "" }` (JSONB). Ora si renderiz
 
 ## Anteprima progetti non pubblicati
 Token HMAC-SHA256 firmato con `SESSION_SECRET`, scadenza 1h — `lib/preview-token.ts`. La pagina pubblica del progetto salta il guard `published:true` se il token è valido.
+
+## Agent API (agenti esterni, es. Devin)
+Endpoint `app/api/agent/projects/route.ts` — permette a un agent esterno di **leggere i contenuti pubblici** e **creare bozze**, senza mai toccare layout né pubblicare.
+- **Auth:** header `x-api-key` confrontato con `AGENT_API_KEY` (server-only, `.env`). Fuori dal matcher del `middleware.ts` → il guard è in-handler. Chiave vuota = endpoint disabilitato.
+- **`GET`:** ritorna i soli progetti `published:true` con `select` esplicito (title, descrizioni, cover, gallery, categoria) + uno `style_guide` con le regole di copy. **Mai** dati cliente (requests/email) né bozze.
+- **`POST`:** crea sempre `published:false` (bozza invisibile al pubblico finché l'admin non pubblica). Valida/sanifica: `title` obbligatorio, campi i18n coerti a `{it,en}`, URL immagini solo `http(s)`/`/…` (scarta `data:`/`javascript:`), `status` da allowlist enum, categoria collegata solo se lo slug esiste già (mai creata), slug generato da `title.it` e de-duplicato con `-${Date.now()}`.
+- Non usa `zod` per restare coerente con lo stile di `api/upload` (validazione manuale). Immagini: l'agent passa URL già pronti (non gestisce upload qui).
