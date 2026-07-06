@@ -186,6 +186,7 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                         {isNew && (
                           <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
                         )}
+                        <OriginIcon source={req.source} />
                         <span
                           className={`truncate ${
                             isNew
@@ -203,6 +204,11 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                       </div>
                       <StatusPill status={req.status} />
                     </div>
+                    {req.source === "email" && req.subject ? (
+                      <p className="text-xs text-gray-500 truncate mb-1 font-medium">
+                        {req.subject}
+                      </p>
+                    ) : null}
                     <p className="text-xs text-gray-400 truncate mb-2">
                       {req.email}
                     </p>
@@ -289,23 +295,28 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                       </td>
 
                       <td className="px-4 py-3 border-l border-gray-100 text-center">
-                        <Link
-                          href={`/admina/messaggi/${req.id}`}
-                          className={`hover:text-green-end transition-colors ${
-                            isNew
-                              ? "font-semibold text-graphite"
-                              : "font-medium text-gray-700"
-                          }`}
-                        >
-                          {req.name}
-                        </Link>
-                        {req.replied_at && (
-                          <span
-                            className="ml-1.5 text-green-end"
-                            title="Hai risposto"
+                        <div className="flex items-center justify-center gap-1.5">
+                          <OriginIcon source={req.source} />
+                          <Link
+                            href={`/admina/messaggi/${req.id}`}
+                            className={`hover:text-green-end transition-colors ${
+                              isNew
+                                ? "font-semibold text-graphite"
+                                : "font-medium text-gray-700"
+                            }`}
                           >
-                            ↩
-                          </span>
+                            {req.name}
+                          </Link>
+                          {req.replied_at && (
+                            <span className="text-green-end" title="Hai risposto">
+                              ↩
+                            </span>
+                          )}
+                        </div>
+                        {req.source === "email" && req.subject && (
+                          <p className="text-[11px] text-gray-400 truncate mt-0.5 max-w-[220px] mx-auto">
+                            {req.subject}
+                          </p>
                         )}
                       </td>
 
@@ -357,6 +368,25 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
         </>
       )}
     </div>
+  );
+}
+
+function OriginIcon({ source }: { source: "site" | "email" }) {
+  if (source === "email") {
+    return (
+      <span title="Email (inoltrata da Zoho)" className="text-gray-400 flex-shrink-0">
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      </span>
+    );
+  }
+  return (
+    <span title="Dal sito (modulo)" className="text-green-end/70 flex-shrink-0">
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z M3.6 9h16.8 M3.6 15h16.8 M12 3a15 15 0 010 18 M12 3a15 15 0 000 18" />
+      </svg>
+    </span>
   );
 }
 

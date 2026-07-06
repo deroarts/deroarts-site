@@ -56,6 +56,10 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
   }
 
   const fromAddress = message.project?.from_email || DEFAULT_FROM;
+  // Per le email inoltrate rispondiamo al mittente reale (reply_to_email);
+  // per i messaggi dal form l'indirizzo è lo stesso `email`.
+  const replyTo = message.reply_to_email || message.email;
+  const isEmail = message.source === "email";
 
   return (
     <div className="max-w-2xl">
@@ -70,7 +74,18 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
           </svg>
         </Link>
         <div className="min-w-0">
-          <h1 className="text-2xl font-bold text-graphite">Messaggio</h1>
+          <h1 className="text-2xl font-bold text-graphite flex items-center gap-2">
+            {isEmail ? "Email" : "Messaggio"}
+            <span
+              className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${
+                isEmail
+                  ? "bg-gray-100 text-gray-500"
+                  : "bg-green-end/10 text-green-end"
+              }`}
+            >
+              {isEmail ? "inoltrata" : "dal sito"}
+            </span>
+          </h1>
           <p className="text-xs text-gray-400 mt-0.5">
             {formatDateFull(message.created_at)}
           </p>
@@ -183,7 +198,7 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
       <ReplyForm
         requestId={message.id}
         fromAddress={fromAddress}
-        toEmail={message.email}
+        toEmail={replyTo}
         alreadyReplied={Boolean(message.replied_at)}
       />
     </div>

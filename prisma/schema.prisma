@@ -34,6 +34,12 @@ enum RequestStatus {
   handled
 }
 
+// Come è entrato il messaggio: dal form del sito, o email inoltrata (Zoho→Resend).
+enum RequestSource {
+  site
+  email
+}
+
 // ─── Models ───────────────────────────────────────────────────────────────────
 
 model Category {
@@ -100,9 +106,19 @@ model Request {
   handled_at DateTime?
   // Timestamp of the last reply sent from the admin Messaggi panel (null = mai risposto).
   replied_at DateTime?
+  // Origine del messaggio: "site" (form) o "email" (posta inoltrata da Zoho via Resend).
+  source     RequestSource @default(site)
+  // Subject della email inoltrata (null per i messaggi dal form).
+  subject    String?
+  // Indirizzo a cui l'admin risponde: per le email è il mittente reale, che può
+  // differire dal campo `email` (che teniamo comunque = indirizzo del mittente).
+  reply_to_email String?
+  // ID Resend della email ricevuta — evita doppioni se il webhook ritenta.
+  inbound_email_id String? @unique
 
   @@index([project_id])
   @@index([status])
+  @@index([source])
   @@map("requests")
 }
 

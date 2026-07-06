@@ -75,14 +75,23 @@ export async function replyToRequestAction(
     ? t(request.project.title as Record<string, string>)
     : undefined;
   const fromEmail = request.project?.from_email || DEFAULT_FROM;
+  // Rispondi al mittente reale (per le email inoltrate = reply_to_email).
+  const toAddress = request.reply_to_email || request.email;
+  // Se è una email con oggetto, rispondi in thread con "Re: <oggetto>".
+  const subject =
+    request.source === "email" && request.subject
+      ? request.subject.toLowerCase().startsWith("re:")
+        ? request.subject
+        : `Re: ${request.subject}`
+      : adminReplySubject(projectTitle);
 
   try {
     const mail = getMailAdapter();
     await mail.sendMail({
-      to: request.email,
+      to: toAddress,
       from: fromEmail,
       replyTo: fromEmail,
-      subject: adminReplySubject(projectTitle),
+      subject,
       html: adminReplyHtml({
         requesterName: request.name,
         bodyText,

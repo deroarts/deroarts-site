@@ -119,31 +119,49 @@ il sito è "Aggiungi a schermata Home" — limite di Apple, non del codice).
 
 ---
 
-## 5bis · Rapporto con Zoho (IMPORTANTE — cosa mostra la tabella)
+## 5bis · Casella unificata — email Zoho dentro l'app (inoltro → Resend Inbound)
 
-La tabella **Messaggi** mostra **solo i messaggi inviati dal sito** (form
-"Richiedi informazioni" → tabella `requests`). **NON** legge la posta delle
-caselle Zoho (`info@`, `stickers@`, ecc.). Sono due mondi distinti:
+La tabella **Messaggi** mostra **due origini** (campo `source` su `requests`):
+- `site` = richieste dal form del sito.
+- `email` = email vere inoltrate da Zoho e ricevute via **Resend Inbound**.
 
-- **App › Messaggi** = richieste generate dal sito (fonte: DB `requests`).
-- **Zoho webmail** = tutte le email vere ricevute su quelle caselle (anche
-  quelle scritte a mano dai clienti direttamente all'indirizzo, non dal form).
+**Perché l'inoltro e non IMAP:** il piano **Zoho Mail Free NON include IMAP/POP**
+(bloccati: "questa funzionalità non è disponibile per il tuo account"). Quindi non
+si può "leggere" la casella via IMAP. Soluzione gratis equivalente: **inoltro
+automatico**.
 
-Perché non le uniamo automaticamente: leggere la casella Zoho dentro l'app
-richiederebbe un accesso IMAP/API alla mailbox — è un progetto a sé, con costi
-di complessità e sicurezza (credenziali mailbox nel backend, sync continua,
-gestione thread). Non è quello che serve ora e non era richiesto: il flusso
-"cliente → form del sito → Messaggi → rispondi" è completo e coerente.
+**Come funziona il flusso:**
+1. Zoho: inoltro automatico di `info@deroarts.com` → indirizzo di ricezione Resend
+   (`info@toleopiodr.resend.app`, il sotto-dominio `.resend.app` è già pronto sul
+   piano, nessun MX da configurare).
+2. Resend riceve, salva la mail, e chiama il webhook `email.received` →
+   `POST /api/inbound/resend`.
+3. L'endpoint **verifica la firma** (`standardwebhooks` + `RESEND_WEBHOOK_SECRET`),
+   scarica il corpo con `resend.emails.receiving.get(email_id)`, ricava mittente
+   (`parseFrom`) e progetto (dall'alias in `received_for`, `aliasLocalPart` →
+   `from_email` del progetto), e salva un messaggio `source=email` con
+   `reply_to_email` = mittente reale, `subject`, `inbound_email_id` (idempotenza).
+4. Scatta la **notifica push**.
 
-Coerenza garantita comunque:
-- Le **risposte** partono dall'indirizzo `@deroarts.com` del progetto via Resend
-  con **Reply-To** = indirizzo del progetto → se il cliente risponde, la mail
-  arriva nella **casella Zoho** corrispondente. Nessun messaggio si perde.
-- La **notifica all'owner** di un nuovo messaggio dal sito arriva comunque anche
-  via email su `ADMIN_EMAIL` (Zoho), oltre che in tabella e come push.
+**Rispondere:** dal dettaglio, la risposta va a `reply_to_email` (il mittente
+reale) con oggetto `Re: <subject>`, inviata via Resend dall'indirizzo `@deroarts.com`.
 
-Se in futuro si vuole una vera casella unificata (leggere Zoho dentro l'app),
-è un'estensione separata via IMAP — da valutare a parte.
+**Limiti noti (piano Free + inoltro):**
+- Solo email **da quando l'inoltro è attivo** in poi (niente storico).
+- Solo la **posta in arrivo** inoltrata (non Spam, non cartelle, non Inviati).
+- **Allegati** non importati (solo testo/HTML del corpo).
+- Le risposte dall'app **non** finiscono negli "Inviati" di Zoho.
+
+**Variabili:** `RESEND_WEBHOOK_SECRET` (segreto, dal webhook Resend),
+`RESEND_INBOUND_ADDRESS` (indirizzo di ricezione, non segreto).
+
+**Setup manuale (una volta):**
+- Resend → Webhooks → Add: URL `https://www.deroarts.com/api/inbound/resend`,
+  evento `email.received` → copia il **Signing Secret** in `RESEND_WEBHOOK_SECRET`.
+- Zoho webmail → Impostazioni → Inoltro (Forwarding): inoltra a
+  `info@toleopiodr.resend.app` (mantieni copia in Zoho se vuoi).
+- In locale il webhook non arriva (serve URL pubblico): si testa in produzione,
+  oppure con un tunnel.
 
 ## 6 · Note operative / sicurezza
 
