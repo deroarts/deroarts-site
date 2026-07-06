@@ -266,7 +266,7 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-gray-200">
                 {messages.map((req) => {
                   const isNew = req.status === "new";
                   return (
@@ -286,7 +286,7 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                         )}
                       </td>
 
-                      <td className="px-0 py-0 border-l border-gray-100">
+                      <td className="px-0 py-0 border-l border-gray-300">
                         <Link
                           href={`/admina/messaggi/${req.id}`}
                           className="block px-4 py-3 text-xs text-gray-600 whitespace-nowrap text-center hover:text-graphite"
@@ -295,7 +295,7 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                         </Link>
                       </td>
 
-                      <td className="px-4 py-3 border-l border-gray-100 text-center">
+                      <td className="px-4 py-3 border-l border-gray-300 text-center">
                         {req.project ? (
                           <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-end/10 text-green-end">
                             {t(req.project.title)}
@@ -307,11 +307,11 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                         )}
                       </td>
 
-                      <td className="px-4 py-3 hidden lg:table-cell border-l border-gray-100 text-center text-sm text-gray-700">
+                      <td className="px-4 py-3 hidden lg:table-cell border-l border-gray-300 text-center text-sm text-gray-700">
                         {mailboxFor(req.project)}
                       </td>
 
-                      <td className="px-4 py-3 border-l border-gray-100 text-center">
+                      <td className="px-4 py-3 border-l border-gray-300 text-center">
                         <div className="flex items-center justify-center gap-1.5">
                           <OriginIcon source={req.source} />
                           <Link
@@ -337,7 +337,7 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                         )}
                       </td>
 
-                      <td className="px-4 py-3 hidden md:table-cell border-l border-gray-100 text-center text-sm text-gray-700">
+                      <td className="px-4 py-3 hidden md:table-cell border-l border-gray-300 text-center text-sm text-gray-700">
                         <a
                           href={`mailto:${req.email}`}
                           className="hover:text-green-end transition-colors"
@@ -346,7 +346,7 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                         </a>
                       </td>
 
-                      <td className="px-4 py-3 border-l border-gray-100 text-center">
+                      <td className="px-4 py-3 border-l border-gray-300 text-center">
                         <StatusPill status={req.status} />
                       </td>
                     </tr>
