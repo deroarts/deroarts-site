@@ -7,8 +7,8 @@
   },
   "scripts": {
     "dev": "next dev --port ${PORT:-3000}",
-    "build": "next build",
-    "build:check": "NEXT_BUILD_DIR=.next-build next build",
+    "build": "prisma generate && next build",
+    "build:check": "prisma generate && NEXT_BUILD_DIR=.next-build next build",
     "start": "next start --port ${PORT:-3000}",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
