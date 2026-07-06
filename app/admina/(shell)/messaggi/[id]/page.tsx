@@ -158,6 +158,10 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
             </dd>
           </div>
           <div className="flex items-center gap-3">
+            <dt className="text-gray-400 w-24 flex-shrink-0">Casella</dt>
+            <dd className="text-gray-600">{fromAddress}</dd>
+          </div>
+          <div className="flex items-center gap-3">
             <dt className="text-gray-400 w-24 flex-shrink-0">Progetto</dt>
             <dd className="flex items-center gap-2 min-w-0">
               {message.project ? (

@@ -9,6 +9,13 @@ export const metadata = { title: "Messaggi | Admin DeroArts" };
 
 const PAGE_SIZE = 20;
 
+// Indirizzo @deroarts.com "a cui" è arrivato il messaggio: quello del progetto
+// se impostato, altrimenti la casella di default (RESEND_FROM / info@).
+const DEFAULT_MAILBOX = process.env.RESEND_FROM || "info@deroarts.com";
+function mailboxFor(project: { from_email: string | null } | null): string {
+  return project?.from_email || DEFAULT_MAILBOX;
+}
+
 const TAB_OPTIONS: Array<{ label: string; value: string }> = [
   { label: "Tutti", value: "" },
   { label: "Nuovi", value: "new" },
@@ -64,7 +71,7 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
       prisma.request.count({ where: { status: "handled" } }),
       prisma.request.findMany({
         where,
-        include: { project: { select: { slug: true, title: true } } },
+        include: { project: { select: { slug: true, title: true, from_email: true } } },
         orderBy: { created_at: "desc" },
         skip,
         take: PAGE_SIZE,
@@ -209,8 +216,11 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                         {req.subject}
                       </p>
                     ) : null}
-                    <p className="text-xs text-gray-400 truncate mb-2">
+                    <p className="text-xs text-gray-400 truncate mb-0.5">
                       {req.email}
+                    </p>
+                    <p className="text-[11px] text-gray-400 truncate mb-2">
+                      <span className="text-gray-300">a:</span> {mailboxFor(req.project)}
                     </p>
                     <div className="flex items-center justify-between gap-2">
                       {req.project ? (
@@ -241,6 +251,9 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                   </th>
                   <th className="text-center px-4 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider border-l border-white/10">
                     Progetto
+                  </th>
+                  <th className="text-center px-4 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider hidden lg:table-cell border-l border-white/10">
+                    Casella
                   </th>
                   <th className="text-center px-4 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider border-l border-white/10">
                     Nome
@@ -292,6 +305,10 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                             Generale
                           </span>
                         )}
+                      </td>
+
+                      <td className="px-4 py-3 hidden lg:table-cell border-l border-gray-100 text-center text-xs text-gray-500">
+                        {mailboxFor(req.project)}
                       </td>
 
                       <td className="px-4 py-3 border-l border-gray-100 text-center">
