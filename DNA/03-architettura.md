@@ -38,7 +38,9 @@ Token HMAC-SHA256 firmato con `SESSION_SECRET`, scadenza 1h — `lib/preview-tok
 Due endpoint sotto `app/api/agent/**` — permettono a un agent esterno di **leggere i contenuti pubblici**, **caricare immagini** e **creare bozze**, senza mai toccare layout né pubblicare. Entrambi: auth header `x-api-key` == `AGENT_API_KEY` (server-only, fuori dal matcher del `middleware.ts` → guard in-handler; chiave vuota = disabilitati).
 - **`GET /api/agent/projects`:** ritorna i soli progetti `published:true` con `select` esplicito + uno `style_guide` con le regole di copy. **Mai** dati cliente (requests/email) né bozze.
 - **`POST /api/agent/projects`:** crea sempre `published:false`. Valida/sanifica: `title` obbligatorio, i18n coerti a `{it,en}`, URL immagini solo `http(s)`/`/…` (scarta `data:`/`javascript:`), `status` da allowlist enum, categoria collegata solo se lo slug esiste già, slug da `title.it` de-duplicato.
+- **`PATCH /api/agent/projects`:** aggiorna un progetto ESISTENTE per `slug`, solo i campi passati (partial update); pulisce le immagini sostituite da Supabase (`storage.delete`, best-effort); 404 se lo slug non esiste (l'agent usa POST per i nuovi) → evita i doppioni.
 - **`POST /api/agent/upload`:** riceve UN'immagine (multipart `file` + `purpose` cover|gallery), la comprime con sharp (come `api/upload` admin) e la salva via `getStorageAdapter()`; ritorna `{ url }`. L'agent carica prima le immagini qui, poi passa gli URL a `projects`. In prod lo storage è Supabase → URL pubblico permanente.
+- `style_guide` (nel GET) = briefing marketing per l'agent: cover = LOGO del progetto (screenshot nella gallery), copy impersonale/no-destinatari/qualità↔prezzo, PATCH per modificare.
 - Validazione manuale (no `zod`) per coerenza con `api/upload`.
 
 ## Storage immagini (permanente)
