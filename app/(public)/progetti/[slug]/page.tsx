@@ -113,23 +113,9 @@ export default async function ProjectDetailPage({ params, searchParams }: PagePr
         )}
       </div>
 
-      {/* Action buttons */}
-      {enabledActions.length > 0 && (
-        <div className="mb-10 p-5 bg-white rounded-2xl shadow-sm border border-gray-100">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-            Cosa puoi fare
-          </p>
-          <ActionButtons
-            actions={project.actions}
-            projectId={project.id}
-            projectTitle={title}
-          />
-        </div>
-      )}
-
       {/* Long description */}
       {longDesc && (
-        <section className="mb-12">
+        <section className="mb-10">
           <h2 className="text-xl font-semibold text-graphite mb-4">
             Descrizione
           </h2>
@@ -140,6 +126,17 @@ export default async function ProjectDetailPage({ params, searchParams }: PagePr
             dangerouslySetInnerHTML={{ __html: sanitizeRichText(longDesc) }}
           />
         </section>
+      )}
+
+      {/* Action buttons — sotto la descrizione, prima della galleria, senza box */}
+      {enabledActions.length > 0 && (
+        <div className="mb-12">
+          <ActionButtons
+            actions={project.actions}
+            projectId={project.id}
+            projectTitle={title}
+          />
+        </div>
       )}
 
       {/* Gallery */}
