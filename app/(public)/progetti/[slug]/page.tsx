@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/db/client";
 import AspectImage from "@/components/AspectImage";
-import StatusBadge from "@/components/StatusBadge";
 import ActionButtons from "@/components/ActionButtons";
 import { t, parseGallery } from "@/lib/i18n";
 import { verifyPreviewToken } from "@/lib/preview-token";
@@ -92,14 +91,11 @@ export default async function ProjectDetailPage({ params, searchParams }: PagePr
 
       {/* Header */}
       <div className="mb-8">
-        <div className="flex flex-wrap items-center gap-3 mb-3">
-          {categoryName && (
-            <span className="text-xs font-semibold text-green-end uppercase tracking-wider">
-              {categoryName}
-            </span>
-          )}
-          <StatusBadge status={project.status} size="md" />
-        </div>
+        {categoryName && (
+          <span className="block text-xs font-semibold text-green-end uppercase tracking-wider mb-3">
+            {categoryName}
+          </span>
+        )}
 
         <h1 className="text-3xl md:text-4xl font-bold text-graphite mb-3 leading-tight">
           {title}

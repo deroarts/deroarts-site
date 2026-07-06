@@ -26,6 +26,9 @@ Per aggiungere il prod adapter: implementa l'interfaccia, aggiungi il `case` nel
 ## i18n
 Campi testo tradotti = JSON `{ "it": "...", "en": "" }` (JSONB). Ora si renderizza solo `it`. Helper in `lib/i18n.ts` (`t()`, `getIt()`, `parseGallery()`). La gallery è un array JSON `[{ url, alt: {it,en} }]`.
 
+## Testo ricco (descrizioni progetti)
+`short_description`/`long_description` sono HTML rich text. Admin: `components/admin/RichTextEditor.tsx` (Tiptap, StarterKit + Underline; toolbar B/I/U/lista) mirrorato in input nascosti dentro `ProjectForm`. **Sicurezza:** `lib/sanitize-html.ts` (`sanitizeRichText` allow-list solo `p/br/strong/em/u/ul/ol/li`, nessun attributo) applicata al SALVATAGGIO (server action) E in OUTPUT pubblico (`dangerouslySetInnerHTML` + classe `prose`, plugin `@tailwindcss/typography`). Card lista e meta usano `htmlToPlainText` (line-clamp/SEO). L'agent (testo semplice) → `plainTextToHtml` converte a capo/paragrafi in HTML sicuro.
+
 ## Immagini
 - Upload: `app/api/upload/route.ts`, auth-gated, MIME allowlist (JPEG/PNG/WebP), compressione sharp (cover ≤1920px q82 ~200KB, gallery ≤1280px q80 ~150KB).
 - Editor client: `ImageFrameEditor` (canvas drag+zoom+crop) e `GalleryEditor` (riordino DnD), integrati in `ProjectForm`.
