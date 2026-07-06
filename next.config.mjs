@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
+  // Allow an isolated build dir (npm run build:check) so a production build
+  // never overwrites the running dev server's .next cache (avoids the
+  // recurring "Cannot find module './xxx.js'" corruption during local tests).
+  ...(process.env.NEXT_BUILD_DIR ? { distDir: process.env.NEXT_BUILD_DIR } : {}),
   images: {
     remotePatterns: [
       {

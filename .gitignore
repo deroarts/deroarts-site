@@ -67,3 +67,6 @@ next-env.d.ts
 /.idea
 .vscode/*
 !.vscode/settings.json
+
+# Isolated build dir for local build:check (never committed)
+/.next-build

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import AspectImage from "@/components/AspectImage";
-import StatusBadge from "@/components/StatusBadge";
 import { t } from "@/lib/i18n";
 
 interface ProjectCardProps {
@@ -33,12 +32,9 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       />
 
       <div className="p-5">
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="font-semibold text-graphite text-lg leading-snug group-hover:text-green-end transition-colors duration-200">
-            {title}
-          </h3>
-          <StatusBadge status={project.status} />
-        </div>
+        <h3 className="font-semibold text-graphite text-lg leading-snug group-hover:text-green-end transition-colors duration-200 mb-2">
+          {title}
+        </h3>
 
         {categoryName && (
           <p className="text-xs font-medium text-green-end mb-2 uppercase tracking-wide">
