@@ -27,7 +27,7 @@ async function getPageData(categoriaSlug?: string) {
       ...(categoriaSlug ? { category: { slug: categoriaSlug } } : {}),
     },
     include: { category: true },
-    orderBy: { sort_order: "asc" },
+    orderBy: [{ sort_order: "asc" }, { created_at: "asc" }],
   });
   return { projects };
 }

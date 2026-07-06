@@ -16,20 +16,20 @@ interface PageProps {
 }
 
 export default async function ProgettiAdminPage({ searchParams }: PageProps) {
-  const page = Math.max(1, parseInt(searchParams.page ?? "1") || 1);
+  const requestedPage = Math.max(1, parseInt(searchParams.page ?? "1") || 1);
+
+  const total = await prisma.project.count();
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  // Clamp to the last real page so ?page=99 never shows an empty table.
+  const page = Math.min(requestedPage, totalPages);
   const skip = (page - 1) * PAGE_SIZE;
 
-  const [projects, total] = await Promise.all([
-    prisma.project.findMany({
-      include: { category: true },
-      orderBy: { sort_order: "asc" },
-      skip,
-      take: PAGE_SIZE,
-    }),
-    prisma.project.count(),
-  ]);
-
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const projects = await prisma.project.findMany({
+    include: { category: true },
+    orderBy: [{ sort_order: "asc" }, { created_at: "asc" }],
+    skip,
+    take: PAGE_SIZE,
+  });
   const projectIds = projects.map((p) => p.id);
 
   // Per-project request counts for the current page

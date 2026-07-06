@@ -15,7 +15,6 @@ interface ProjectAction {
 interface ActionButtonsProps {
   actions: ProjectAction[];
   projectId: string;
-  projectSlug: string;
   projectTitle: string;
 }
 
@@ -28,7 +27,6 @@ function getLabel(action: ProjectAction): string {
 export default function ActionButtons({
   actions,
   projectId,
-  projectSlug,
   projectTitle,
 }: ActionButtonsProps) {
   const [modalOpen, setModalOpen] = useState(false);

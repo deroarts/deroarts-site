@@ -28,10 +28,14 @@ export default function AspectImage({
         className={`${ratioClass} w-full relative overflow-hidden rounded-lg bg-dark-green-gradient flex items-center justify-center ${className}`}
       >
         <svg
+          width={48}
+          height={48}
           className="w-12 h-12 opacity-30 text-white"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          aria-hidden="true"
+          style={{ maxWidth: "48px", maxHeight: "48px", flexShrink: 0 }}
         >
           <path
             strokeLinecap="round"

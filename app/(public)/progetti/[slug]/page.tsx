@@ -117,7 +117,6 @@ export default async function ProjectDetailPage({ params, searchParams }: PagePr
           <ActionButtons
             actions={project.actions}
             projectId={project.id}
-            projectSlug={project.slug}
             projectTitle={title}
           />
         </div>
