@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins, Fraunces } from "next/font/google";
 import "./globals.css";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -67,6 +68,7 @@ export default function RootLayout({
   return (
     <html lang="it" className={`${poppins.variable} ${fraunces.variable}`}>
       <body className="font-sans antialiased">
+        <ScrollToTop />
         {children}
         {showDevSwitcher && (
           // DevSwitcher is imported lazily so it is completely absent from the

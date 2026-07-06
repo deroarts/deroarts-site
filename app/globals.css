@@ -48,3 +48,28 @@
     aspect-ratio: 4 / 3;
   }
 }
+
+/* ── HeroFlow: animazioni dell'illustrazione hero ─────────────────────────── */
+.hf-lines path {
+  stroke-dasharray: 340;
+  stroke-dashoffset: 340;
+  animation: hf-draw 1.3s ease-out forwards;
+}
+.hf-lines path:nth-child(2) { animation-delay: 0.12s; }
+.hf-lines path:nth-child(3) { animation-delay: 0.24s; }
+.hf-lines path:nth-child(4) { animation-delay: 0.36s; }
+
+/* la piuma si rivela dal pennino (basso-sx) alla cima (alto-dx) con un fade
+   diagonale. Parte a 1.4s — una frazione PRIMA che l'ultima linea chiuda (1.66s):
+   i due movimenti si sovrappongono un attimo → nessun tempo morto. */
+/* la piuma appare in dissolvenza dopo che le linee si sono disegnate. */
+.hf-feather {
+  opacity: 0;
+  animation: hf-fade 1.2s ease-out 1.5s forwards;
+}
+@keyframes hf-draw { to { stroke-dashoffset: 0; } }
+@keyframes hf-fade { to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .hf-feather { animation: none; opacity: 1; }
+  .hf-lines path { animation: none; stroke-dashoffset: 0; }
+}
