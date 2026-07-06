@@ -289,7 +289,7 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                       <td className="px-0 py-0 border-l border-gray-100">
                         <Link
                           href={`/admina/messaggi/${req.id}`}
-                          className="block px-4 py-3 text-xs text-gray-400 whitespace-nowrap text-center hover:text-graphite"
+                          className="block px-4 py-3 text-xs text-gray-600 whitespace-nowrap text-center hover:text-graphite"
                         >
                           {formatDate(req.created_at)}
                         </Link>
@@ -307,7 +307,7 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                         )}
                       </td>
 
-                      <td className="px-4 py-3 hidden lg:table-cell border-l border-gray-100 text-center text-xs text-gray-500">
+                      <td className="px-4 py-3 hidden lg:table-cell border-l border-gray-100 text-center text-sm text-gray-700">
                         {mailboxFor(req.project)}
                       </td>
 
@@ -337,7 +337,7 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                         )}
                       </td>
 
-                      <td className="px-4 py-3 hidden md:table-cell border-l border-gray-100 text-center text-sm text-gray-500">
+                      <td className="px-4 py-3 hidden md:table-cell border-l border-gray-100 text-center text-sm text-gray-700">
                         <a
                           href={`mailto:${req.email}`}
                           className="hover:text-green-end transition-colors"
