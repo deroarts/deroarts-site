@@ -8,7 +8,11 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  // Runtime: Transaction-mode pooler (porta 6543) — poche connessioni, ideale
+  // per serverless/Render sul free tier. Vedi DATABASE_URL nel .env.
+  url       = env("DATABASE_URL")
+  // Migrazioni: Session-mode diretto (porta 5432) — il pooler non le supporta.
+  directUrl = env("DIRECT_URL")
 }
 
 // ─── Enums ────────────────────────────────────────────────────────────────────
