@@ -82,15 +82,27 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       count: projects.length,
       projects,
-      // Content rules the agent must follow when generating copy.
+      // Briefing for the agent: act as a copywriter/marketer, not a cataloguer.
       style_guide: {
-        voice: "impersonale / terza persona — mai prima persona (no 'io', 'creo', 'creiamo')",
-        audience: "mai nominare destinatari (no imprese, PMI, agenzie, privati): è per tutti",
+        mission:
+          "Obiettivo: catturare l'attenzione del visitatore in pochi secondi e convincerlo a interagire con DeroArts (provare, informarsi, contattare). Scrivi come un copywriter che presenta un prodotto per venderlo, NON come chi compila una scheda tecnica.",
+        method:
+          "Prima STUDIA davvero il progetto: che problema risolve, per chi conta, qual è il beneficio concreto e il punto di forza che lo rende migliore. Da lì ricava l'angolo con cui presentarlo. Ogni progetto è diverso: adatta contenuto e taglio al progetto specifico.",
+        anti_generic:
+          "VIETATI i contenuti generici, riciclati o 'passe-partout'. Niente frasi che potrebbero valere per qualunque software. Se una frase suona standard, riscrivila con qualcosa di specifico e concreto di QUESTO progetto.",
+        persuasion:
+          "Persuadi con eleganza e understatement, non con superlativi gridati: convinci mostrando qualità, benefici concreti e sicurezza. Un tocco di call-to-action implicita va bene; l'entusiasmo esagerato no.",
+        structure:
+          "title = nome del progetto, breve e riconoscibile. short_description = un gancio di 1 frase che fa capire subito il valore e invoglia. long_description = il racconto: problema → soluzione → benefici/punti di forza → cosa può fare l'utente. Concreto, scorrevole, mai prolisso.",
+        voice: "impersonale / terza persona — mai prima persona (no 'io', 'creo', 'creiamo', 'ho fatto').",
+        audience: "mai nominare i destinatari (no imprese, PMI, agenzie, privati, professionisti): è per tutti.",
         quality_price:
-          "qualità sempre legata al prezzo accessibile, con termini eleganti; mai la parola 'artigianale'",
-        tone: "software ben fatto, semplice, affidabile, chiaro",
-        fields: "title, short_description, long_description in italiano ({ it }); en opzionale",
-        never_touch: "solo contenuti (testi/foto). Mai layout, mai pubblicare.",
+          "quando ha senso, lega la qualità al prezzo accessibile con termini eleganti (es. 'alla portata di tutti'); mai 'artigianale', mai 'economico'.",
+        tone: "software ben fatto, semplice, affidabile, chiaro — ma vivo e coinvolgente, non asettico.",
+        images:
+          "le immagini sono parte della presentazione: scegli screenshot che mostrano il progetto nel modo più convincente (schermate/funzioni rappresentative), più icone/loghi del progetto. Coerenti con lo stile dei progetti già presenti qui sopra.",
+        fields: "title, short_description, long_description in italiano ({ it }); en opzionale.",
+        never_touch: "solo contenuti (testi/foto). Mai layout, mai pubblicare (le bozze le pubblica l'admin).",
       },
     });
   } catch (err) {
