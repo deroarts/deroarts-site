@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db/client";
 import { Prisma, ProjectStatus } from "@prisma/client";
+import { getStorageAdapter } from "@/lib/adapters";
 
 // External-agent endpoint (e.g. Devin). Request-time only, never prerendered.
 export const dynamic = "force-dynamic";
@@ -100,8 +101,10 @@ export async function GET(request: NextRequest) {
           "lega la qualità al prezzo accessibile con eleganza (es. 'alla portata di tutti', 'senza pesare sul budget'). PAROLE VIETATE: 'artigianale', 'economico', 'low cost', 'a buon mercato' (suonano cheap).",
         tone: "software ben fatto, semplice, affidabile, chiaro — ma vivo e coinvolgente, non asettico.",
         images:
-          "le immagini sono parte della presentazione: scegli screenshot che mostrano il progetto nel modo più convincente (schermate/funzioni rappresentative), più icone/loghi del progetto. Coerenti con lo stile dei progetti già presenti qui sopra.",
+          "la COVER (cover_image_url, immagine principale) deve SEMPRE essere il LOGO del progetto (o l'icona identificativa dell'app), non uno screenshot. Gli screenshot delle schermate/funzioni vanno nella GALLERY. Scegli immagini che mostrino il progetto nel modo più convincente, coerenti con lo stile dei progetti già presenti qui sopra.",
         fields: "title, short_description, long_description in italiano ({ it }); en opzionale.",
+        editing:
+          "Per MODIFICARE un progetto già esistente NON crearne uno nuovo: usa PATCH /api/agent/projects con lo 'slug' del progetto + solo i campi da cambiare. POST è solo per progetti nuovi.",
         never_touch: "solo contenuti (testi/foto). Mai layout, mai pubblicare (le bozze le pubblica l'admin).",
       },
     });
@@ -226,6 +229,139 @@ export async function POST(request: NextRequest) {
     console.error("[api/agent/projects] POST Error:", err);
     return NextResponse.json(
       { error: "Errore durante la creazione della bozza." },
+      { status: 500 }
+    );
+  }
+}
+
+// ── PATCH: update an EXISTING project by slug (no duplicates) ────────────────
+// The agent sends the target `slug` plus only the fields to change. Untouched
+// fields are left as-is. Replaced images are cleaned from storage. Never
+// creates a new row; returns 404 if the slug doesn't exist. Content only.
+export async function PATCH(request: NextRequest) {
+  if (!isAuthorized(request)) return unauthorized();
+
+  try {
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body !== "object") {
+      return NextResponse.json({ error: "Corpo della richiesta non valido." }, { status: 400 });
+    }
+    const b = body as Record<string, unknown>;
+
+    const targetSlug = typeof b.slug === "string" ? b.slug.trim() : "";
+    if (!targetSlug) {
+      return NextResponse.json(
+        { error: "Indica lo 'slug' del progetto da modificare." },
+        { status: 400 }
+      );
+    }
+
+    const existing = await prisma.project.findUnique({ where: { slug: targetSlug } });
+    if (!existing) {
+      return NextResponse.json(
+        { error: `Nessun progetto con slug '${targetSlug}'. Usa POST per crearne uno nuovo.` },
+        { status: 404 }
+      );
+    }
+
+    // Build the update only from provided fields (partial update).
+    const data: Prisma.ProjectUpdateInput = {};
+
+    if (b.title !== undefined) {
+      const title = toI18n(b.title);
+      if (!title) return NextResponse.json({ error: "Titolo non valido." }, { status: 400 });
+      data.title = title as Prisma.InputJsonValue;
+    }
+    if (b.short_description !== undefined)
+      data.short_description = (toI18n(b.short_description) ?? { it: "", en: "" }) as Prisma.InputJsonValue;
+    if (b.long_description !== undefined)
+      data.long_description = (toI18n(b.long_description) ?? { it: "", en: "" }) as Prisma.InputJsonValue;
+
+    if (b.status !== undefined) {
+      if (typeof b.status !== "string" || !(Object.values(ProjectStatus) as string[]).includes(b.status)) {
+        return NextResponse.json({ error: "status non valido." }, { status: 400 });
+      }
+      data.status = b.status as ProjectStatus;
+    }
+
+    // Track images that will be replaced so we can clean them up afterwards.
+    const orphaned: string[] = [];
+
+    if (b.cover_image_url !== undefined) {
+      let cover: string | null = null;
+      if (b.cover_image_url !== null && b.cover_image_url !== "") {
+        if (!isValidImageUrl(b.cover_image_url)) {
+          return NextResponse.json({ error: "cover_image_url non valido." }, { status: 400 });
+        }
+        cover = b.cover_image_url;
+      }
+      if (existing.cover_image_url && existing.cover_image_url !== cover) {
+        orphaned.push(existing.cover_image_url);
+      }
+      data.cover_image_url = cover;
+    }
+
+    if (b.gallery !== undefined) {
+      const gallery: { url: string; alt: { it: string; en: string } }[] = [];
+      if (Array.isArray(b.gallery)) {
+        const titleIt =
+          (data.title as { it?: string } | undefined)?.it ??
+          (existing.title as { it?: string } | null)?.it ??
+          "";
+        for (const raw of b.gallery) {
+          if (!raw || typeof raw !== "object") continue;
+          const item = raw as Record<string, unknown>;
+          if (!isValidImageUrl(item.url)) continue;
+          gallery.push({ url: item.url, alt: toI18n(item.alt) ?? { it: titleIt, en: "" } });
+        }
+      }
+      // Old gallery URLs not present in the new set are orphaned.
+      const newUrls = new Set(gallery.map((g) => g.url));
+      const oldGallery = Array.isArray(existing.gallery)
+        ? (existing.gallery as { url?: string }[])
+        : [];
+      for (const g of oldGallery) {
+        if (g?.url && !newUrls.has(g.url)) orphaned.push(g.url);
+      }
+      data.gallery = gallery as unknown as Prisma.InputJsonValue;
+    }
+
+    if (Object.keys(data).length === 0) {
+      return NextResponse.json(
+        { error: "Nessun campo da aggiornare fornito." },
+        { status: 400 }
+      );
+    }
+
+    const updated = await prisma.project.update({
+      where: { slug: targetSlug },
+      data,
+      select: { id: true, slug: true, published: true },
+    });
+
+    // Best-effort cleanup of replaced images (never blocks the response).
+    if (orphaned.length > 0) {
+      const storage = getStorageAdapter();
+      await Promise.all(
+        Array.from(new Set(orphaned)).map((url) =>
+          storage.delete(url).catch((e: unknown) =>
+            console.error("[api/agent/projects] PATCH cleanup immagine:", url, e)
+          )
+        )
+      );
+    }
+
+    return NextResponse.json({
+      ok: true,
+      slug: updated.slug,
+      published: updated.published,
+      updated_fields: Object.keys(data),
+      message: "Progetto aggiornato. Le modifiche sono visibili nell'area admin.",
+    });
+  } catch (err) {
+    console.error("[api/agent/projects] PATCH Error:", err);
+    return NextResponse.json(
+      { error: "Errore durante l'aggiornamento." },
       { status: 500 }
     );
   }
