@@ -6,6 +6,7 @@ import StatusBadge from "@/components/StatusBadge";
 import ActionButtons from "@/components/ActionButtons";
 import { t, parseGallery } from "@/lib/i18n";
 import { verifyPreviewToken } from "@/lib/preview-token";
+import { sanitizeRichText, htmlToPlainText } from "@/lib/sanitize-html";
 import type { Metadata } from "next";
 
 // DB-backed page: render at request time, never prerender at build.
@@ -33,7 +34,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!project) return { title: "Progetto non trovato | DeroArts" };
 
   const title = t(project.title);
-  const desc = t(project.short_description);
+  // short_description is rich-text HTML → strip tags for meta tags.
+  const desc = htmlToPlainText(t(project.short_description));
 
   return {
     title: `${title} | DeroArts`,
@@ -104,9 +106,10 @@ export default async function ProjectDetailPage({ params, searchParams }: PagePr
         </h1>
 
         {shortDesc && (
-          <p className="text-lg text-gray-500 leading-relaxed whitespace-pre-line">
-            {shortDesc.replace(/\r\n/g, "\n")}
-          </p>
+          <div
+            className="prose prose-gray max-w-none text-lg text-gray-500 leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: sanitizeRichText(shortDesc) }}
+          />
         )}
       </div>
 
@@ -130,11 +133,12 @@ export default async function ProjectDetailPage({ params, searchParams }: PagePr
           <h2 className="text-xl font-semibold text-graphite mb-4">
             Descrizione
           </h2>
-          {/* whitespace-pre-line rispetta ESATTAMENTE gli a capo e le righe
-              vuote come inseriti nell'admin. Normalizzo i CRLF di Windows. */}
-          <div className="max-w-none text-gray-600 leading-relaxed whitespace-pre-line">
-            {longDesc.replace(/\r\n/g, "\n")}
-          </div>
+          {/* Rich text (HTML) sanificato: grassetto, corsivo, sottolineato,
+              elenchi e a capo resi come nell'editor admin. */}
+          <div
+            className="prose prose-gray max-w-none text-gray-600 leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: sanitizeRichText(longDesc) }}
+          />
         </section>
       )}
 

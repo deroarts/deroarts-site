@@ -7,6 +7,7 @@ import { saveProjectAction } from "@/app/admina/(shell)/progetti/actions";
 import { ACTION_LABELS } from "@/lib/i18n";
 import ImageFrameEditor from "./ImageFrameEditor";
 import GalleryEditor, { type GalleryItem } from "./GalleryEditor";
+import RichTextEditor from "./RichTextEditor";
 
 const PROJECT_STATUSES = [
   { value: "available", label: "Disponibile" },
@@ -124,6 +125,14 @@ export default function ProjectForm({ project, categories }: ProjectFormProps) {
       : []
   );
 
+  // Rich-text descriptions (HTML) — mirrored into hidden inputs for the form.
+  const [shortDesc, setShortDesc] = useState<string>(
+    isEdit ? getIt(project!.short_description) : ""
+  );
+  const [longDesc, setLongDesc] = useState<string>(
+    isEdit ? getIt(project!.long_description) : ""
+  );
+
   const [state, formAction] = useFormState(saveProjectAction, { error: null });
 
   function handleTitleChange(v: string) {
@@ -234,26 +243,26 @@ export default function ProjectForm({ project, categories }: ProjectFormProps) {
           <label className="block text-sm font-medium text-graphite mb-1.5">
             Descrizione breve (italiano)
           </label>
-          <textarea
-            name="short_description_it"
-            rows={2}
-            defaultValue={isEdit ? getIt(project!.short_description) : ""}
-            className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-end focus:border-transparent resize-none"
+          <RichTextEditor
+            value={shortDesc}
+            onChange={setShortDesc}
+            minHeightClass="min-h-[3.5rem]"
             placeholder="Una riga che descrive il progetto"
           />
+          <input type="hidden" name="short_description_it" value={shortDesc} />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-graphite mb-1.5">
             Descrizione lunga (italiano)
           </label>
-          <textarea
-            name="long_description_it"
-            rows={6}
-            defaultValue={isEdit ? getIt(project!.long_description) : ""}
-            className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-end focus:border-transparent resize-y"
-            placeholder="Descrizione completa, funzionalità, a chi è rivolto…"
+          <RichTextEditor
+            value={longDesc}
+            onChange={setLongDesc}
+            minHeightClass="min-h-[9rem]"
+            placeholder="Descrizione completa, funzionalità, benefici…"
           />
+          <input type="hidden" name="long_description_it" value={longDesc} />
         </div>
       </section>
 

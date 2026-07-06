@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db/client";
 import { Prisma, ProjectStatus, ActionType } from "@prisma/client";
 import { getStorageAdapter } from "@/lib/adapters";
 import { parseGallery } from "@/lib/i18n";
+import { sanitizeRichText } from "@/lib/sanitize-html";
 
 function toSlug(text: string): string {
   return text
@@ -103,10 +104,9 @@ export async function saveProjectAction(
 ): Promise<ProjectFormState> {
   const id = formData.get("id") as string | null;
   const titleIt = (formData.get("title_it") as string | null)?.trim() ?? "";
-  const shortDescIt =
-    (formData.get("short_description_it") as string | null)?.trim() ?? "";
-  const longDescIt =
-    (formData.get("long_description_it") as string | null)?.trim() ?? "";
+  // Descriptions are rich text (HTML from the editor) — sanitize before saving.
+  const shortDescIt = sanitizeRichText(formData.get("short_description_it"));
+  const longDescIt = sanitizeRichText(formData.get("long_description_it"));
   const status = (formData.get("status") as ProjectStatus) ?? "available";
   const categoryId =
     (formData.get("category_id") as string | null) || null;

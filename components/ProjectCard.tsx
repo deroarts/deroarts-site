@@ -1,6 +1,7 @@
 import Link from "next/link";
 import AspectImage from "@/components/AspectImage";
 import { t } from "@/lib/i18n";
+import { htmlToPlainText } from "@/lib/sanitize-html";
 
 interface ProjectCardProps {
   project: {
@@ -16,7 +17,8 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ project }: ProjectCardProps) {
   const title = t(project.title);
-  const shortDesc = t(project.short_description);
+  // Card preview: strip rich-text tags so line-clamp works cleanly.
+  const shortDesc = htmlToPlainText(t(project.short_description));
   const categoryName = project.category ? t(project.category.name) : null;
 
   return (

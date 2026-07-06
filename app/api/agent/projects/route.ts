@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db/client";
 import { Prisma, ProjectStatus } from "@prisma/client";
 import { getStorageAdapter } from "@/lib/adapters";
+import { plainTextToHtml } from "@/lib/sanitize-html";
 
 // External-agent endpoint (e.g. Devin). Request-time only, never prerendered.
 export const dynamic = "force-dynamic";
@@ -136,10 +137,16 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    const short_description =
-      toI18n(b.short_description) ?? { it: "", en: "" };
-    const long_description =
-      toI18n(b.long_description) ?? { it: "", en: "" };
+    // The agent sends plain text with newlines → convert to safe HTML so it
+    // renders with correct paragraphs/line breaks (site now outputs HTML).
+    const short_description = {
+      it: plainTextToHtml((toI18n(b.short_description) ?? { it: "" }).it),
+      en: "",
+    };
+    const long_description = {
+      it: plainTextToHtml((toI18n(b.long_description) ?? { it: "" }).it),
+      en: "",
+    };
 
     // Optional cover image (must be a valid URL if provided).
     let cover_image_url: string | null = null;
@@ -273,9 +280,15 @@ export async function PATCH(request: NextRequest) {
       data.title = title as Prisma.InputJsonValue;
     }
     if (b.short_description !== undefined)
-      data.short_description = (toI18n(b.short_description) ?? { it: "", en: "" }) as Prisma.InputJsonValue;
+      data.short_description = {
+        it: plainTextToHtml((toI18n(b.short_description) ?? { it: "" }).it),
+        en: "",
+      } as Prisma.InputJsonValue;
     if (b.long_description !== undefined)
-      data.long_description = (toI18n(b.long_description) ?? { it: "", en: "" }) as Prisma.InputJsonValue;
+      data.long_description = {
+        it: plainTextToHtml((toI18n(b.long_description) ?? { it: "" }).it),
+        en: "",
+      } as Prisma.InputJsonValue;
 
     if (b.status !== undefined) {
       if (typeof b.status !== "string" || !(Object.values(ProjectStatus) as string[]).includes(b.status)) {

@@ -27,6 +27,15 @@
   }
 }
 
+@layer base {
+  /* Rich-text underline: keep it visually distinct from links (which are green)
+     so an underlined word isn't mistaken for something clickable. */
+  .prose u {
+    text-decoration-color: currentColor;
+    text-underline-offset: 2px;
+  }
+}
+
 @layer utilities {
   /* Safe-area helpers for notch / home-bar (active via viewportFit: cover).
      Add to sticky top bars and fixed bottom elements so nothing is clipped
