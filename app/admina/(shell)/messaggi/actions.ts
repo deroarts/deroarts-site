@@ -11,10 +11,14 @@ import { RequestStatus } from "@prisma/client";
 
 const DEFAULT_FROM = process.env.RESEND_FROM || "info@deroarts.com";
 
+// Le rotte /admina/* sono già protette dal middleware. In sviluppo, con
+// DEV_UA_SWITCH=true, non esiste una sessione (accesso libero per il DevSwitcher):
+// in quel caso non richiediamo la sessione, coerentemente con le altre azioni
+// admin. In produzione (DEV_UA_SWITCH assente) la sessione resta obbligatoria.
 async function requireAdmin() {
+  if (process.env.DEV_UA_SWITCH === "true") return;
   const session = await getSession();
   if (!session) throw new Error("Non autorizzato.");
-  return session;
 }
 
 /** Update the status of a message (new / read / handled). */
