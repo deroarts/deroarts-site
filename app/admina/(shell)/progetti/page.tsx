@@ -84,7 +84,7 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
         <>
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto">
             <table className="w-full min-w-[520px] text-sm">
-              <thead className="bg-graphite border-b border-gray-200">
+              <thead className="bg-dark-green-gradient border-b border-gray-200">
                 <tr>
                   <th className="w-8 px-2 py-3" />
                   <th className="text-center px-4 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider border-l border-white/10">
