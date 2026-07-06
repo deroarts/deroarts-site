@@ -11,6 +11,7 @@ const config: Config = {
         graphite: "#1A222B",
         "green-start": "#8FC603",
         "green-end": "#1E9E3D",
+        "green-deep": "#157A2E",
         "dark-green-start": "#1A3A26",
         "dark-green-end": "#0F2419",
         "light-surface": "#F8F6F6",
@@ -30,6 +31,7 @@ const config: Config = {
       },
       backgroundImage: {
         "green-gradient": "linear-gradient(135deg, #8FC603, #1E9E3D)",
+        "green-gradient-mid": "linear-gradient(135deg, #2FA84C, #157A2E)",
         "dark-green-gradient": "linear-gradient(135deg, #1A3A26, #0F2419)",
       },
       aspectRatio: {

@@ -58,9 +58,6 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-graphite">Progetti</h1>
-          <p className="text-xs text-gray-400 mt-0.5">
-            {total} progetto/i totali
-          </p>
         </div>
         <Link
           href="/admina/progetti/new"
@@ -84,7 +81,7 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
         <>
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto">
             <table className="w-full min-w-[520px] text-sm">
-              <thead className="bg-dark-green-gradient border-b border-gray-200">
+              <thead className="bg-green-deep border-b border-gray-200">
                 <tr>
                   <th className="w-8 px-2 py-3" />
                   <th className="text-center px-4 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider border-l border-white/10">
@@ -165,14 +162,11 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
                             <p className="font-medium text-graphite group-hover/cell:text-green-end transition-colors">
                               {t(project.title)}
                             </p>
-                            <p className="text-xs text-gray-400 font-mono mt-0.5">
-                              {project.slug}
-                            </p>
                           </div>
                         </Link>
                       </td>
 
-                      <td className="px-4 py-3 hidden sm:table-cell text-gray-500 border-l border-gray-100">
+                      <td className="px-4 py-3 hidden sm:table-cell text-gray-500 border-l border-gray-100 text-center">
                         {project.category ? (
                           t(project.category.name)
                         ) : (
@@ -180,12 +174,12 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
                         )}
                       </td>
 
-                      <td className="px-4 py-3 hidden md:table-cell border-l border-gray-100">
+                      <td className="px-4 py-3 hidden md:table-cell border-l border-gray-100 text-center">
                         <StatusBadge status={project.status} />
                       </td>
 
                       {/* Request counts */}
-                      <td className="px-4 py-3 hidden lg:table-cell border-l border-gray-100">
+                      <td className="px-4 py-3 hidden lg:table-cell border-l border-gray-100 text-center">
                         {totalReq === 0 ? (
                           <span className="text-gray-300 text-xs">—</span>
                         ) : (
@@ -236,24 +230,24 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
                         </form>
                       </td>
 
-                      <td className="px-4 py-3 text-right border-l border-gray-100">
-                        <div className="flex items-center justify-end gap-2">
+                      <td className="px-4 py-3 text-center border-l border-gray-100">
+                        <div className="flex items-center justify-center gap-3">
                           <Link
                             href={`/progetti/${project.slug}`}
                             target="_blank"
                             title="Anteprima pubblica"
-                            className="text-gray-400 hover:text-green-end transition-colors p-1"
+                            className="text-gray-400 hover:text-green-end transition-colors p-1.5"
                           >
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                             </svg>
                           </Link>
                           <Link
                             href={`/admina/progetti/${project.id}/edit`}
-                            className="text-gray-400 hover:text-graphite transition-colors p-1"
+                            className="text-gray-400 hover:text-graphite transition-colors p-1.5"
                             title="Modifica"
                           >
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
                           </Link>
