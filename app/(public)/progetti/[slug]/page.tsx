@@ -104,7 +104,9 @@ export default async function ProjectDetailPage({ params, searchParams }: PagePr
         </h1>
 
         {shortDesc && (
-          <p className="text-lg text-gray-500 leading-relaxed">{shortDesc}</p>
+          <p className="text-lg text-gray-500 leading-relaxed whitespace-pre-line">
+            {shortDesc.replace(/\r\n/g, "\n")}
+          </p>
         )}
       </div>
 
@@ -128,12 +130,10 @@ export default async function ProjectDetailPage({ params, searchParams }: PagePr
           <h2 className="text-xl font-semibold text-graphite mb-4">
             Descrizione
           </h2>
-          <div className="prose prose-gray max-w-none text-gray-600 leading-relaxed">
-            {longDesc.split("\n").map((para, i) => (
-              <p key={i} className="mb-3">
-                {para}
-              </p>
-            ))}
+          {/* whitespace-pre-line rispetta ESATTAMENTE gli a capo e le righe
+              vuote come inseriti nell'admin. Normalizzo i CRLF di Windows. */}
+          <div className="max-w-none text-gray-600 leading-relaxed whitespace-pre-line">
+            {longDesc.replace(/\r\n/g, "\n")}
           </div>
         </section>
       )}
