@@ -121,7 +121,7 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
                             <button
                               type="submit"
                               disabled={idx === 0 && page === 1}
-                              className="text-gray-300 hover:text-graphite disabled:opacity-20 transition-colors leading-none p-1.5"
+                              className="text-green-deep hover:text-green-end disabled:opacity-20 transition-colors leading-none p-1.5"
                               title="Sposta su"
                             >
                               <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -133,7 +133,7 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
                             <button
                               type="submit"
                               disabled={idx === projects.length - 1 && page === totalPages}
-                              className="text-gray-300 hover:text-graphite disabled:opacity-20 transition-colors leading-none p-1.5"
+                              className="text-green-deep hover:text-green-end disabled:opacity-20 transition-colors leading-none p-1.5"
                               title="Sposta giù"
                             >
                               <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
