@@ -94,10 +94,10 @@ export async function GET(request: NextRequest) {
           "Persuadi con eleganza e understatement, non con superlativi gridati: convinci mostrando qualità, benefici concreti e sicurezza. Un tocco di call-to-action implicita va bene; l'entusiasmo esagerato no.",
         structure:
           "title = nome del progetto, breve e riconoscibile. short_description = un gancio di 1 frase che fa capire subito il valore e invoglia. long_description = il racconto: problema → soluzione → benefici/punti di forza → cosa può fare l'utente. Concreto, scorrevole, mai prolisso.",
-        voice: "impersonale / terza persona — mai prima persona (no 'io', 'creo', 'creiamo', 'ho fatto').",
-        audience: "mai nominare i destinatari (no imprese, PMI, agenzie, privati, professionisti): è per tutti.",
+        voice: "impersonale / terza persona — mai prima persona (no 'io', 'noi', 'creo', 'creiamo', 'ho fatto'). Non deve trasparire chi c'è dietro né se è una persona sola o un team: es. 'Strumenti digitali creati per…', non 'Creiamo…'.",
+        audience: "mai nominare i destinatari (no imprese, PMI, aziende, agenzie, privati, professionisti): il messaggio è per tutti, in generale.",
         quality_price:
-          "quando ha senso, lega la qualità al prezzo accessibile con termini eleganti (es. 'alla portata di tutti'); mai 'artigianale', mai 'economico'.",
+          "lega la qualità al prezzo accessibile con eleganza (es. 'alla portata di tutti', 'senza pesare sul budget'). PAROLE VIETATE: 'artigianale', 'economico', 'low cost', 'a buon mercato' (suonano cheap).",
         tone: "software ben fatto, semplice, affidabile, chiaro — ma vivo e coinvolgente, non asettico.",
         images:
           "le immagini sono parte della presentazione: scegli screenshot che mostrano il progetto nel modo più convincente (schermate/funzioni rappresentative), più icone/loghi del progetto. Coerenti con lo stile dei progetti già presenti qui sopra.",
