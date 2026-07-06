@@ -53,7 +53,7 @@ Legenda: ✅ fatto · 🔄 in corso · ⬜ da fare
 |-----------|------|---------|
 | `RESEND_API_KEY` | server, sensibile | Chiave API Resend per inviare email |
 | `RESEND_FROM` | server | Mittente di default se il progetto non ha `from_email` (es. `info@deroarts.com`) |
-| `MAIL_MODE` | server | `fake` = Dev Outbox (dev) · `resend` = invio reale · `smtp` non usato |
+| `MAIL_MODE` | server | `fake` = Dev Outbox (dev) · `resend` = invio reale (prod) |
 | `VAPID_PUBLIC_KEY` | server | Chiave pubblica push (VAPID) |
 | `VAPID_PRIVATE_KEY` | server, sensibile | Chiave privata push (VAPID) |
 | `VAPID_SUBJECT` | server | Contatto VAPID, es. `mailto:info@deroarts.com` |
@@ -75,7 +75,8 @@ con uno switch su `MAIL_MODE` in `lib/adapters/index.ts`:
 
 **Mittente per progetto:** ogni progetto ha un campo `from_email`
 (prefisso + `@deroarts.com`, es. `stickers@deroarts.com`). Se vuoto → `RESEND_FROM`.
-Così su Zoho puoi taggare/filtrare in base al mittente del progetto.
+Questo mittente distingue le email per progetto e, in ricezione, l'alias di
+destinazione permette di collegare la mail al progetto giusto (vedi §5bis).
 
 **Quando un utente scrive dal sito** (`app/actions/requests.ts`): la richiesta
 viene salvata in DB, poi partono 2 email — notifica all'owner (`ADMIN_EMAIL`) +
@@ -152,9 +153,8 @@ reale) con oggetto `Re: <subject>`, inviata via Resend dall'indirizzo `@deroarts
 - Le risposte dall'app non sono raggruppate in thread con il messaggio originale
   (ogni risposta in arrivo è un nuovo messaggio) — miglioria futura.
 
-**Variabili:** `RESEND_WEBHOOK_SECRET` (segreto, dal webhook Resend).
-`RESEND_INBOUND_ADDRESS` non è più necessaria (nessun indirizzo `.resend.app`
-intermedio): può restare vuota/rimossa.
+**Variabili:** `RESEND_WEBHOOK_SECRET` (segreto, dal webhook Resend). Nessun
+indirizzo `.resend.app` intermedio: la ricezione è via MX diretto del dominio.
 
 **Setup (già fatto una volta):**
 - Cloudflare DNS → record MX `@` → `inbound-smtp.eu-west-1.amazonaws.com` prio 9
@@ -202,9 +202,10 @@ Il modo **consigliato e senza limiti** per portare le notifiche delle tue app
   al progetto se lo slug esiste, con `reply_to_email` = from_email; scatta la push.
 - **Risposte:** 401 (chiave errata/assente), 400 (message mancante o JSON non
   valido), 500 (chiave non configurata sul server), 200 `{ok:true}`.
-- **Perché questa via e non l'email:** diretta, nessun limite Zoho, il messaggio
-  arriva subito e già collegato al progetto. Le app che sanno solo mandare email
-  possono in alternativa scrivere a `RESEND_INBOUND_ADDRESS` (vedi §5bis).
+- **Perché questa via e non l'email:** diretta, senza consumare la quota email,
+  il messaggio arriva subito e già collegato al progetto. Le app che sanno solo
+  mandare email possono in alternativa scrivere a un indirizzo `@deroarts.com`
+  (ricevuto via Resend Inbound, vedi §5bis).
 
 **Variabile:** `DEROARTS_APP_KEY` (segreta) — in `.env`, App Control, Render.
 

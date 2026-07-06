@@ -5,7 +5,7 @@ Da leggere solo al momento del deploy. L'app usa `output: "standalone"` (`next.c
 ## Prerequisiti
 1. Bucket Supabase Storage `deroarts-assets` (public read, private write) creato.
 2. `SupabaseStorageAdapter` implementato e collegato in `lib/adapters/index.ts`.
-3. `SmtpMailAdapter` (Zoho) implementato e collegato.
+3. `ResendMailAdapter` implementato e collegato (invio + ricezione via Resend).
 4. DNS `deroarts.com` pronto per puntare a Render.
 
 ## Render — build
@@ -17,7 +17,7 @@ Da leggere solo al momento del deploy. L'app usa `output: "standalone"` (`next.c
 
 ## Flip adapter dev → prod
 - **Storage:** `STORAGE_MODE=supabase` (già implementato: `SupabaseStorageAdapter`).
-- **Mail:** `MAIL_MODE=resend` (già implementato: `ResendMailAdapter`, vedi [[08-messaggi-notifiche]]). In locale resta `fake` per non consumare invii; in prod va messo `resend`. Serve `RESEND_API_KEY` (+ `RESEND_FROM`). Il vecchio piano SMTP/Zoho (`nodemailer`) è **superato**: la ricezione resta su Zoho, l'invio dal sito passa da Resend.
+- **Mail:** `MAIL_MODE=resend` (già implementato: `ResendMailAdapter`, vedi [[08-messaggi-notifiche]]). In locale resta `fake` per non consumare invii; in prod va messo `resend`. Serve `RESEND_API_KEY` (+ `RESEND_FROM`, `RESEND_WEBHOOK_SECRET` per la ricezione). Resend fa **sia invio sia ricezione** (MX del dominio → Resend); il vecchio piano SMTP/Zoho è **dismesso** (2026-07-07).
 - **Push (notifiche):** richiede `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `NEXT_PUBLIC_VAPID_PUBLIC_KEY`. **Non rigenerare** le chiavi VAPID (invaliderebbe le iscrizioni). Usare gli stessi valori del `.env`.
 
 ## Checklist primo deploy

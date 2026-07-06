@@ -7,9 +7,9 @@ import { parseFrom, aliasLocalPart, bodyToText } from "@/lib/inbound/parse";
 export const dynamic = "force-dynamic";
 
 // ─── Resend Inbound webhook ───────────────────────────────────────────────────
-// Riceve l'evento `email.received` quando una mail viene inoltrata all'indirizzo
-// di ricezione Resend (Zoho info@ → *.resend.app). Verifica la firma, scarica il
-// corpo, e salva la mail come messaggio nella tabella `requests` (source=email).
+// Riceve l'evento `email.received` quando una mail arriva su un indirizzo
+// @deroarts.com (l'MX del dominio punta direttamente a Resend). Verifica la firma,
+// scarica il corpo, e salva la mail come messaggio nella tabella `requests` (source=email).
 
 interface EmailReceivedPayload {
   type: string;
@@ -104,20 +104,38 @@ export async function POST(request: NextRequest) {
   }
   const message = bodyToText(full.text, full.html);
 
-  // 6) Salva come messaggio (origine email).
-  await prisma.request.create({
-    data: {
-      name,
-      email,
-      reply_to_email: email,
-      subject: full.subject || null,
-      message,
-      project_id: projectId,
-      source: "email",
-      status: "new",
-      inbound_email_id: emailId,
-    },
-  });
+  // 6) Salva come messaggio (origine email). Il check al punto 3 non è atomico:
+  //    se il webhook ritenta in parallelo, due richieste possono superarlo entrambe.
+  //    Il vincolo @unique su inbound_email_id fa da guardia finale: se scatta
+  //    (P2002 = duplicato) trattiamo come già salvata → 200, senza ritentare né
+  //    ricontare la quota/push.
+  try {
+    await prisma.request.create({
+      data: {
+        name,
+        email,
+        reply_to_email: email,
+        subject: full.subject || null,
+        message,
+        project_id: projectId,
+        source: "email",
+        status: "new",
+        inbound_email_id: emailId,
+      },
+    });
+  } catch (e) {
+    if (
+      typeof e === "object" &&
+      e !== null &&
+      "code" in e &&
+      (e as { code?: string }).code === "P2002"
+    ) {
+      return NextResponse.json({ ok: true, duplicate: true });
+    }
+    console.error("[inbound] salvataggio fallito", emailId, e);
+    // 500 → Resend riproverà (la mail è ancora salvata da loro).
+    return NextResponse.json({ error: "Save failed." }, { status: 500 });
+  }
 
   // 7) Conteggio per l'alert di quota (email ricevuta).
   const { recordEmail } = await import("@/lib/mail/quota");

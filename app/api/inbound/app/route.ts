@@ -6,8 +6,8 @@ export const dynamic = "force-dynamic";
 
 // ─── Endpoint notifiche dalle app dei progetti ────────────────────────────────
 // Un'app esterna (es. Stickers) invia qui una notifica ("nuovo ordine", ecc.):
-// la salviamo come messaggio nella sezione Messaggi di DeroArts. Nessuna email
-// di mezzo → nessun limite Zoho. Auth con chiave dedicata DEROARTS_APP_KEY.
+// la salviamo come messaggio nella sezione Messaggi di DeroArts. Via diretta,
+// nessuna email di mezzo. Auth con chiave dedicata DEROARTS_APP_KEY.
 //
 // POST /api/inbound/app
 //   header: x-api-key: <DEROARTS_APP_KEY>

@@ -22,7 +22,7 @@ export function parseFrom(from: string): { name: string; email: string } {
 /**
  * Ricava il "local part" dell'alias a cui era indirizzata la mail, a partire
  * dagli indirizzi in `received_for` / `to`. Es. "stickers@deroarts.com" → "stickers".
- * Ignora l'indirizzo tecnico *.resend.app (è solo il tramite dell'inoltro).
+ * Scarta per prudenza eventuali indirizzi tecnici *.resend.app.
  */
 export function aliasLocalPart(
   receivedFor: string[] | null | undefined,

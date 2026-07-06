@@ -28,4 +28,4 @@ Full operational context for developers/agents lives in [`DNA/`](DNA/00-indice.m
 ## Notes
 
 - Multilingual text fields use JSON with shape `{ "it": "...", "en": "" }`.
-- Storage and mail use adapters (`STORAGE_MODE`, `MAIL_MODE`): local/fake in dev, Supabase/SMTP in production.
+- Storage and mail use adapters (`STORAGE_MODE`, `MAIL_MODE`): local/fake in dev, Supabase/Resend in production.

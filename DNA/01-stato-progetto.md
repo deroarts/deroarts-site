@@ -14,10 +14,9 @@ Next.js 14 (App Router, React 18, TS) · Tailwind · Prisma + PostgreSQL (Supaba
 - **SEO/polish**: sitemap, robots, 404, error boundary — tutti presenti.
 - **DB**: 2 migrazioni applicate (init + enable_rls). RLS attiva su tutte le tabelle. Dati demo caricati (3 progetti, 2 categorie).
 
-## Cosa manca (solo per il deploy in produzione)
-- `SmtpMailAdapter` (Zoho) — ora attivo `FakeMailAdapter` (scrive su `dev_outbox`).
-- `SupabaseStorageAdapter` — ora attivo `LocalStorageAdapter` (`public/uploads/`, effimero su Render).
-- Bucket Supabase Storage `deroarts-assets` (non ancora creato).
+## Deploy in produzione
+Email (invio + ricezione), storage Supabase e bucket sono già implementati e in uso.
+In prod servono solo i flip di ambiente: `MAIL_MODE=resend`, `STORAGE_MODE=supabase`.
 Dettagli in [[05-deploy]].
 
 ## Ambiente locale

@@ -29,7 +29,9 @@
 | Tooling qualità (ESLint config + CI) | DONE | `.eslintrc.json`, `.github/workflows/ci.yml` (CI verde) |
 | Primo push GitHub | DONE | `github.com/deroarts/deroarts-site`, branch `main` |
 | Deploy Render (standalone + HOSTNAME fix) | DONE | `https://deroarts.onrender.com` HTTP 200 |
-| Dominio custom `www.deroarts.com` + apex 301 | DONE | Cloudflare CNAME Solo-DNS, SSL Render, email Zoho intatte |
+| Dominio custom `www.deroarts.com` + apex 301 | DONE | Cloudflare CNAME Solo-DNS, SSL Render |
+| Email invio + ricezione (Resend) | DONE | `ResendMailAdapter` + Resend Inbound (MX diretto). Zoho dismesso 2026-07-07. Testato dal vivo. |
+| Sezione Messaggi + notifiche push + alert quota | DONE | `/admina/messaggi`, Web Push VAPID, `email_counters` + `lib/mail/quota.ts` |
 
 ---
 
@@ -37,8 +39,6 @@
 
 | Voce | Stato | Cosa manca per chiudere |
 |------|-------|-------------------------|
-| Mail in produzione | PARTIAL | Attivo `FakeMailAdapter` (scrive su `dev_outbox`). Manca `SmtpMailAdapter` (Zoho) + `MAIL_MODE=smtp` + `SMTP_PASS`. |
-| Storage in produzione | PARTIAL | Attivo `LocalStorageAdapter` (`public/uploads/`, effimero su Render). Manca `SupabaseStorageAdapter` + bucket `deroarts-assets` + `STORAGE_MODE=supabase`. |
 | Pagina impostazioni admin | PARTIAL | `/admina/impostazioni` è un placeholder; manca modello `Settings` e wiring. |
 
 ---
@@ -53,8 +53,8 @@
 | Creare cartella DNA/ dai docs/ | DONE |
 | Consolidamento — pnpm-workspace | DONE (voci `@replit/*` orfane rimosse) |
 | Consolidamento — gitignore uploads | DONE (`/public/uploads/` già ignorato) |
-| Consolidamento — `SupabaseStorageAdapter` | TODO |
-| Consolidamento — `SmtpMailAdapter` Zoho | TODO |
+| Consolidamento — `SupabaseStorageAdapter` | DONE (bucket `deroarts-assets`, `STORAGE_MODE=supabase`) |
+| Consolidamento — email Resend (invio + ricezione) | DONE (`ResendMailAdapter` + Resend Inbound, Zoho dismesso) |
 | Consolidamento — `DATABASE_URL`→Supabase + migrate deploy | DONE (Supabase collegato, 3 migrazioni applicate) |
 | Consolidamento — bcrypt (ADMIN_PASSWORD) + SESSION_SECRET | DONE (prod: hash bcrypt + secret dedicato su Render) |
 | Consolidamento — RLS | DONE |
@@ -85,8 +85,8 @@
 
 ## 5. Problemi / rischi aperti
 
-- **Mail e storage in modalità dev** (`fake`/`local`): in produzione le email non partono davvero e le immagini caricate sono effimere (Render azzera il filesystem ai redeploy). Chiudere con gli adapter prod.
-- ~~**Dominio non collegato**~~ RISOLTO 2026-07-06: dominio collegato → `https://www.deroarts.com` (apex `deroarts.com` 301→www). CNAME Cloudflare Solo-DNS, SSL Render. Email Zoho intatte.
+- **Mail e storage**: in prod attivi via `MAIL_MODE=resend` / `STORAGE_MODE=supabase`. In locale restano `fake`/`local` per non consumare invii e per comodità. Email invio+ricezione su Resend (testato dal vivo).
+- ~~**Dominio non collegato**~~ RISOLTO 2026-07-06: dominio collegato → `https://www.deroarts.com` (apex `deroarts.com` 301→www). CNAME Cloudflare Solo-DNS, SSL Render.
 - **Free tier**: Render dorme dopo 15 min (cold start ~30s); Supabase protetto dal keepalive. Nessun rischio di saturazione (DB ~10MB/500MB).
 - **File oltre 300 righe** (governance): `components/admin/ProjectForm.tsx` (470), `ImageFrameEditor.tsx` (348) — da dividere quando toccati.
 - **Privacy EU**: manca cookie/informativa banner prima di traffico reale.

@@ -19,7 +19,7 @@
 
 ## Dominio & email — deroarts.com
 - Registrar + DNS: **Cloudflare** (DNSSEC attivo, SSL full, HTTPS forzato). Non modificare registrar/nameserver/DNSSEC.
-- Email: **Zoho Mail** (EU), casella `info@deroarts.com`. SPF/DKIM/DMARC PASS. SMTP: `smtp.zoho.eu:465` (serve app-password Zoho, non la password account).
+- Email: **Resend** (invio + ricezione). MX del dominio → Resend (`inbound-smtp.eu-west-1.amazonaws.com`), invio via `send.deroarts.com`. SPF/DKIM/DMARC PASS. **Zoho dismesso** il 2026-07-07.
 - **Scheda completa** (record DNS, SSL, sottodomini, regole): [[07-dominio-email]].
 
 ## App Control

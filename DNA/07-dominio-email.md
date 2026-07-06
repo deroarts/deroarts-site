@@ -33,7 +33,8 @@ Scheda tecnica del dominio. Valori operativi reali — usarli, non reinventarli.
 | TXT (DKIM) | `resend._domainkey` | `p=MIGf...IDAQAB` (chiave Resend, completa in Cloudflare) | — |
 | TXT (DMARC) | `_dmarc` | `v=DMARC1; p=none; rua=mailto:info@deroarts.com` (monitoraggio; irrigidire solo dopo) | — |
 
-> Nota: il DKIM Zoho residuo `zmail._domainkey` va rimosso (innocuo ma inutile).
+> Nota: nessun record Zoho residuo in Cloudflare (MX, SPF, DKIM `zmail._domainkey`
+> e TXT di verifica rimossi il 2026-07-07).
 
 ## Sito web → Render (collegato 2026-07-06)
 - **`www.deroarts.com`** → CNAME `deroarts.onrender.com` (Cloudflare, **Solo DNS** / proxy off). Verificato su Render (servizio `deroarts`, id `srv-d92qjlok1i2s73d15n0g`), SSL emesso da Render. Live: `https://www.deroarts.com`.

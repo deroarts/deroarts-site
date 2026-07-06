@@ -9,9 +9,13 @@ export const dynamic = "force-dynamic";
 // POST   → save a subscription for this device + turn push ON globally
 // DELETE → remove a subscription (unsubscribe this device)
 
-async function requireAdmin() {
+// In sviluppo con DEV_UA_SWITCH=true non esiste una sessione (accesso libero per
+// il DevSwitcher): in quel caso consideriamo l'admin autorizzato, coerentemente
+// con le azioni della sezione Messaggi. In produzione la sessione resta obbligatoria.
+async function requireAdmin(): Promise<boolean> {
+  if (process.env.DEV_UA_SWITCH === "true") return true;
   const session = await getSession();
-  return session ?? null;
+  return Boolean(session);
 }
 
 export async function GET() {

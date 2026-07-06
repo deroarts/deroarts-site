@@ -44,40 +44,47 @@ export async function recordEmail(kind: CountKind): Promise<void> {
     const dayTotal = row.sent + row.received;
 
     // ── Alert giornaliero ──
-    if (!row.alert_day_sent && dayTotal >= DAILY_LIMIT * THRESHOLD) {
-      await prisma.emailCounter.update({
-        where: { day },
+    // Il "check-and-set" è reso atomico dall'updateMany con `alert_day_sent: false`
+    // nel where: fra invocazioni concorrenti solo UNA scrive (count === 1) e solo
+    // quella manda la push → niente alert duplicati vicino al limite.
+    if (dayTotal >= DAILY_LIMIT * THRESHOLD) {
+      const claimed = await prisma.emailCounter.updateMany({
+        where: { day, alert_day_sent: false },
         data: { alert_day_sent: true },
       });
-      await sendPushToAll({
-        title: "Attenzione — limite email giornaliero",
-        body: `${dayTotal}/${DAILY_LIMIT} email oggi (invio+ricezione). Vicino al limite gratuito Resend: valuta il piano a pagamento.`,
-        url: "/admina/messaggi",
-        tag: "deroarts-quota-day",
-      });
+      if (claimed.count > 0) {
+        await sendPushToAll({
+          title: "Attenzione — limite email giornaliero",
+          body: `${dayTotal}/${DAILY_LIMIT} email oggi (invio+ricezione). Vicino al limite gratuito Resend: valuta il piano a pagamento.`,
+          url: "/admina/messaggi",
+          tag: "deroarts-quota-day",
+        });
+      }
     }
 
     // ── Alert mensile ──
     // Somma i totali di tutte le righe del mese corrente.
     const monthRows = await prisma.emailCounter.findMany({
       where: { day: { startsWith: monthPrefix() } },
-      select: { sent: true, received: true, alert_month_sent: true },
+      select: { sent: true, received: true },
     });
     const monthTotal = monthRows.reduce((acc, r) => acc + r.sent + r.received, 0);
-    const monthAlreadyAlerted = monthRows.some((r) => r.alert_month_sent);
 
-    if (!monthAlreadyAlerted && monthTotal >= MONTHLY_LIMIT * THRESHOLD) {
-      // Segna l'alert sulla riga di oggi (basta una riga del mese per bloccarlo).
-      await prisma.emailCounter.update({
-        where: { day },
+    if (monthTotal >= MONTHLY_LIMIT * THRESHOLD) {
+      // Stesso pattern atomico: marca l'alert sulla riga di oggi solo se non già
+      // marcata (basta una riga del mese a fare da flag mensile).
+      const claimed = await prisma.emailCounter.updateMany({
+        where: { day, alert_month_sent: false },
         data: { alert_month_sent: true },
       });
-      await sendPushToAll({
-        title: "Attenzione — limite email mensile",
-        body: `${monthTotal}/${MONTHLY_LIMIT} email questo mese (invio+ricezione). Vicino al limite gratuito Resend: valuta il piano a pagamento.`,
-        url: "/admina/messaggi",
-        tag: "deroarts-quota-month",
-      });
+      if (claimed.count > 0) {
+        await sendPushToAll({
+          title: "Attenzione — limite email mensile",
+          body: `${monthTotal}/${MONTHLY_LIMIT} email questo mese (invio+ricezione). Vicino al limite gratuito Resend: valuta il piano a pagamento.`,
+          url: "/admina/messaggi",
+          tag: "deroarts-quota-month",
+        });
+      }
     }
   } catch (e) {
     console.error("[quota] recordEmail error:", e);
