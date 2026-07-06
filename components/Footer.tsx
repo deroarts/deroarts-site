@@ -6,69 +6,31 @@ export default function Footer() {
 
   return (
     <footer className="bg-graphite text-gray-400 mt-auto">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          {/* Brand */}
-          <div>
-            <Image
-              src="/brand/logo-horizontal-on-dark.svg"
-              alt="DeroArts"
-              width={120}
-              height={32}
-              className="h-7 w-auto mb-3"
-            />
-            <p className="text-sm leading-relaxed">
-              App, siti e software su misura. Qualità e prezzi, alla portata di tutti.
-            </p>
-          </div>
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center text-center">
+        {/* Logo */}
+        <Image
+          src="/brand/logo-horizontal-on-dark.svg"
+          alt="DeroArts"
+          width={140}
+          height={38}
+          className="h-8 w-auto mb-4"
+        />
 
-          {/* Navigation */}
-          <div>
-            <h4 className="text-white text-sm font-semibold mb-4 uppercase tracking-wider">
-              Navigazione
-            </h4>
-            <ul className="text-sm">
-              <li>
-                <Link href="/" className="inline-block py-1.5 hover:text-white transition-colors">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link href="/progetti" className="inline-block py-1.5 hover:text-white transition-colors">
-                  Progetti
-                </Link>
-              </li>
-              <li>
-                <Link href="/contatti" className="inline-block py-1.5 hover:text-white transition-colors">
-                  Contatti
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="inline-block py-1.5 hover:text-white transition-colors">
-                  Privacy &amp; Cookie
-                </Link>
-              </li>
-            </ul>
-          </div>
+        {/* Tagline */}
+        <p className="text-sm leading-relaxed max-w-md mb-6">
+          App, siti e software su misura. Qualità e prezzi, alla portata di tutti.
+        </p>
 
-          {/* Contact */}
-          <div>
-            <h4 className="text-white text-sm font-semibold mb-4 uppercase tracking-wider">
-              Contatti
-            </h4>
-            <p className="text-sm">
-              <a
-                href="mailto:info@deroarts.com"
-                className="hover:text-white transition-colors"
-              >
-                info@deroarts.com
-              </a>
-            </p>
-            <p className="text-sm mt-1">deroarts.com</p>
-          </div>
-        </div>
+        {/* Privacy link */}
+        <Link
+          href="/privacy"
+          className="text-sm hover:text-white transition-colors"
+        >
+          Privacy &amp; Cookie
+        </Link>
 
-        <div className="mt-10 pt-6 border-t border-white/10 text-xs text-center">
+        {/* Copyright */}
+        <div className="mt-8 pt-6 border-t border-white/10 w-full text-xs">
           © {year} DeroArts. Tutti i diritti riservati.
         </div>
       </div>
