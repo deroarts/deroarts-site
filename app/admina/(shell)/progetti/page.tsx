@@ -82,8 +82,8 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
         </div>
       ) : (
         <>
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <table className="w-full text-sm">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto">
+            <table className="w-full min-w-[520px] text-sm">
               <thead className="bg-gray-50 border-b border-gray-100">
                 <tr>
                   <th className="w-8 px-2 py-3" />
@@ -124,7 +124,7 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
                             <button
                               type="submit"
                               disabled={idx === 0 && page === 1}
-                              className="text-gray-300 hover:text-graphite disabled:opacity-20 transition-colors leading-none"
+                              className="text-gray-300 hover:text-graphite disabled:opacity-20 transition-colors leading-none p-1.5"
                               title="Sposta su"
                             >
                               <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -136,7 +136,7 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
                             <button
                               type="submit"
                               disabled={idx === projects.length - 1 && page === totalPages}
-                              className="text-gray-300 hover:text-graphite disabled:opacity-20 transition-colors leading-none"
+                              className="text-gray-300 hover:text-graphite disabled:opacity-20 transition-colors leading-none p-1.5"
                               title="Sposta giù"
                             >
                               <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor">

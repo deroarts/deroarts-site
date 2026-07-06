@@ -1,7 +1,7 @@
 {
   "name": "DeroArts",
   "short_name": "DeroArts",
-  "description": "Software e applicazioni per piccole e medie imprese.",
+  "description": "App, siti e software su misura, curati dall'idea al rilascio.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1A222B",

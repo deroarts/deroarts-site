@@ -67,16 +67,16 @@ export default async function ProjectDetailPage({ params, searchParams }: PagePr
   return (
     <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-gray-400 mb-8">
-        <Link href="/" className="hover:text-graphite transition-colors">
+      <nav className="flex items-center gap-2 text-sm text-gray-400 mb-8 min-w-0">
+        <Link href="/" className="hover:text-graphite transition-colors flex-shrink-0">
           Home
         </Link>
-        <span>/</span>
-        <Link href="/progetti" className="hover:text-graphite transition-colors">
+        <span className="flex-shrink-0">/</span>
+        <Link href="/progetti" className="hover:text-graphite transition-colors flex-shrink-0">
           Progetti
         </Link>
-        <span>/</span>
-        <span className="text-graphite font-medium truncate">{title}</span>
+        <span className="flex-shrink-0">/</span>
+        <span className="text-graphite font-medium truncate min-w-0">{title}</span>
       </nav>
 
       {/* Cover image */}

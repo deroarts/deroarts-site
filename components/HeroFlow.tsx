@@ -44,7 +44,7 @@ export default function HeroFlow() {
         fill="none"
         role="img"
         aria-label="Le strutture di software convergono nella punta della piuma di DeroArts, come se la scrivesse"
-        className="w-full h-auto overflow-visible"
+        className="w-full h-auto"
       >
         <defs>
           <linearGradient id="hf-line" x1="120" y1="235" x2="360" y2="322" gradientUnits="userSpaceOnUse">

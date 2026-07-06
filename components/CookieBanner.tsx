@@ -34,7 +34,7 @@ export default function CookieBanner() {
     <div
       role="dialog"
       aria-label="Avviso privacy"
-      className="fixed bottom-4 inset-x-4 sm:inset-x-auto sm:right-4 sm:max-w-sm z-[9998] rounded-xl bg-graphite text-gray-200 shadow-lg border border-white/10 p-4 text-sm"
+      className="fixed bottom-safe inset-x-4 sm:inset-x-auto sm:right-4 sm:max-w-sm z-[9998] rounded-xl bg-graphite text-gray-200 shadow-lg border border-white/10 p-4 text-sm"
     >
       <p className="leading-relaxed">
         Usiamo solo dati tecnici essenziali e nessun cookie di tracciamento.

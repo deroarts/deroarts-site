@@ -30,6 +30,15 @@ export default function GalleryEditor({ items, onChange }: GalleryEditorProps) {
     onChange(items.filter((_, idx) => idx !== i));
   }
 
+  // Touch-friendly reorder (HTML5 drag doesn't fire on mobile).
+  function move(i: number, dir: "up" | "down") {
+    const j = dir === "up" ? i - 1 : i + 1;
+    if (j < 0 || j >= items.length) return;
+    const arr = [...items];
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+    onChange(arr);
+  }
+
   function handleDragStart(i: number) {
     dragItem.current = i;
     setDragIndex(i);
@@ -103,6 +112,33 @@ export default function GalleryEditor({ items, onChange }: GalleryEditorProps) {
                 </span>
                 <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   Immagine {i + 1}
+                </span>
+                {/* Touch-friendly reorder arrows (work where drag doesn't) */}
+                <span className="flex items-center gap-0.5">
+                  <button
+                    type="button"
+                    onClick={() => move(i, "up")}
+                    disabled={i === 0}
+                    className="p-1.5 text-gray-400 hover:text-green-end disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    title="Sposta su"
+                    aria-label="Sposta immagine su"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => move(i, "down")}
+                    disabled={i === items.length - 1}
+                    className="p-1.5 text-gray-400 hover:text-green-end disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    title="Sposta giù"
+                    aria-label="Sposta immagine giù"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
                 </span>
               </div>
               <button

@@ -22,6 +22,23 @@
 
   body {
     @apply bg-light-surface text-graphite;
+    /* Safety net: never allow accidental horizontal scroll on mobile. */
+    overflow-x: hidden;
+  }
+}
+
+@layer utilities {
+  /* Safe-area helpers for notch / home-bar (active via viewportFit: cover).
+     Add to sticky top bars and fixed bottom elements so nothing is clipped
+     by the notch or the gesture bar in installed (standalone) PWA mode. */
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .pb-safe {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+  }
+  .bottom-safe {
+    bottom: max(1rem, env(safe-area-inset-bottom, 0px));
   }
 }
 

@@ -27,24 +27,24 @@ export default function Footer() {
             <h4 className="text-white text-sm font-semibold mb-4 uppercase tracking-wider">
               Navigazione
             </h4>
-            <ul className="space-y-2 text-sm">
+            <ul className="text-sm">
               <li>
-                <Link href="/" className="hover:text-white transition-colors">
+                <Link href="/" className="inline-block py-1.5 hover:text-white transition-colors">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/progetti" className="hover:text-white transition-colors">
+                <Link href="/progetti" className="inline-block py-1.5 hover:text-white transition-colors">
                   Progetti
                 </Link>
               </li>
               <li>
-                <Link href="/contatti" className="hover:text-white transition-colors">
+                <Link href="/contatti" className="inline-block py-1.5 hover:text-white transition-colors">
                   Contatti
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-white transition-colors">
+                <Link href="/privacy" className="inline-block py-1.5 hover:text-white transition-colors">
                   Privacy &amp; Cookie
                 </Link>
               </li>

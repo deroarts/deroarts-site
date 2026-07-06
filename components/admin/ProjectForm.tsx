@@ -369,7 +369,7 @@ export default function ProjectForm({ project, categories }: ProjectFormProps) {
         <div className="space-y-3">
           {actions.map((action, i) => (
             <div key={i} className="border border-gray-100 rounded-xl p-3 space-y-2">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <div className="flex flex-col gap-0.5">
                   <button
                     type="button"

@@ -86,8 +86,10 @@ export default async function HomePage() {
                 </Link>
               </div>
             </div>
-            {/* illustrazione — sotto su mobile, a destra su desktop */}
-            <div className="order-first lg:order-last -mx-2 sm:mx-0 opacity-90 lg:opacity-100">
+            {/* illustrazione — sotto su mobile, a destra su desktop.
+                Su mobile è rimpicciolita e centrata così la CTA resta sopra
+                la piega; su desktop (lg) torna a piena larghezza di colonna. */}
+            <div className="order-first lg:order-last w-full max-w-[260px] sm:max-w-xs mx-auto lg:max-w-none lg:mx-0 opacity-90 lg:opacity-100">
               <HeroFlow />
             </div>
           </div>

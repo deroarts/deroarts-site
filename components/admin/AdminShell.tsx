@@ -122,7 +122,7 @@ export default function AdminShell({
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-light-surface overflow-hidden">
+    <div className="flex h-[100dvh] bg-light-surface overflow-hidden">
       {/* ── Desktop sidebar ─────────────────────────────────────────────── */}
       <aside className="hidden md:flex flex-col w-60 bg-dark-green-gradient flex-shrink-0 shadow-xl">
         <div className="flex items-center gap-2 px-5 py-5 border-b border-white/10">
@@ -213,10 +213,10 @@ export default function AdminShell({
       {/* ── Main content ─────────────────────────────────────────────────── */}
       <div className="flex flex-col flex-1 min-w-0 overflow-auto">
         {/* Mobile top bar */}
-        <header className="md:hidden flex items-center gap-3 px-4 py-3 bg-white border-b border-gray-100 shadow-sm">
+        <header className="md:hidden flex items-center gap-3 px-4 py-3 bg-white border-b border-gray-100 shadow-sm pt-safe">
           <button
             onClick={() => setDrawerOpen(true)}
-            className="text-graphite hover:text-green-end transition-colors p-1"
+            className="text-graphite hover:text-green-end transition-colors p-2 -m-1"
             aria-label="Apri menu"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

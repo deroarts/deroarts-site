@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Poppins, Fraunces } from "next/font/google";
 import "./globals.css";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -52,6 +52,15 @@ export const metadata: Metadata = {
       },
     ],
   },
+};
+
+// Mobile viewport + safe-area support. `viewportFit: "cover"` is REQUIRED to
+// activate env(safe-area-inset-*) for notch/home-bar handling in installed PWA.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#1A222B",
 };
 
 export default function RootLayout({

@@ -210,7 +210,7 @@ export default function ImageFrameEditor({ ratio, currentUrl, onChange }: Props)
       {/* Frame preview */}
       <div
         ref={containerRef}
-        className={`w-full relative overflow-hidden rounded-xl border-2 select-none ${
+        className={`w-full relative overflow-hidden rounded-xl border-2 select-none touch-none ${
           hasNewImage
             ? "border-green-end " + (dragging ? "cursor-grabbing" : "cursor-grab")
             : hasExisting
