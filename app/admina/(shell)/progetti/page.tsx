@@ -84,25 +84,25 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
         <>
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto">
             <table className="w-full min-w-[520px] text-sm">
-              <thead className="bg-gray-50 border-b border-gray-100">
+              <thead className="bg-graphite border-b border-gray-200">
                 <tr>
                   <th className="w-8 px-2 py-3" />
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <th className="text-center px-4 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider border-l border-white/10">
                     Progetto
                   </th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+                  <th className="text-center px-4 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider hidden sm:table-cell border-l border-white/10">
                     Categoria
                   </th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                  <th className="text-center px-4 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider hidden md:table-cell border-l border-white/10">
                     Stato
                   </th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+                  <th className="text-center px-4 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider hidden lg:table-cell border-l border-white/10">
                     Richieste
                   </th>
-                  <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <th className="text-center px-4 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider border-l border-white/10">
                     Pubbl.
                   </th>
-                  <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <th className="text-center px-4 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider border-l border-white/10">
                     Azioni
                   </th>
                 </tr>
@@ -147,8 +147,12 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
                         </div>
                       </td>
 
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
+                      <td className="px-4 py-3 border-l border-gray-100">
+                        <Link
+                          href={`/admina/progetti/${project.id}/edit`}
+                          className="flex items-center gap-3 group/cell -m-2 p-2 rounded-lg hover:bg-green-end/5 transition-colors"
+                          title="Apri e modifica il progetto"
+                        >
                           <div className="w-16 flex-shrink-0">
                             <AspectImage
                               src={project.cover_image_url}
@@ -158,17 +162,17 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
                             />
                           </div>
                           <div>
-                            <p className="font-medium text-graphite">
+                            <p className="font-medium text-graphite group-hover/cell:text-green-end transition-colors">
                               {t(project.title)}
                             </p>
                             <p className="text-xs text-gray-400 font-mono mt-0.5">
                               {project.slug}
                             </p>
                           </div>
-                        </div>
+                        </Link>
                       </td>
 
-                      <td className="px-4 py-3 hidden sm:table-cell text-gray-500">
+                      <td className="px-4 py-3 hidden sm:table-cell text-gray-500 border-l border-gray-100">
                         {project.category ? (
                           t(project.category.name)
                         ) : (
@@ -176,12 +180,12 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
                         )}
                       </td>
 
-                      <td className="px-4 py-3 hidden md:table-cell">
+                      <td className="px-4 py-3 hidden md:table-cell border-l border-gray-100">
                         <StatusBadge status={project.status} />
                       </td>
 
                       {/* Request counts */}
-                      <td className="px-4 py-3 hidden lg:table-cell">
+                      <td className="px-4 py-3 hidden lg:table-cell border-l border-gray-100">
                         {totalReq === 0 ? (
                           <span className="text-gray-300 text-xs">—</span>
                         ) : (
@@ -202,7 +206,7 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
                         )}
                       </td>
 
-                      <td className="px-4 py-3 text-center">
+                      <td className="px-4 py-3 text-center border-l border-gray-100">
                         <form
                           action={togglePublishedAction.bind(
                             null,
@@ -232,7 +236,7 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
                         </form>
                       </td>
 
-                      <td className="px-4 py-3 text-right">
+                      <td className="px-4 py-3 text-right border-l border-gray-100">
                         <div className="flex items-center justify-end gap-2">
                           <Link
                             href={`/progetti/${project.slug}`}
