@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { prisma } from "@/lib/db/client";
 import { getMailAdapter } from "@/lib/adapters";
+import { sendPushToAll } from "@/lib/push/send";
 import {
   ownerNotificationHtml,
   ownerNotificationSubject,
@@ -96,6 +97,7 @@ export async function createRequestAction(
       mail.sendMail({
         to: adminEmail,
         from: fromEmail,
+        replyTo: email,
         subject: ownerNotificationSubject(projectTitle),
         html: ownerNotificationHtml({
           projectTitle,
@@ -115,6 +117,16 @@ export async function createRequestAction(
     console.error("[createRequestAction] Mail error:", e);
     // Don't surface mail errors to the user
   }
+
+  // Push notification to admin devices (also fire-and-forget & self-guarding).
+  await sendPushToAll({
+    title: projectTitle
+      ? `Nuovo messaggio — ${projectTitle}`
+      : "Nuovo messaggio dal sito",
+    body: `${name}: ${message.slice(0, 90)}${message.length > 90 ? "…" : ""}`,
+    url: "/admina/messaggi",
+    tag: "deroarts-messaggio",
+  });
 
   return { ok: true, error: null, fieldErrors: {} };
 }

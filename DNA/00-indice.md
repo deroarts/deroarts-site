@@ -12,6 +12,7 @@ Contesto canonico del progetto. Leggi in ordine: i numeri bassi sono indispensab
 | 05 | deploy.md | Procedura deploy Render + flip adapter prod | Solo al deploy |
 | 06 | decision-log.md | Registro decisioni tecniche rilevanti | In chiusura, per registrare decisioni |
 | 07 | dominio-email.md | Dominio Cloudflare + email Zoho: record DNS, SSL, sottodomini, regole | Prima di toccare DNS/email/dominio |
+| 08 | messaggi-notifiche.md | Sezione Messaggi admin, email reale Resend, notifiche push (+ account Resend) | Prima di toccare email/messaggi/notifiche |
 
 **Regole (come si lavora)** → `AGENTS.md` (governance canonica) + `CLAUDE.md` (standard universale). Questo DNA è lo **stato** (cos'è, dov'è), non le regole.
 **Fonte di verità = il codice.** Se DNA e codice divergono, vale il codice: aggiorna il DNA.

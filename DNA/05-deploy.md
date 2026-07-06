@@ -16,21 +16,23 @@ Da leggere solo al momento del deploy. L'app usa `output: "standalone"` (`next.c
 - Node 20.x · Health check `/` · porta: Render inietta `PORT`, l'app la legge.
 
 ## Flip adapter dev → prod
-- **Storage:** `STORAGE_MODE=supabase` + implementare `SupabaseStorageAdapter` (`@supabase/storage-js`) + `case "supabase"` nella factory.
-- **Mail:** `MAIL_MODE=smtp` + `pnpm add nodemailer @types/nodemailer` + `SmtpMailAdapter` (`nodemailer.createTransport({host:SMTP_HOST, port:465, secure:true, auth:{user,pass}})`) + `case "smtp"` nella factory. Host EU: `smtp.zoho.eu`.
+- **Storage:** `STORAGE_MODE=supabase` (già implementato: `SupabaseStorageAdapter`).
+- **Mail:** `MAIL_MODE=resend` (già implementato: `ResendMailAdapter`, vedi [[08-messaggi-notifiche]]). In locale resta `fake` per non consumare invii; in prod va messo `resend`. Serve `RESEND_API_KEY` (+ `RESEND_FROM`). Il vecchio piano SMTP/Zoho (`nodemailer`) è **superato**: la ricezione resta su Zoho, l'invio dal sito passa da Resend.
+- **Push (notifiche):** richiede `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `NEXT_PUBLIC_VAPID_PUBLIC_KEY`. **Non rigenerare** le chiavi VAPID (invaliderebbe le iscrizioni). Usare gli stessi valori del `.env`.
 
 ## Checklist primo deploy
 - [ ] `npx prisma migrate deploy` sul DB Supabase (+ opzionale `db seed`)
 - [ ] `DATABASE_URL` in Session mode (porta 5432), non Transaction
 - [ ] `SESSION_SECRET` nuovo random (`openssl rand -base64 32`), diverso da dev
 - [ ] `ADMIN_PASSWORD` = hash bcrypt (`bcryptjs.hashSync('pass',12)`), non plain
-- [ ] `MAIL_MODE=smtp` + credenziali Zoho (app-password)
+- [ ] `MAIL_MODE=resend` + `RESEND_API_KEY` (Secret) + `RESEND_FROM=info@deroarts.com`
+- [ ] `VAPID_*` + `NEXT_PUBLIC_VAPID_PUBLIC_KEY` (private key = Secret) — stessi valori del `.env`
 - [ ] `STORAGE_MODE=supabase` + credenziali Supabase
-- [ ] `NEXT_PUBLIC_SITE_URL=https://deroarts.com`
+- [ ] `NEXT_PUBLIC_SITE_URL=https://www.deroarts.com`
 - [ ] `DEV_UA_SWITCH` assente o `false` (rimuovere il DevSwitcher)
 - [ ] Verifica `/robots.txt` blocca `/admina`, `/sitemap.xml` lista i progetti pubblicati
-- [ ] Test: login admin, form richieste (email reale arriva), upload immagine (finisce nel bucket)
+- [ ] Test: login admin, form richieste (email reale arriva via Resend), upload immagine (bucket)
 - [ ] DNS deroarts.com → Render; aggiornare `LINK_DEPLOY` / `LINK_DEPLOY ADMIN` in App Control
 
 ## Variabili produzione
-Elenco completo con descrizioni in `.env.example`. Regola `NEXT_PUBLIC_` in [[02-regole]]. Segreti (Secret in Render): `DATABASE_URL`, `SESSION_SECRET`, `ADMIN_PASSWORD`, `SMTP_PASS`, `SUPABASE_SERVICE_ROLE_KEY`.
+Elenco completo con descrizioni in `.env.example`. Regola `NEXT_PUBLIC_` in [[02-regole]]. Segreti (Secret in Render): `DATABASE_URL`, `SESSION_SECRET`, `ADMIN_PASSWORD`, `RESEND_API_KEY`, `VAPID_PRIVATE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`.

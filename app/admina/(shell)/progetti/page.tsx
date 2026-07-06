@@ -184,9 +184,9 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
                           <span className="text-gray-300 text-xs">—</span>
                         ) : (
                           <Link
-                            href={`/admina/richieste?projectId=${project.id}`}
+                            href={`/admina/messaggi?projectId=${project.id}`}
                             className="inline-flex items-center gap-1.5 hover:opacity-80 transition-opacity"
-                            title={`${totalReq} richiesta/e (${newReq} nuova/e)`}
+                            title={`${totalReq} messaggio/i (${newReq} nuovo/i)`}
                           >
                             {newReq > 0 && (
                               <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-700">

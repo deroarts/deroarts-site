@@ -98,10 +98,35 @@ model Request {
   status     RequestStatus @default(new)
   created_at DateTime      @default(now())
   handled_at DateTime?
+  // Timestamp of the last reply sent from the admin Messaggi panel (null = mai risposto).
+  replied_at DateTime?
 
   @@index([project_id])
   @@index([status])
   @@map("requests")
+}
+
+// Web-push subscription for one device/browser of the admin. One row per
+// endpoint; deleting the row unsubscribes that device.
+model PushSubscription {
+  id         String   @id @default(cuid())
+  endpoint   String   @unique
+  p256dh     String
+  auth       String
+  user_agent String?
+  created_at DateTime @default(now())
+
+  @@map("push_subscriptions")
+}
+
+// Global on/off flags for admin notifications. Single-row table keyed by a
+// stable string ("global"); keeps push preferences server-side.
+model NotificationSetting {
+  key            String   @id
+  push_enabled   Boolean  @default(false)
+  updated_at     DateTime @updatedAt
+
+  @@map("notification_settings")
 }
 
 model DevOutbox {

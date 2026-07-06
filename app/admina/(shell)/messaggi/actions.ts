@@ -1,0 +1,112 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { prisma } from "@/lib/db/client";
+import { getSession } from "@/lib/auth";
+import { getMailAdapter } from "@/lib/adapters";
+import { t } from "@/lib/i18n";
+import { adminReplyHtml, adminReplySubject } from "@/lib/mail/templates";
+import { RequestStatus } from "@prisma/client";
+
+const DEFAULT_FROM = process.env.RESEND_FROM || "info@deroarts.com";
+
+async function requireAdmin() {
+  const session = await getSession();
+  if (!session) throw new Error("Non autorizzato.");
+  return session;
+}
+
+/** Update the status of a message (new / read / handled). */
+export async function updateRequestStatusAction(
+  id: string,
+  status: RequestStatus
+) {
+  await requireAdmin();
+  await prisma.request.update({
+    where: { id },
+    data: {
+      status,
+      handled_at: status === "handled" ? new Date() : undefined,
+    },
+  });
+  revalidatePath("/admina/messaggi");
+  revalidatePath(`/admina/messaggi/${id}`);
+}
+
+/** Delete a message permanently. */
+export async function deleteRequestAction(id: string) {
+  await requireAdmin();
+  await prisma.request.delete({ where: { id } });
+  revalidatePath("/admina/messaggi");
+  redirect("/admina/messaggi");
+}
+
+export interface ReplyFormState {
+  ok: boolean;
+  error: string | null;
+}
+
+/**
+ * Send a written reply to the requester via the project's from-address (Resend),
+ * with the requester's email as Reply-To. Marks the message replied + handled.
+ */
+export async function replyToRequestAction(
+  _prev: ReplyFormState,
+  formData: FormData
+): Promise<ReplyFormState> {
+  await requireAdmin();
+
+  const id = (formData.get("id") as string | null)?.trim();
+  const bodyText = (formData.get("body") as string | null)?.trim() ?? "";
+
+  if (!id) return { ok: false, error: "Messaggio non trovato." };
+  if (bodyText.length < 2) {
+    return { ok: false, error: "Scrivi un messaggio prima di inviare." };
+  }
+
+  const request = await prisma.request.findUnique({
+    where: { id },
+    include: { project: { select: { title: true, from_email: true } } },
+  });
+  if (!request) return { ok: false, error: "Messaggio non trovato." };
+
+  const projectTitle = request.project
+    ? t(request.project.title as Record<string, string>)
+    : undefined;
+  const fromEmail = request.project?.from_email || DEFAULT_FROM;
+
+  try {
+    const mail = getMailAdapter();
+    await mail.sendMail({
+      to: request.email,
+      from: fromEmail,
+      replyTo: fromEmail,
+      subject: adminReplySubject(projectTitle),
+      html: adminReplyHtml({
+        requesterName: request.name,
+        bodyText,
+        projectTitle,
+      }),
+    });
+  } catch (e) {
+    console.error("[replyToRequestAction] invio fallito:", e);
+    return {
+      ok: false,
+      error: "Invio non riuscito. Riprova tra qualche istante.",
+    };
+  }
+
+  await prisma.request.update({
+    where: { id },
+    data: {
+      replied_at: new Date(),
+      status: "handled",
+      handled_at: request.handled_at ?? new Date(),
+    },
+  });
+
+  revalidatePath("/admina/messaggi");
+  revalidatePath(`/admina/messaggi/${id}`);
+  return { ok: true, error: null };
+}

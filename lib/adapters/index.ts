@@ -1,5 +1,5 @@
 import { StorageAdapter, LocalStorageAdapter, SupabaseStorageAdapter } from "./storage";
-import { MailAdapter, FakeMailAdapter } from "./mail";
+import { MailAdapter, FakeMailAdapter, ResendMailAdapter } from "./mail";
 
 export type { StorageAdapter, MailAdapter };
 export type { MailMessage } from "./mail";
@@ -34,9 +34,12 @@ export function getMailAdapter(): MailAdapter {
       case "fake":
         _mail = new FakeMailAdapter();
         break;
+      case "resend":
+        _mail = new ResendMailAdapter();
+        break;
       default:
         throw new Error(
-          `Unknown MAIL_MODE="${mode}". Supported values: fake`
+          `Unknown MAIL_MODE="${mode}". Supported values: fake, resend`
         );
     }
   }

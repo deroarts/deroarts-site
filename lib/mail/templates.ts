@@ -125,3 +125,53 @@ export function autoReplyHtml(data: AutoReplyData): string {
 </body>
 </html>`;
 }
+
+// ─── Admin reply (risposta scritta a mano dal pannello Messaggi) ──────────────
+
+export interface AdminReplyData {
+  requesterName: string;
+  /** Corpo del messaggio scritto dall'admin (testo semplice, con a-capo). */
+  bodyText: string;
+  projectTitle?: string;
+}
+
+export function adminReplySubject(projectTitle?: string): string {
+  return projectTitle
+    ? `Risposta — ${projectTitle} | DeroArts`
+    : "Risposta alla tua richiesta | DeroArts";
+}
+
+export function adminReplyHtml(data: AdminReplyData): string {
+  // Preserve the admin's line breaks safely in HTML.
+  const safeBody = escapeHtml(data.bodyText).replace(/\r?\n/g, "<br>");
+  const projectLine = data.projectTitle
+    ? `<p style="margin:0 0 18px;color:#999;font-size:13px;">In merito a: <strong style="color:#555;">${escapeHtml(
+        data.projectTitle
+      )}</strong></p>`
+    : "";
+
+  return `<!DOCTYPE html>
+<html lang="it">
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:20px;background:#f5f5f5;font-family:system-ui,sans-serif;">
+  <div style="max-width:580px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
+    <div style="background:linear-gradient(135deg,${BRAND_DARK} 0%,#1a4a35 100%);padding:28px;">
+      <h1 style="margin:0;color:#fff;font-size:22px;font-weight:800;letter-spacing:-.3px;">DeroArts</h1>
+    </div>
+    <div style="padding:32px 28px;">
+      <p style="margin:0 0 16px;color:#1a1a1a;font-size:16px;">
+        Ciao <strong>${escapeHtml(data.requesterName)}</strong>,
+      </p>
+      ${projectLine}
+      <div style="margin:0 0 24px;color:#333;font-size:15px;line-height:1.7;">${safeBody}</div>
+      <p style="margin:0;color:#999;font-size:13px;line-height:1.6;">
+        <strong style="color:${BRAND_GREEN};">DeroArts</strong>
+      </p>
+    </div>
+    <div style="padding:14px 28px;background:#f5f5f5;font-size:12px;color:#aaa;text-align:center;">
+      Puoi rispondere direttamente a questa email.
+    </div>
+  </div>
+</body>
+</html>`;
+}

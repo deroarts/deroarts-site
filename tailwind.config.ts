@@ -14,7 +14,7 @@ const config: Config = {
         "green-deep": "#116326",
         "dark-green-start": "#1A3A26",
         "dark-green-end": "#0F2419",
-        "light-surface": "#F8F6F6",
+        "light-surface": "#ECEAE8",
         "dark-green": "#1A3A26",
         brand: {
           graphite: "#1A222B",
