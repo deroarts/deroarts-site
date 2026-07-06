@@ -119,7 +119,11 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  // 7) Notifica push (self-guarding: no-op se disattivate).
+  // 7) Conteggio per l'alert di quota (email ricevuta).
+  const { recordEmail } = await import("@/lib/mail/quota");
+  await recordEmail("received");
+
+  // 8) Notifica push (self-guarding: no-op se disattivate).
   await sendPushToAll({
     title: full.subject ? `Nuova email — ${full.subject.slice(0, 40)}` : "Nuova email",
     body: `${name}: ${message.slice(0, 90)}${message.length > 90 ? "…" : ""}`,

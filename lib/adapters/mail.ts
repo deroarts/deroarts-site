@@ -66,5 +66,9 @@ export class ResendMailAdapter implements MailAdapter {
       throw new Error(`Resend: ${error.name} — ${error.message}`);
     }
     console.log("[RESEND] inviata:", data?.id, "→", message.to);
+
+    // Conteggio per l'alert di quota (non blocca mai l'invio già andato a buon fine).
+    const { recordEmail } = await import("@/lib/mail/quota");
+    await recordEmail("sent");
   }
 }

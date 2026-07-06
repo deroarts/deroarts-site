@@ -1,7 +1,12 @@
-# 07 — Dominio & Email (Cloudflare + Zoho)
+# 07 — Dominio & Email (Cloudflare + Resend)
 
 Scheda tecnica del dominio. Valori operativi reali — usarli, non reinventarli.
 **Dominio corretto: `deroarts.com`** · **mai** `dero-arts.com`.
+
+> **Aggiornamento 2026-07-07:** email migrate da **Zoho → Resend**. L'MX del
+> dominio punta ora direttamente a Resend (ricezione), l'invio era già su Resend.
+> **Zoho dismesso** (era solo posta di test): MX/SPF/verifica Zoho rimossi da
+> Cloudflare. Dettagli flusso e alert quota in `08-messaggi-notifiche.md`.
 
 ## Cloudflare (registrar + DNS)
 - Registrar **e** DNS provider: **Cloudflare** (piano Free). DNSSEC **attivo**.
@@ -10,22 +15,25 @@ Scheda tecnica del dominio. Valori operativi reali — usarli, non reinventarli.
 - SSL/TLS: mode **Full**, Universal + Wildcard `*.deroarts.com`, Always-Use-HTTPS on, TLS 1.2+ (1.3 on), HTTP/2+3 on, HSTS off, ACM non attivo.
 - Sicurezza: Managed Ruleset + DDoS + Browser Integrity + email obfuscation **on**; Bot Fight / Under Attack **off**. AI bots: ricerca+agente consenti, addestramento **blocca**.
 
-## Email — Zoho Mail (Free, EU)
-- Casella unica reale: **`info@deroarts.com`** (invio+ricezione OK, nome "Davide"). Webmail: `https://mail.zoho.eu/zm`.
-- SPF / DKIM / DMARC: **PASS**. Piano Free = 5 licenze, 1 utente attivo.
-- SMTP prod (per `SmtpMailAdapter`, vedi [[05-deploy]]): `smtp.zoho.eu:465` SSL, user `info@deroarts.com`, **app-password Zoho** (non la password account).
-- **Non** usare Cloudflare Email Routing come soluzione principale: Zoho è l'email ufficiale.
+## Email — Resend (invio + ricezione)
+- Provider unico: **Resend** (account `dero975@gmail.com`, region Ireland eu-west-1).
+- Dominio `deroarts.com` **Verified**; **Enable Sending** + **Enable Receiving** ON.
+- Casella pubblica: **`info@deroarts.com`** (più alias per progetto, es. `stickers@`).
+- Invio: via API Resend (`ResendMailAdapter`). Ricezione: MX → Resend Inbound →
+  webhook `email.received` → `/api/inbound/resend`. Vedi [[08-messaggi-notifiche]].
+- **Zoho dismesso** il 2026-07-07 (era solo posta di test). Non ripristinare Zoho
+  né i suoi record; non usare Cloudflare Email Routing (superfluo, Resend basta).
 
 ## Record DNS email (in Cloudflare, modalità "Solo DNS")
 | Tipo | Nome | Valore | Prio |
 |---|---|---|---|
-| TXT | @ | `zoho-verification=zb87474940.zmverify.zoho.eu` | — |
-| MX | @ | `mx.zoho.eu` | 10 |
-| MX | @ | `mx2.zoho.eu` | 20 |
-| MX | @ | `mx3.zoho.eu` | 50 |
-| TXT (SPF) | @ | `v=spf1 include:zohomail.eu ~all` | — |
-| TXT (DKIM) | `zmail._domainkey` | `v=DKIM1; k=rsa; p=MIGf...QIDAQAB` (chiave RSA completa in Cloudflare) | — |
+| MX | @ | `inbound-smtp.eu-west-1.amazonaws.com` (ricezione Resend) | 9 |
+| MX | `send` | `feedback-smtp.eu-west-1.amazonses.com` (invio Resend) | 10 |
+| TXT (SPF) | `send` | `v=spf1 include:amazonses.com ~all` | — |
+| TXT (DKIM) | `resend._domainkey` | `p=MIGf...IDAQAB` (chiave Resend, completa in Cloudflare) | — |
 | TXT (DMARC) | `_dmarc` | `v=DMARC1; p=none; rua=mailto:info@deroarts.com` (monitoraggio; irrigidire solo dopo) | — |
+
+> Nota: il DKIM Zoho residuo `zmail._domainkey` va rimosso (innocuo ma inutile).
 
 ## Sito web → Render (collegato 2026-07-06)
 - **`www.deroarts.com`** → CNAME `deroarts.onrender.com` (Cloudflare, **Solo DNS** / proxy off). Verificato su Render (servizio `deroarts`, id `srv-d92qjlok1i2s73d15n0g`), SSL emesso da Render. Live: `https://www.deroarts.com`.
@@ -36,11 +44,14 @@ Scheda tecnica del dominio. Valori operativi reali — usarli, non reinventarli.
 `deroarts.com` (sito) · `demo.` · `docs.` · `status.` · `<app>.` (app/progetto) · `admin.<app>.` · `api.<app>.`
 Esempi futuri: `barnode.` `aquilanera.` `ccv.` `wine.` `stickers.`
 
-## Alias email (futuri, non ancora creati)
-Per progetto (`info-demo@`, `info-stickers@`, `info-barnode@`, `info-ccv@`, `info-aquilanera@`), devono puntare/inoltrare a `info@deroarts.com`. Verificare prima che il piano Zoho Free lo consenta; niente caselle separate inutili.
+## Alias email (per progetto)
+Con Resend Inbound **qualsiasi** indirizzo `@deroarts.com` è già ricevibile senza
+crearlo (catch-all): es. `stickers@`, `barnode@`, ecc. arrivano tutti al webhook,
+che collega il messaggio al progetto tramite `from_email`. Nessuna casella separata
+da creare. Per l'**invio** da un alias, basta impostare `from_email` sul progetto.
 
 ## Regole per agent/dev (non negoziabili)
-- Non modificare registrar / nameserver; non disattivare DNSSEC; non eliminare i record email Zoho.
+- Non modificare registrar / nameserver; non disattivare DNSSEC; non eliminare i record email Resend (MX `@` e `send`, SPF `send`, DKIM `resend._domainkey`, DMARC).
 - Aggiungere record DNS **solo** con valori precisi forniti dalla piattaforma (Render/Vercel/verifica dominio). Mai record inventati; nessun record web se non richiesto.
 - Prima di modificare email/DNS, documentare: tipo, nome/host, valore, TTL, priorità (se MX), motivo, piattaforma richiedente.
 

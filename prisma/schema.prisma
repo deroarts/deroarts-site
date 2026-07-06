@@ -159,3 +159,18 @@ model DevOutbox {
 
   @@map("dev_outbox")
 }
+
+// Conteggio giornaliero delle email che passano da Resend (inviate + ricevute).
+// Serve solo per l'alert di quota: il free Resend è 100/giorno e 3.000/mese,
+// invio e ricezione condivisi. Una riga per giorno (chiave = data "YYYY-MM-DD").
+// `alert_day_sent` / `alert_month_sent` evitano di ripetere la stessa notifica.
+model EmailCounter {
+  day              String   @id // "YYYY-MM-DD" (UTC)
+  sent             Int      @default(0)
+  received         Int      @default(0)
+  alert_day_sent   Boolean  @default(false)
+  alert_month_sent Boolean  @default(false)
+  updated_at       DateTime @updatedAt
+
+  @@map("email_counters")
+}

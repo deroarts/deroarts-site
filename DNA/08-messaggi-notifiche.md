@@ -16,8 +16,10 @@ dell'invio email reale via **Resend** e delle **notifiche push** sul telefono.
   SPF + MX `send` aggiunti via *Auto configure* su Cloudflare, region Ireland eu-west-1).
 - **Chiave API:** `deroarts-site` (Full access). Valore in `RESEND_API_KEY`
   (App Control, sensibile). Mai in chiaro nel codice.
-- **Ricezione posta** (leggere le caselle @deroarts.com) resta su **Zoho** — vedi
-  `07-dominio-email.md`. Resend serve SOLO a **inviare** dal sito.
+- **Ricezione posta** (email verso @deroarts.com) è su **Resend Inbound**: il
+  record **MX del dominio punta direttamente a Resend** (AWS `inbound-smtp`), non
+  più a Zoho. **Zoho è stato dismesso** (era solo email di test). Resend fa quindi
+  sia **invio** sia **ricezione**. Vedi `07-dominio-email.md`.
 
 ---
 
@@ -119,49 +121,64 @@ il sito è "Aggiungi a schermata Home" — limite di Apple, non del codice).
 
 ---
 
-## 5bis · Casella unificata — email Zoho dentro l'app (inoltro → Resend Inbound)
+## 5bis · Casella unificata — email @deroarts.com dentro l'app (Resend Inbound, MX diretto)
 
 La tabella **Messaggi** mostra **due origini** (campo `source` su `requests`):
 - `site` = richieste dal form del sito.
-- `email` = email vere inoltrate da Zoho e ricevute via **Resend Inbound**.
+- `email` = email vere ricevute su `@deroarts.com` via **Resend Inbound**.
 
-**Perché l'inoltro e non IMAP:** il piano **Zoho Mail Free NON include IMAP/POP**
-(bloccati: "questa funzionalità non è disponibile per il tuo account"). Quindi non
-si può "leggere" la casella via IMAP. Soluzione gratis equivalente: **inoltro
-automatico**.
+**Architettura (dal 2026-07-07):** il **record MX del dominio punta direttamente
+a Resend** (`inbound-smtp.eu-west-1.amazonaws.com`, priorità 9). Zoho è stato
+**dismesso** — MX/SPF/verifica Zoho rimossi da Cloudflare. Un solo vendor (Resend)
+per invio + ricezione. Niente più inoltro intermedio, niente limiti Zoho Free.
 
 **Come funziona il flusso:**
-1. Zoho: inoltro automatico di `info@deroarts.com` → indirizzo di ricezione Resend
-   (`info@toleopiodr.resend.app`, il sotto-dominio `.resend.app` è già pronto sul
-   piano, nessun MX da configurare).
-2. Resend riceve, salva la mail, e chiama il webhook `email.received` →
-   `POST /api/inbound/resend`.
+1. Un cliente scrive a `info@deroarts.com` (o `stickers@`, ecc.).
+2. Il MX consegna a Resend, che riceve, verifica SPF/DKIM, salva la mail e chiama
+   il webhook `email.received` → `POST /api/inbound/resend`.
 3. L'endpoint **verifica la firma** (`standardwebhooks` + `RESEND_WEBHOOK_SECRET`),
    scarica il corpo con `resend.emails.receiving.get(email_id)`, ricava mittente
    (`parseFrom`) e progetto (dall'alias in `received_for`, `aliasLocalPart` →
    `from_email` del progetto), e salva un messaggio `source=email` con
    `reply_to_email` = mittente reale, `subject`, `inbound_email_id` (idempotenza).
-4. Scatta la **notifica push**.
+4. Registra la mail nel contatore quota (§5quater) e scatta la **notifica push**.
 
 **Rispondere:** dal dettaglio, la risposta va a `reply_to_email` (il mittente
 reale) con oggetto `Re: <subject>`, inviata via Resend dall'indirizzo `@deroarts.com`.
 
-**Limiti noti (piano Free + inoltro):**
-- Solo email **da quando l'inoltro è attivo** in poi (niente storico).
-- Solo la **posta in arrivo** inoltrata (non Spam, non cartelle, non Inviati).
-- **Allegati** non importati (solo testo/HTML del corpo).
-- Le risposte dall'app **non** finiscono negli "Inviati" di Zoho.
+**Limiti noti (Resend + MX diretto):**
+- Solo email **da quando l'MX punta a Resend** in poi (niente storico Zoho).
+- **Allegati** non importati (solo testo/HTML del corpo) — limite del codice, non di Resend.
+- Le risposte dall'app non sono raggruppate in thread con il messaggio originale
+  (ogni risposta in arrivo è un nuovo messaggio) — miglioria futura.
 
-**Variabili:** `RESEND_WEBHOOK_SECRET` (segreto, dal webhook Resend),
-`RESEND_INBOUND_ADDRESS` (indirizzo di ricezione, non segreto).
+**Variabili:** `RESEND_WEBHOOK_SECRET` (segreto, dal webhook Resend).
+`RESEND_INBOUND_ADDRESS` non è più necessaria (nessun indirizzo `.resend.app`
+intermedio): può restare vuota/rimossa.
 
-**Setup manuale (una volta):**
-- Resend → Webhooks → Add: URL `https://www.deroarts.com/api/inbound/resend`,
-  evento `email.received` → copia il **Signing Secret** in `RESEND_WEBHOOK_SECRET`.
-- Zoho webmail → Impostazioni → Inoltro (Forwarding): inoltra a
-  `info@toleopiodr.resend.app` (mantieni copia in Zoho se vuoi).
-- In locale il webhook non arriva (serve URL pubblico): si testa in produzione,
-  oppure con un tunnel.
+**Setup (già fatto una volta):**
+- Cloudflare DNS → record MX `@` → `inbound-smtp.eu-west-1.amazonaws.com` prio 9
+  (generato attivando "Enable Receiving" sul dominio in Resend).
+- Resend → Domains → deroarts.com → **Enable Receiving** ON.
+- Resend → Webhooks → URL `https://www.deroarts.com/api/inbound/resend`,
+  evento `email.received`, **Signing Secret** in `RESEND_WEBHOOK_SECRET`.
+- In locale il webhook non arriva (serve URL pubblico): si testa in produzione.
+
+## 5quater · Alert di quota email (Resend Free)
+
+Il piano gratuito Resend = **100 email/giorno** e **3.000/mese**, con **invio e
+ricezione che condividono** lo stesso conteggio. Per accorgersi in tempo quando le
+app crescono, il sistema conta le email e avvisa **prima** di sbattere sul limite.
+
+- **Dove si conta:** ogni invio (`ResendMailAdapter`) e ogni ricezione (webhook
+  inbound) chiama `recordEmail()` in `lib/mail/quota.ts`.
+- **Tabella:** `email_counters` (una riga per giorno, `sent` + `received`).
+- **Soglia:** all'**80%** del limite giornaliero (80/100) o mensile (2.400/3.000)
+  parte **una** notifica push di avviso (una volta al giorno, una volta al mese).
+- **Non blocca nulla:** è solo un avviso; le email continuano a partire/arrivare.
+  Un errore nel conteggio non impedisce mai l'invio/ricezione.
+- **Cosa fare all'avviso:** valutare il passaggio a **Resend Pro (~20 $/mese)**,
+  che alza i limiti e sblocca l'overage.
 
 ## 5ter · Notifiche dalle app dei progetti (endpoint diretto)
 

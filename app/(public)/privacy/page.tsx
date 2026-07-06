@@ -38,7 +38,7 @@ export default function PrivacyPage() {
             Usiamo questi dati esclusivamente per rispondere alla tua richiesta. La base
             giuridica è il tuo consenso e l&apos;esecuzione di misure precontrattuali. I dati sono
             conservati su <strong>Supabase</strong> (infrastruttura in UE) e le email gestite tramite
-            <strong> Zoho Mail</strong> (server UE). Non vendiamo né cediamo i tuoi dati a terzi.
+            <strong> Resend</strong> (elaborazione su server UE, Irlanda). Non vendiamo né cediamo i tuoi dati a terzi.
           </p>
         </div>
 
