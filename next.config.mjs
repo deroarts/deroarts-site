@@ -7,6 +7,12 @@ const nextConfig = {
         protocol: "https",
         hostname: "placehold.co",
       },
+      {
+        // Supabase Storage public bucket (project images uploaded via agent/admin).
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
     ],
     formats: ["image/avif", "image/webp"],
   },

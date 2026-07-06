@@ -35,8 +35,11 @@ Campi testo tradotti = JSON `{ "it": "...", "en": "" }` (JSONB). Ora si renderiz
 Token HMAC-SHA256 firmato con `SESSION_SECRET`, scadenza 1h — `lib/preview-token.ts`. La pagina pubblica del progetto salta il guard `published:true` se il token è valido.
 
 ## Agent API (agenti esterni, es. Devin)
-Endpoint `app/api/agent/projects/route.ts` — permette a un agent esterno di **leggere i contenuti pubblici** e **creare bozze**, senza mai toccare layout né pubblicare.
-- **Auth:** header `x-api-key` confrontato con `AGENT_API_KEY` (server-only, `.env`). Fuori dal matcher del `middleware.ts` → il guard è in-handler. Chiave vuota = endpoint disabilitato.
-- **`GET`:** ritorna i soli progetti `published:true` con `select` esplicito (title, descrizioni, cover, gallery, categoria) + uno `style_guide` con le regole di copy. **Mai** dati cliente (requests/email) né bozze.
-- **`POST`:** crea sempre `published:false` (bozza invisibile al pubblico finché l'admin non pubblica). Valida/sanifica: `title` obbligatorio, campi i18n coerti a `{it,en}`, URL immagini solo `http(s)`/`/…` (scarta `data:`/`javascript:`), `status` da allowlist enum, categoria collegata solo se lo slug esiste già (mai creata), slug generato da `title.it` e de-duplicato con `-${Date.now()}`.
-- Non usa `zod` per restare coerente con lo stile di `api/upload` (validazione manuale). Immagini: l'agent passa URL già pronti (non gestisce upload qui).
+Due endpoint sotto `app/api/agent/**` — permettono a un agent esterno di **leggere i contenuti pubblici**, **caricare immagini** e **creare bozze**, senza mai toccare layout né pubblicare. Entrambi: auth header `x-api-key` == `AGENT_API_KEY` (server-only, fuori dal matcher del `middleware.ts` → guard in-handler; chiave vuota = disabilitati).
+- **`GET /api/agent/projects`:** ritorna i soli progetti `published:true` con `select` esplicito + uno `style_guide` con le regole di copy. **Mai** dati cliente (requests/email) né bozze.
+- **`POST /api/agent/projects`:** crea sempre `published:false`. Valida/sanifica: `title` obbligatorio, i18n coerti a `{it,en}`, URL immagini solo `http(s)`/`/…` (scarta `data:`/`javascript:`), `status` da allowlist enum, categoria collegata solo se lo slug esiste già, slug da `title.it` de-duplicato.
+- **`POST /api/agent/upload`:** riceve UN'immagine (multipart `file` + `purpose` cover|gallery), la comprime con sharp (come `api/upload` admin) e la salva via `getStorageAdapter()`; ritorna `{ url }`. L'agent carica prima le immagini qui, poi passa gli URL a `projects`. In prod lo storage è Supabase → URL pubblico permanente.
+- Validazione manuale (no `zod`) per coerenza con `api/upload`.
+
+## Storage immagini (permanente)
+`STORAGE_MODE=supabase` → `SupabaseStorageAdapter` (`lib/adapters/storage.ts`) carica su bucket **pubblico** `SUPABASE_STORAGE_BUCKET` via REST API (nessuna dip. `supabase-js`), ritorna l'URL CDN pubblico → sopravvive ai redeploy (il disco Render è effimero, `local` perderebbe i file). `next.config.mjs` `remotePatterns` include `*.supabase.co/storage/v1/object/public/**`. Bucket: solo immagini (jpeg/png/webp), max 15MB.

@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
     if (b.cover_image_url != null && b.cover_image_url !== "") {
       if (!isValidImageUrl(b.cover_image_url)) {
         return NextResponse.json(
-          { error: "cover_image_url non valido (usa un URL http(s) o /uploads/...)." },
+          { error: "cover_image_url non valido (usa un URL http(s), es. quello restituito da /api/agent/upload)." },
           { status: 400 }
         );
       }

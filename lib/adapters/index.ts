@@ -1,4 +1,4 @@
-import { StorageAdapter, LocalStorageAdapter } from "./storage";
+import { StorageAdapter, LocalStorageAdapter, SupabaseStorageAdapter } from "./storage";
 import { MailAdapter, FakeMailAdapter } from "./mail";
 
 export type { StorageAdapter, MailAdapter };
@@ -15,9 +15,12 @@ export function getStorageAdapter(): StorageAdapter {
       case "local":
         _storage = new LocalStorageAdapter();
         break;
+      case "supabase":
+        _storage = new SupabaseStorageAdapter();
+        break;
       default:
         throw new Error(
-          `Unknown STORAGE_MODE="${mode}". Supported values: local`
+          `Unknown STORAGE_MODE="${mode}". Supported values: local, supabase`
         );
     }
   }
