@@ -310,13 +310,25 @@ export default function ProjectForm({ project, categories }: ProjectFormProps) {
           </div>
           <div>
             <label className="block text-sm font-medium text-graphite mb-1.5">Email mittente</label>
-            <input
-              type="email"
-              name="from_email"
-              defaultValue={isEdit ? (project!.from_email ?? "") : ""}
-              placeholder="info@deroarts.com"
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-end"
-            />
+            <div className="flex items-stretch">
+              <input
+                type="text"
+                name="from_email_local"
+                defaultValue={
+                  isEdit
+                    ? (project!.from_email ?? "").replace(/@deroarts\.com$/i, "")
+                    : ""
+                }
+                placeholder="es. stickers"
+                className="w-full min-w-0 px-3 py-2.5 border border-gray-200 rounded-l-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-end focus:z-10"
+              />
+              <span className="inline-flex items-center px-3 rounded-r-xl border border-l-0 border-gray-200 bg-gray-50 text-sm text-gray-500 whitespace-nowrap">
+                @deroarts.com
+              </span>
+            </div>
+            <p className="text-xs text-gray-400 mt-1">
+              Scrivi solo il nome prima della chiocciola (es. <span className="font-mono">stickers</span>). Lascia vuoto per l&apos;indirizzo predefinito.
+            </p>
           </div>
         </div>
 

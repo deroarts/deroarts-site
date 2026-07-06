@@ -121,8 +121,14 @@ export async function saveProjectAction(
     10
   );
   const sortOrder = Number.isFinite(parsedSort) ? parsedSort : 0;
-  const fromEmail =
-    (formData.get("from_email") as string | null)?.trim() || null;
+  // Email mittente: si inserisce solo il prefisso (es. "stickers"), il dominio
+  // @deroarts.com è fisso. Sanifica il local-part; vuoto → null (usa il default).
+  const emailLocal = (formData.get("from_email_local") as string | null)
+    ?.trim()
+    .toLowerCase()
+    .replace(/@deroarts\.com$/i, "") // se l'utente incolla l'indirizzo intero
+    .replace(/[^a-z0-9._-]/g, ""); // solo caratteri validi per un local-part
+  const fromEmail = emailLocal ? `${emailLocal}@deroarts.com` : null;
   let slug =
     (formData.get("slug") as string | null)?.trim() || toSlug(titleIt);
 
