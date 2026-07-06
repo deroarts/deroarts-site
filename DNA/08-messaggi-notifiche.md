@@ -163,6 +163,34 @@ reale) con oggetto `Re: <subject>`, inviata via Resend dall'indirizzo `@deroarts
 - In locale il webhook non arriva (serve URL pubblico): si testa in produzione,
   oppure con un tunnel.
 
+## 5ter · Notifiche dalle app dei progetti (endpoint diretto)
+
+Il modo **consigliato e senza limiti** per portare le notifiche delle tue app
+(Stickers, futuri progetti) dentro Messaggi — non usa email né Zoho.
+
+- **Endpoint:** `POST /api/inbound/app`
+- **Auth:** header `x-api-key: <DEROARTS_APP_KEY>` (chiave dedicata, separata da
+  `AGENT_API_KEY`, revocabile in autonomia).
+- **Body JSON:**
+  ```json
+  {
+    "project": "<slug-progetto>",   // opzionale: collega il messaggio al progetto
+    "from_name": "...",             // chi/cosa ha generato la notifica
+    "from_email": "...",            // opzionale: indirizzo per rispondere
+    "subject": "...",               // opzionale: oggetto breve
+    "message": "..."                // OBBLIGATORIO: testo
+  }
+  ```
+- **Comportamento:** salva un messaggio in `requests` (`source=email`), collegato
+  al progetto se lo slug esiste, con `reply_to_email` = from_email; scatta la push.
+- **Risposte:** 401 (chiave errata/assente), 400 (message mancante o JSON non
+  valido), 500 (chiave non configurata sul server), 200 `{ok:true}`.
+- **Perché questa via e non l'email:** diretta, nessun limite Zoho, il messaggio
+  arriva subito e già collegato al progetto. Le app che sanno solo mandare email
+  possono in alternativa scrivere a `RESEND_INBOUND_ADDRESS` (vedi §5bis).
+
+**Variabile:** `DEROARTS_APP_KEY` (segreta) — in `.env`, App Control, Render.
+
 ## 6 · Note operative / sicurezza
 
 - Tutte le nuove tabelle hanno dati **non-PII di terzi** (subscription del solo
