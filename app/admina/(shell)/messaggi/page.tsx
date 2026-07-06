@@ -250,19 +250,22 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                     Data
                   </th>
                   <th className="text-center px-4 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider border-l border-white/10">
-                    Progetto
+                    Nome
                   </th>
                   <th className="text-center px-4 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider hidden lg:table-cell border-l border-white/10">
                     Casella
                   </th>
                   <th className="text-center px-4 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider border-l border-white/10">
-                    Nome
+                    Progetto
                   </th>
                   <th className="text-center px-4 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider hidden md:table-cell border-l border-white/10">
                     Email
                   </th>
                   <th className="text-center px-4 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider border-l border-white/10">
                     Stato
+                  </th>
+                  <th className="text-center px-3 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider border-l border-white/10">
+                    Apri
                   </th>
                 </tr>
               </thead>
@@ -296,14 +299,25 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                       </td>
 
                       <td className="px-4 py-3 border-l border-gray-300 text-center">
-                        {req.project ? (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-end/10 text-green-end">
-                            {t(req.project.title)}
-                          </span>
-                        ) : (
-                          <span className="text-xs italic text-gray-400">
-                            Generale
-                          </span>
+                        <Link
+                          href={`/admina/messaggi/${req.id}`}
+                          className={`hover:text-green-end transition-colors inline-flex items-center gap-1.5 ${
+                            isNew
+                              ? "font-semibold text-graphite"
+                              : "font-medium text-gray-700"
+                          }`}
+                        >
+                          {req.name}
+                          {req.replied_at && (
+                            <span className="text-green-end" title="Hai risposto">
+                              ↩
+                            </span>
+                          )}
+                        </Link>
+                        {req.source === "email" && req.subject && (
+                          <p className="text-[11px] text-gray-400 truncate mt-0.5 max-w-[220px] mx-auto">
+                            {req.subject}
+                          </p>
                         )}
                       </td>
 
@@ -312,28 +326,14 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                       </td>
 
                       <td className="px-4 py-3 border-l border-gray-300 text-center">
-                        <div className="flex items-center justify-center gap-1.5">
-                          <OriginIcon source={req.source} />
-                          <Link
-                            href={`/admina/messaggi/${req.id}`}
-                            className={`hover:text-green-end transition-colors ${
-                              isNew
-                                ? "font-semibold text-graphite"
-                                : "font-medium text-gray-700"
-                            }`}
-                          >
-                            {req.name}
-                          </Link>
-                          {req.replied_at && (
-                            <span className="text-green-end" title="Hai risposto">
-                              ↩
-                            </span>
-                          )}
-                        </div>
-                        {req.source === "email" && req.subject && (
-                          <p className="text-[11px] text-gray-400 truncate mt-0.5 max-w-[220px] mx-auto">
-                            {req.subject}
-                          </p>
+                        {req.project ? (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-end/10 text-green-end">
+                            {t(req.project.title)}
+                          </span>
+                        ) : (
+                          <span className="text-xs italic text-gray-400">
+                            Generale
+                          </span>
                         )}
                       </td>
 
@@ -348,6 +348,19 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
 
                       <td className="px-4 py-3 border-l border-gray-300 text-center">
                         <StatusPill status={req.status} />
+                      </td>
+
+                      <td className="px-3 py-3 border-l border-gray-300 text-center">
+                        <Link
+                          href={`/admina/messaggi/${req.id}`}
+                          title="Apri il messaggio"
+                          className="inline-flex items-center justify-center text-gray-400 hover:text-green-end transition-colors"
+                        >
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                        </Link>
                       </td>
                     </tr>
                   );
