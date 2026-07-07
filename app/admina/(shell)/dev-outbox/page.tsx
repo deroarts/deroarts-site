@@ -1,20 +1,10 @@
 import { prisma } from "@/lib/db/client";
+import { formatDateTimeSeconds as formatDate } from "@/lib/dates";
 export const dynamic = "force-dynamic";
 
 export const metadata = { title: "Dev Outbox | Admin DeroArts" };
 
 // This page is intentionally only accessible in development (middleware + nav guard).
-
-function formatDate(d: Date): string {
-  return d.toLocaleString("it-IT", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
-}
 
 export default async function DevOutboxPage() {
   if (process.env.MAIL_MODE !== "fake") {

@@ -5,6 +5,7 @@ import { updateRequestStatusAction } from "../actions";
 import ReplyForm from "@/components/admin/ReplyForm";
 import DeleteMessageButton from "@/components/admin/DeleteMessageButton";
 import CopyChatButton from "@/components/admin/CopyChatButton";
+import { formatDateTime } from "@/lib/dates";
 
 export const dynamic = "force-dynamic";
 
@@ -62,13 +63,7 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
     chatItems
       .map((m) => {
         const who = m.direction === "outbound" ? "Tu" : m.name;
-        const when = m.created_at.toLocaleString("it-IT", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        });
+        const when = formatDateTime(m.created_at);
         return `[${when}] ${who}:\n${m.message}`;
       })
       .join("\n\n");

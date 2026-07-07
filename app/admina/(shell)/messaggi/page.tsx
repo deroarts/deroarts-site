@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db/client";
 import { t } from "@/lib/i18n";
+import { formatDateLong as formatDate } from "@/lib/dates";
 import type { Prisma } from "@prisma/client";
 import MessaggiFilters from "@/components/admin/MessaggiFilters";
 import DeleteMessageButton from "@/components/admin/DeleteMessageButton";
@@ -20,16 +21,6 @@ interface PageProps {
     projectId?: string;
     q?: string;
   };
-}
-
-function formatDate(d: Date): string {
-  // Es. "07 Luglio 2026" — giorno a 2 cifre, mese esteso con iniziale maiuscola.
-  const s = d.toLocaleDateString("it-IT", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
-  return s.replace(/ (\p{Ll})/u, (_, c) => " " + c.toUpperCase());
 }
 
 export default async function MessaggiAdminPage({ searchParams }: PageProps) {
