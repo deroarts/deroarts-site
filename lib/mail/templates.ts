@@ -13,6 +13,20 @@ function escapeHtml(str: string): string {
 const BRAND_DARK = "#0d2e22";
 const BRAND_GREEN = "#1a7a5e";
 
+// Shared outer shell for every email: doctype/head/body + the white card
+// wrapper. `inner` is the card content (coloured header + body + footer).
+function emailShell(inner: string): string {
+  return `<!DOCTYPE html>
+<html lang="it">
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:20px;background:#f5f5f5;font-family:system-ui,sans-serif;">
+  <div style="max-width:580px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
+${inner}
+  </div>
+</body>
+</html>`;
+}
+
 // ─── Owner notification ───────────────────────────────────────────────────────
 
 export interface OwnerNotificationData {
@@ -33,11 +47,7 @@ export function ownerNotificationHtml(data: OwnerNotificationData): string {
     ? `Nuova richiesta per &ldquo;${escapeHtml(data.projectTitle)}&rdquo;`
     : "Nuova richiesta di contatto";
 
-  return `<!DOCTYPE html>
-<html lang="it">
-<head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:20px;background:#f5f5f5;font-family:system-ui,sans-serif;">
-  <div style="max-width:580px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
+  return emailShell(`
     <div style="background:${BRAND_DARK};padding:24px 28px;">
       <p style="margin:0;color:rgba(255,255,255,.5);font-size:12px;text-transform:uppercase;letter-spacing:1px;">DeroArts Admin</p>
       <h1 style="margin:6px 0 0;color:#fff;font-size:18px;font-weight:700;">${heading}</h1>
@@ -70,10 +80,7 @@ export function ownerNotificationHtml(data: OwnerNotificationData): string {
     </div>
     <div style="padding:14px 28px;background:#f5f5f5;font-size:12px;color:#aaa;text-align:center;">
       DeroArts &middot; Gestisci le richieste nell&rsquo;area amministrativa
-    </div>
-  </div>
-</body>
-</html>`;
+    </div>`);
 }
 
 // ─── Auto-reply ───────────────────────────────────────────────────────────────
@@ -94,11 +101,7 @@ export function autoReplyHtml(data: AutoReplyData): string {
     ? ` riguardo a <strong>${escapeHtml(data.projectTitle)}</strong>`
     : "";
 
-  return `<!DOCTYPE html>
-<html lang="it">
-<head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:20px;background:#f5f5f5;font-family:system-ui,sans-serif;">
-  <div style="max-width:580px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
+  return emailShell(`
     <div style="background:linear-gradient(135deg,${BRAND_DARK} 0%,#1a4a35 100%);padding:32px 28px;">
       <h1 style="margin:0;color:#fff;font-size:24px;font-weight:800;letter-spacing:-.3px;">DeroArts</h1>
       <p style="margin:8px 0 0;color:rgba(255,255,255,.65);font-size:14px;">Conferma ricezione richiesta</p>
@@ -120,10 +123,7 @@ export function autoReplyHtml(data: AutoReplyData): string {
     </div>
     <div style="padding:14px 28px;background:#f5f5f5;font-size:12px;color:#aaa;text-align:center;">
       Questo &egrave; un messaggio automatico &mdash; non rispondere a questa email.
-    </div>
-  </div>
-</body>
-</html>`;
+    </div>`);
 }
 
 // ─── Admin reply (risposta scritta a mano dal pannello Messaggi) ──────────────
@@ -150,11 +150,7 @@ export function adminReplyHtml(data: AdminReplyData): string {
       )}</strong></p>`
     : "";
 
-  return `<!DOCTYPE html>
-<html lang="it">
-<head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:20px;background:#f5f5f5;font-family:system-ui,sans-serif;">
-  <div style="max-width:580px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
+  return emailShell(`
     <div style="background:linear-gradient(135deg,${BRAND_DARK} 0%,#1a4a35 100%);padding:28px;">
       <h1 style="margin:0;color:#fff;font-size:22px;font-weight:800;letter-spacing:-.3px;">DeroArts</h1>
     </div>
@@ -170,8 +166,5 @@ export function adminReplyHtml(data: AdminReplyData): string {
     </div>
     <div style="padding:14px 28px;background:#f5f5f5;font-size:12px;color:#aaa;text-align:center;">
       Puoi rispondere direttamente a questa email.
-    </div>
-  </div>
-</body>
-</html>`;
+    </div>`);
 }
