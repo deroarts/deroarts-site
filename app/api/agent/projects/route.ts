@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db/client";
 import { Prisma, ProjectStatus } from "@prisma/client";
 import { getStorageAdapter } from "@/lib/adapters";
 import { plainTextToHtml } from "@/lib/sanitize-html";
+import { slugify } from "@/lib/slug";
 
 // External-agent endpoint (e.g. Devin). Request-time only, never prerendered.
 export const dynamic = "force-dynamic";
@@ -17,19 +18,6 @@ function isAuthorized(request: NextRequest): boolean {
 
 function unauthorized() {
   return NextResponse.json({ error: "Non autorizzato." }, { status: 401 });
-}
-
-// Local slug helper — mirrors admin actions (no shared lib helper exists).
-function toSlug(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[àáâã]/g, "a")
-    .replace(/[èéêë]/g, "e")
-    .replace(/[ìíîï]/g, "i")
-    .replace(/[òóôõö]/g, "o")
-    .replace(/[ùúûü]/g, "u")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
 }
 
 // Coerce a translatable field into the canonical { it, en } JSON shape.
@@ -198,7 +186,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Slug: from provided value or Italian title; de-duplicate on conflict.
-    let slug = (typeof b.slug === "string" && b.slug.trim() ? b.slug.trim() : toSlug(title.it));
+    let slug = (typeof b.slug === "string" && b.slug.trim() ? b.slug.trim() : slugify(title.it));
     if (!slug) {
       return NextResponse.json({ error: "Impossibile generare lo slug dal titolo." }, { status: 400 });
     }

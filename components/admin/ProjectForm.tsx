@@ -5,6 +5,7 @@ import { useFormState, useFormStatus } from "react-dom";
 import Link from "next/link";
 import { saveProjectAction } from "@/app/admina/(shell)/progetti/actions";
 import { ACTION_LABELS } from "@/lib/i18n";
+import { slugify } from "@/lib/slug";
 import ImageFrameEditor from "./ImageFrameEditor";
 import GalleryEditor, { type GalleryItem } from "./GalleryEditor";
 import RichTextEditor from "./RichTextEditor";
@@ -66,18 +67,6 @@ interface ProjectFormProps {
 function getIt(field: unknown): string {
   if (!field || typeof field !== "object" || Array.isArray(field)) return "";
   return (field as Record<string, string>).it ?? "";
-}
-
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[àáâã]/g, "a")
-    .replace(/[èéêë]/g, "e")
-    .replace(/[ìíîï]/g, "i")
-    .replace(/[òóôõö]/g, "o")
-    .replace(/[ùúûü]/g, "u")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
 }
 
 function SubmitButton({ label }: { label: string }) {
