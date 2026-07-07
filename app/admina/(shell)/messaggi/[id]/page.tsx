@@ -64,9 +64,9 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
           </svg>
         </Link>
         <div className="min-w-0 flex-1">
-          <h1 className="text-lg text-graphite truncate">
-            <span className="font-normal">
-              {isEmail ? "email" : "messaggio"} di{" "}
+          <h1 className="text-2xl text-graphite truncate">
+            <span className="font-normal text-base text-gray-500">
+              {isEmail ? "email" : "messaggio"}{" "}
             </span>
             <span className="font-bold">{message.name}</span>
           </h1>
