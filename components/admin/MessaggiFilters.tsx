@@ -38,38 +38,14 @@ export default function MessaggiFilters({
   }
 
   return (
-    <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-      {/* Project filter */}
-      <div className="relative">
-        <select
-          value={currentProjectId}
-          onChange={(e) => navigate({ projectId: e.target.value })}
-          className="appearance-none w-full sm:w-56 pl-3 pr-9 py-2 rounded-xl border border-gray-200 bg-white text-sm text-graphite focus:outline-none focus:ring-2 focus:ring-green-end/30 focus:border-green-end/40 transition-shadow"
-        >
-          <option value="">Tutti i progetti</option>
-          {projects.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.label}
-            </option>
-          ))}
-        </select>
-        <svg
-          className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </div>
-
-      {/* Search */}
+    <div className="flex items-center gap-2 flex-1 min-w-0">
+      {/* Search — prima posizione, a sinistra */}
       <form
         onSubmit={(e) => {
           e.preventDefault();
           navigate({ q: query });
         }}
-        className="relative flex-1 sm:max-w-xs"
+        className="relative flex-1 min-w-0 sm:max-w-xs"
       >
         <svg
           className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
@@ -87,6 +63,30 @@ export default function MessaggiFilters({
           className="w-full pl-9 pr-3 py-2 rounded-xl border border-gray-200 bg-white text-sm text-graphite placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-green-end/30 focus:border-green-end/40 transition-shadow"
         />
       </form>
+
+      {/* Project filter */}
+      <div className="relative flex-shrink-0">
+        <select
+          value={currentProjectId}
+          onChange={(e) => navigate({ projectId: e.target.value })}
+          className="appearance-none w-40 sm:w-56 pl-3 pr-9 py-2 rounded-xl border border-gray-200 bg-white text-sm text-graphite focus:outline-none focus:ring-2 focus:ring-green-end/30 focus:border-green-end/40 transition-shadow"
+        >
+          <option value="">Tutti i progetti</option>
+          {projects.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.label}
+            </option>
+          ))}
+        </select>
+        <svg
+          className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
     </div>
   );
 }

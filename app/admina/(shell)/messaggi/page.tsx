@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db/client";
 import { t } from "@/lib/i18n";
 import type { RequestStatus, Prisma } from "@prisma/client";
 import MessaggiFilters from "@/components/admin/MessaggiFilters";
+import DeleteMessageButton from "@/components/admin/DeleteMessageButton";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Messaggi | Admin DeroArts" };
@@ -33,13 +34,13 @@ interface PageProps {
 }
 
 function formatDate(d: Date): string {
-  return d.toLocaleDateString("it-IT", {
+  // Es. "07 Luglio 2026" — giorno a 2 cifre, mese esteso con iniziale maiuscola.
+  const s = d.toLocaleDateString("it-IT", {
     day: "2-digit",
-    month: "2-digit",
+    month: "long",
     year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
   });
+  return s.replace(/ (\p{Ll})/u, (_, c) => " " + c.toUpperCase());
 }
 
 export default async function MessaggiAdminPage({ searchParams }: PageProps) {
@@ -65,26 +66,57 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
     ];
   }
 
-  const [total, newCount, readCount, handledCount, messages, projects] =
-    await Promise.all([
-      prisma.request.count({ where }),
-      prisma.request.count({ where: { status: "new", direction: "inbound" } }),
-      prisma.request.count({ where: { status: "read", direction: "inbound" } }),
-      prisma.request.count({ where: { status: "handled", direction: "inbound" } }),
-      prisma.request.findMany({
-        where,
-        include: { project: { select: { slug: true, title: true, from_email: true } } },
-        orderBy: { created_at: "desc" },
-        skip,
-        take: PAGE_SIZE,
-      }),
-      prisma.project.findMany({
-        select: { id: true, title: true },
-        orderBy: { sort_order: "asc" },
-      }),
-    ]);
+  // Carico i messaggi ricevuti (inbound) che matchano i filtri, poi collasso
+  // ogni CONVERSAZIONE in una sola riga: tengo il messaggio più recente per
+  // `thread_key`. I messaggi senza thread_key (rari/legacy) restano singoli.
+  // Volumi free-tier bassi → dedup in JS, semplice e leggibile.
+  const [inboundRows, projects] = await Promise.all([
+    prisma.request.findMany({
+      where,
+      include: { project: { select: { slug: true, title: true, from_email: true } } },
+      orderBy: { created_at: "desc" },
+    }),
+    prisma.project.findMany({
+      select: { id: true, title: true },
+      orderBy: { sort_order: "asc" },
+    }),
+  ]);
 
-  const allCount = newCount + readCount + handledCount;
+  // Dedup per thread (l'array è già ordinato per data desc → il primo è l'ultimo msg).
+  function dedupeByThread<T extends { id: string; thread_key: string | null }>(rows: T[]): T[] {
+    const seen = new Set<string>();
+    const out: T[] = [];
+    for (const r of rows) {
+      const key = r.thread_key ?? `id:${r.id}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push(r);
+    }
+    return out;
+  }
+
+  const conversations = dedupeByThread(inboundRows);
+
+  // Conteggi per tab = numero di CONVERSAZIONI (non di singoli messaggi).
+  // Per i contatori serve l'insieme completo (senza filtro stato), deduplicato.
+  const allInbound =
+    statusFilter || projectFilter || q
+      ? await prisma.request.findMany({
+          where: { direction: "inbound" },
+          select: { id: true, thread_key: true, status: true },
+          orderBy: { created_at: "desc" },
+        })
+      : inboundRows.map((r) => ({ id: r.id, thread_key: r.thread_key, status: r.status }));
+  const allConversations = dedupeByThread(allInbound);
+  const newCount = allConversations.filter((c) => c.status === "new").length;
+  const readCount = allConversations.filter((c) => c.status === "read").length;
+  const handledCount = allConversations.filter((c) => c.status === "handled").length;
+
+  // Paginazione applicata al set deduplicato.
+  const total = conversations.length;
+  const messages = conversations.slice(skip, skip + PAGE_SIZE);
+
+  const allCount = allConversations.length;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const tabCounts: Record<string, number> = {
     "": allCount,
@@ -122,50 +154,52 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
   }));
 
   return (
-    <div>
-      <div className="mb-6">
+    <div className="flex flex-col h-[calc(100vh-var(--header-h,4rem))]">
+      <div className="mb-4 flex-shrink-0">
         <h1 className="text-2xl font-bold text-graphite">Messaggi</h1>
       </div>
 
-      {/* Filter tabs (status) */}
-      <div className="flex flex-wrap gap-1 mb-4 bg-gray-100 rounded-xl p-1 w-fit">
-        {TAB_OPTIONS.map((tab) => {
-          const active = statusFilter === tab.value;
-          const isNew = tab.value === "new" && tabCounts[tab.value] > 0;
-          return (
-            <Link
-              key={tab.value}
-              href={buildHref({ status: tab.value || undefined, page: undefined })}
-              className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
-                active
-                  ? "bg-white text-graphite shadow-sm"
-                  : "text-gray-500 hover:text-graphite"
-              }`}
-            >
-              {tab.label}
-              <span
-                className={`text-xs px-1.5 py-0.5 rounded-full ${
-                  isNew
-                    ? "bg-red-100 text-red-700"
-                    : active
-                    ? "bg-gray-100 text-gray-500"
-                    : "bg-white/50 text-gray-400"
+      {/* Filtri: tutto su una sola riga — cerca a sx, progetti, tab stato */}
+      <div className="flex items-center gap-3 mb-4 flex-shrink-0">
+        <MessaggiFilters
+          projects={projectOptions}
+          currentProjectId={projectFilter}
+          currentQuery={q}
+          currentStatus={statusFilter}
+        />
+
+        {/* Tab stato — senza contenitore/sfondo */}
+        <div className="hidden lg:flex items-center gap-1 flex-shrink-0">
+          {TAB_OPTIONS.map((tab) => {
+            const active = statusFilter === tab.value;
+            const isNew = tab.value === "new" && tabCounts[tab.value] > 0;
+            return (
+              <Link
+                key={tab.value}
+                href={buildHref({ status: tab.value || undefined, page: undefined })}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                  active
+                    ? "text-green-end"
+                    : "text-gray-500 hover:text-graphite"
                 }`}
               >
-                {tabCounts[tab.value]}
-              </span>
-            </Link>
-          );
-        })}
+                {tab.label}
+                <span
+                  className={`text-xs px-1.5 py-0.5 rounded-full ${
+                    isNew
+                      ? "bg-red-100 text-red-700"
+                      : active
+                      ? "bg-green-end/10 text-green-end"
+                      : "bg-gray-100 text-gray-400"
+                  }`}
+                >
+                  {tabCounts[tab.value]}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
       </div>
-
-      {/* Project filter + search (client component for instant UX) */}
-      <MessaggiFilters
-        projects={projectOptions}
-        currentProjectId={projectFilter}
-        currentQuery={q}
-        currentStatus={statusFilter}
-      />
 
       {messages.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center text-gray-400 mt-4">
@@ -177,9 +211,9 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
           </p>
         </div>
       ) : (
-        <>
+        <div className="flex-1 min-h-0 flex flex-col">
           {/* ── Mobile: card impilate (esperienza nativa) ────────────────── */}
-          <ul className="md:hidden mt-4 space-y-2.5">
+          <ul className="md:hidden overflow-y-auto flex-1 min-h-0 space-y-2.5">
             {messages.map((req) => {
               const isNew = req.status === "new";
               return (
@@ -242,10 +276,10 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
             })}
           </ul>
 
-          {/* ── Desktop: tabella ─────────────────────────────────────────── */}
-          <div className="hidden md:block bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto mt-4">
+          {/* ── Desktop: tabella (scroll interno, pagina fissa) ──────────── */}
+          <div className="hidden md:block bg-white rounded-2xl border border-gray-100 shadow-sm overflow-auto flex-1 min-h-0">
             <table className="w-full min-w-[560px] text-sm">
-              <thead className="bg-green-deep border-b border-gray-200">
+              <thead className="bg-green-deep border-b border-gray-200 sticky top-0 z-10">
                 <tr>
                   <th className="w-3 px-1 py-3" />
                   <th className="text-center px-4 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider border-l border-white/10">
@@ -266,9 +300,7 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                   <th className="text-center px-4 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider border-l border-white/10">
                     Stato
                   </th>
-                  <th className="text-center px-3 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider border-l border-white/10">
-                    Apri
-                  </th>
+                  <th className="w-10 px-2 py-3 border-l border-white/10" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -300,69 +332,62 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                         </Link>
                       </td>
 
-                      <td className="px-4 py-3 border-l border-gray-300 text-center">
+                      <td className="px-0 py-0 border-l border-gray-300 text-center">
                         <Link
                           href={`/admina/messaggi/${req.id}`}
-                          className={`hover:text-green-end transition-colors inline-flex items-center gap-1.5 ${
+                          className={`block px-4 py-3 hover:text-green-end transition-colors ${
                             isNew
                               ? "font-semibold text-graphite"
                               : "font-medium text-gray-700"
                           }`}
                         >
-                          {req.name}
-                          {req.replied_at && (
-                            <span className="text-green-end" title="Hai risposto">
-                              ↩
+                          <span className="inline-flex items-center gap-1.5">
+                            {req.name}
+                            {req.replied_at && (
+                              <span className="text-green-end" title="Hai risposto">
+                                ↩
+                              </span>
+                            )}
+                          </span>
+                        </Link>
+                      </td>
+
+                      <td className="px-0 py-0 hidden lg:table-cell border-l border-gray-300 text-center text-sm text-gray-700">
+                        <Link href={`/admina/messaggi/${req.id}`} className="block px-4 py-3">
+                          {mailboxFor(req.project)}
+                        </Link>
+                      </td>
+
+                      <td className="px-0 py-0 border-l border-gray-300 text-center">
+                        <Link href={`/admina/messaggi/${req.id}`} className="block px-4 py-3">
+                          {req.project ? (
+                            <span className="text-xs font-medium text-green-end">
+                              {t(req.project.title)}
+                            </span>
+                          ) : (
+                            <span className="text-xs italic text-gray-400">
+                              Generale
                             </span>
                           )}
                         </Link>
-                        {req.source === "email" && req.subject && (
-                          <p className="text-[11px] text-gray-400 truncate mt-0.5 max-w-[220px] mx-auto">
-                            {req.subject}
-                          </p>
-                        )}
                       </td>
 
-                      <td className="px-4 py-3 hidden lg:table-cell border-l border-gray-300 text-center text-sm text-gray-700">
-                        {mailboxFor(req.project)}
-                      </td>
-
-                      <td className="px-4 py-3 border-l border-gray-300 text-center">
-                        {req.project ? (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-end/10 text-green-end">
-                            {t(req.project.title)}
-                          </span>
-                        ) : (
-                          <span className="text-xs italic text-gray-400">
-                            Generale
-                          </span>
-                        )}
-                      </td>
-
-                      <td className="px-4 py-3 hidden md:table-cell border-l border-gray-300 text-center text-sm text-gray-700">
-                        <a
-                          href={`mailto:${req.email}`}
-                          className="hover:text-green-end transition-colors"
-                        >
+                      <td className="px-0 py-0 hidden md:table-cell border-l border-gray-300 text-center text-sm text-gray-700">
+                        <Link href={`/admina/messaggi/${req.id}`} className="block px-4 py-3 hover:text-green-end transition-colors">
                           {req.email}
-                        </a>
-                      </td>
-
-                      <td className="px-4 py-3 border-l border-gray-300 text-center">
-                        <StatusPill status={req.status} />
-                      </td>
-
-                      <td className="px-3 py-3 border-l border-gray-300 text-center">
-                        <Link
-                          href={`/admina/messaggi/${req.id}`}
-                          title="Apri il messaggio"
-                          className="inline-flex items-center justify-center text-gray-400 hover:text-green-end transition-colors"
-                        >
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                          </svg>
                         </Link>
+                      </td>
+
+                      <td className="px-0 py-0 border-l border-gray-300 text-center">
+                        <Link href={`/admina/messaggi/${req.id}`} className="block px-4 py-3">
+                          <StatusPill status={req.status} />
+                        </Link>
+                      </td>
+
+                      <td className="w-10 px-2 py-3 border-l border-gray-300 text-center">
+                        <div className="inline-flex">
+                          <DeleteMessageButton id={req.id} />
+                        </div>
                       </td>
                     </tr>
                   );
@@ -373,7 +398,7 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4 text-sm">
+            <div className="flex items-center justify-between mt-3 text-sm flex-shrink-0">
               <span className="text-gray-400">
                 Pagina {page} di {totalPages} · {total} messaggio/i
               </span>
@@ -397,7 +422,7 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
               </div>
             </div>
           )}
-        </>
+        </div>
       )}
     </div>
   );

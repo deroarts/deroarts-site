@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db/client";
 import { updateRequestStatusAction } from "../actions";
 import ReplyForm from "@/components/admin/ReplyForm";
 import DeleteMessageButton from "@/components/admin/DeleteMessageButton";
+import CopyChatButton from "@/components/admin/CopyChatButton";
 
 export const dynamic = "force-dynamic";
 
@@ -50,6 +51,27 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
       })
     : [];
   const hasConversation = thread.length > 1;
+
+  // Testo copiabile dell'intera conversazione (per analisi altrove).
+  const chatItems = hasConversation
+    ? thread
+    : [{ name: message.name, direction: "inbound" as const, message: message.message, created_at: message.created_at }];
+  const chatText =
+    `Conversazione — ${message.name} · ${fromAddress}\n` +
+    `${"-".repeat(40)}\n` +
+    chatItems
+      .map((m) => {
+        const who = m.direction === "outbound" ? "Tu" : m.name;
+        const when = m.created_at.toLocaleString("it-IT", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        return `[${when}] ${who}:\n${m.message}`;
+      })
+      .join("\n\n");
 
   return (
     <div className="max-w-2xl flex flex-col h-[calc(100vh-var(--header-h,4rem))]">
@@ -99,6 +121,12 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
 
       {/* Chat: riempie lo spazio rimanente, solo i messaggi scrollano */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col flex-1 min-h-0">
+        <div className="flex items-center justify-between mb-3 flex-shrink-0">
+          <h2 className="text-sm font-semibold text-graphite uppercase tracking-wider">
+            Messaggi
+          </h2>
+          <CopyChatButton text={chatText} />
+        </div>
         {hasConversation ? (
           <div className="space-y-3 overflow-y-auto pr-1 flex-1 min-h-0">
             {thread.map((m) => {
