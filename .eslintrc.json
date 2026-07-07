@@ -1,9 +1,6 @@
 {
   "extends": "next/core-web-vitals",
   "ignorePatterns": [
-    "lib/api-spec/**",
-    "lib/api-client-react/**",
-    "lib/api-zod/**",
     "tests/**",
     ".next/**"
   ]

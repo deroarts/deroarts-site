@@ -38,9 +38,6 @@
   "exclude": [
     "node_modules",
     "prisma/seed.ts",
-    "lib/api-spec/**",
-    "lib/api-client-react/**",
-    "lib/api-zod/**",
     "tests/**",
     "playwright.config.ts"
   ]
