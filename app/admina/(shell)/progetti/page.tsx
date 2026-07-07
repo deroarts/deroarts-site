@@ -25,7 +25,16 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
   const skip = (page - 1) * PAGE_SIZE;
 
   const projects = await prisma.project.findMany({
-    include: { category: true },
+    // La tabella admin non usa gallery/long_description/short_description (JSONB).
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      cover_image_url: true,
+      status: true,
+      published: true,
+      category: { select: { name: true } },
+    },
     orderBy: [{ sort_order: "asc" }, { created_at: "asc" }],
     skip,
     take: PAGE_SIZE,

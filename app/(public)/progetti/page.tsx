@@ -3,8 +3,10 @@ import ProjectCard from "@/components/ProjectCard";
 import type { Metadata } from "next";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo";
 
-// DB-backed page: render at request time, never prerender at build.
-export const dynamic = "force-dynamic";
+// ISR: cache statica rigenerata da revalidatePath("/progetti") (chiamato dalle
+// azioni admin su progetti/categorie) o dopo 1h. Le varianti ?categoria=… sono
+// rese dinamicamente per-richiesta ma condividono la stessa cache invalidabile.
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Progetti | DeroArts",
@@ -27,7 +29,16 @@ async function getPageData(categoriaSlug?: string) {
       published: true,
       ...(categoriaSlug ? { category: { slug: categoriaSlug } } : {}),
     },
-    include: { category: true },
+    // select mirato: le card non usano long_description/gallery (JSONB pesanti).
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      short_description: true,
+      cover_image_url: true,
+      status: true,
+      category: { select: { name: true } },
+    },
     orderBy: [{ sort_order: "asc" }, { created_at: "asc" }],
   });
   return { projects };

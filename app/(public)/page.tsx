@@ -5,8 +5,9 @@ import HeroFlow from "@/components/HeroFlow";
 import type { Metadata } from "next";
 import { getSiteUrl, DEFAULT_OG_IMAGE } from "@/lib/seo";
 
-// DB-backed page: render at request time, never prerender at build.
-export const dynamic = "force-dynamic";
+// ISR: servita da cache statica, rigenerata quando un'azione admin chiama
+// revalidatePath("/") o dopo 1h. Niente SSR ad ogni navigazione.
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "DeroArts — Software che semplifica la vita",
@@ -24,10 +25,21 @@ export const metadata: Metadata = {
   },
 };
 
+// select mirato: le card non usano long_description/gallery (JSONB pesanti).
+const CARD_SELECT = {
+  id: true,
+  slug: true,
+  title: true,
+  short_description: true,
+  cover_image_url: true,
+  status: true,
+  category: { select: { name: true } },
+} as const;
+
 async function getFeaturedProjects() {
   return prisma.project.findMany({
     where: { published: true },
-    include: { category: true },
+    select: CARD_SELECT,
     orderBy: { sort_order: "asc" },
     take: 3,
   });

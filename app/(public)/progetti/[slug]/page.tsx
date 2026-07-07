@@ -7,17 +7,22 @@ import { t, parseGallery } from "@/lib/i18n";
 import { verifyPreviewToken } from "@/lib/preview-token";
 import { sanitizeRichText, htmlToPlainText } from "@/lib/sanitize-html";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo";
+import { cache } from "react";
 import type { Metadata } from "next";
 
-// DB-backed page: render at request time, never prerender at build.
-export const dynamic = "force-dynamic";
+// ISR: la versione pubblica (senza preview_token) è cacheata e rigenerata da
+// revalidatePath(`/progetti/${slug}`) o dopo 1h. Le richieste con ?preview_token=
+// leggono searchParams → rese dinamicamente, quindi le bozze non pubblicate NON
+// entrano mai nella cache statica condivisa.
+export const revalidate = 3600;
 
 interface PageProps {
   params: { slug: string };
   searchParams: { preview_token?: string };
 }
 
-async function getProject(slug: string, allowUnpublished = false) {
+// cache(): metadata e body condividono un'unica query per render (no doppio round-trip).
+const getProject = cache(async (slug: string, allowUnpublished = false) => {
   return prisma.project.findFirst({
     where: allowUnpublished ? { slug } : { slug, published: true },
     include: {
@@ -27,7 +32,7 @@ async function getProject(slug: string, allowUnpublished = false) {
       },
     },
   });
-}
+});
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const project = await getProject(params.slug);

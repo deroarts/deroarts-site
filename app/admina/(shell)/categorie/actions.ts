@@ -2,24 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db/client";
-
-function toSlug(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[àáâã]/g, "a")
-    .replace(/[èéêë]/g, "e")
-    .replace(/[ìíîï]/g, "i")
-    .replace(/[òóôõö]/g, "o")
-    .replace(/[ùúûü]/g, "u")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
+import { slugify } from "@/lib/slug";
 
 export async function createCategoryAction(formData: FormData) {
   const name = (formData.get("name") as string | null)?.trim() ?? "";
   if (!name) return;
 
-  let slug = toSlug(name);
+  let slug = slugify(name);
   // Ensure slug uniqueness
   const existing = await prisma.category.findUnique({ where: { slug } });
   if (existing) slug = `${slug}-${Date.now()}`;
@@ -50,6 +39,9 @@ export async function renameCategoryAction(
 
   revalidatePath("/admina/categorie");
   revalidatePath("/admina/progetti");
+  // Le card pubbliche mostrano il nome categoria → invalida anche il sito.
+  revalidatePath("/progetti");
+  revalidatePath("/");
 }
 
 export async function moveCategoryAction(id: string, dir: "up" | "down") {
@@ -81,4 +73,6 @@ export async function deleteCategoryAction(id: string) {
   }
   await prisma.category.delete({ where: { id } });
   revalidatePath("/admina/categorie");
+  revalidatePath("/progetti");
+  revalidatePath("/");
 }
