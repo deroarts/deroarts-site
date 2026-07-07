@@ -31,9 +31,6 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
   }
 
   const fromAddress = message.project?.from_email || DEFAULT_FROM;
-  // Per le email ricevute rispondiamo al mittente reale (reply_to_email);
-  // per i messaggi dal form l'indirizzo è lo stesso `email`.
-  const replyTo = message.reply_to_email || message.email;
   const isEmail = message.source === "email";
 
   // Carica l'intera conversazione (thread): tutti i messaggi con la stessa
@@ -180,19 +177,29 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
             })}
           </div>
         ) : (
-          <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap border-l-4 border-green-end">
-            {message.message}
+          <div className="flex justify-start">
+            <div className="max-w-[80%] rounded-2xl rounded-bl-sm bg-gray-100 text-gray-700 px-3 py-2 text-sm leading-relaxed">
+              <div className="text-[11px] font-medium mb-0.5 text-gray-400">
+                {message.name}
+              </div>
+              <div className="whitespace-pre-wrap">
+                {message.message}
+                <span className="float-right ml-2 mt-1 text-[10px] leading-none translate-y-1 text-gray-400">
+                  {message.created_at.toLocaleTimeString("it-IT", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+              </div>
+            </div>
           </div>
         )}
-      </div>
 
-      {/* Reply */}
-      <ReplyForm
-        requestId={message.id}
-        fromAddress={fromAddress}
-        toEmail={replyTo}
-        alreadyReplied={Boolean(message.replied_at)}
-      />
+        {/* Barra di risposta, dentro lo stesso box: chat unica */}
+        <div className="border-t border-gray-100 mt-4 pt-1">
+          <ReplyForm requestId={message.id} />
+        </div>
+      </div>
     </div>
   );
 }
