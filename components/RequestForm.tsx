@@ -41,9 +41,11 @@ export default function RequestForm({
     fieldErrors: {},
   });
 
+  // text-base su mobile (evita l'auto-zoom iOS al focus, che scatta sotto i 16px),
+  // text-sm da sm↑ per non toccare la resa desktop.
   const inputClass = compact
-    ? "w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-end focus:border-transparent transition"
-    : "w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-end focus:border-transparent transition bg-white";
+    ? "w-full px-3 py-2 border border-gray-200 rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-green-end focus:border-transparent transition"
+    : "w-full px-4 py-3 border border-gray-200 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-green-end focus:border-transparent transition bg-white";
 
   if (state.ok) {
     return (

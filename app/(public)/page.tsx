@@ -52,7 +52,7 @@ export default async function HomePage() {
               <span className="inline-block mb-5 text-green-start text-xs sm:text-sm font-semibold uppercase tracking-[0.2em]">
                 App · Siti · Software
               </span>
-              <h1 className="font-serif text-4xl sm:text-5xl lg:text-[3.4rem] text-white leading-[1.08] mb-6">
+              <h1 className="font-serif max-[359px]:text-3xl text-4xl sm:text-5xl lg:text-[3.4rem] text-white leading-[1.08] mb-6">
                 Applicazioni, siti e software{" "}
                 <span className="text-gradient-green">costruiti ad hoc.</span>
                 <span className="block text-2xl sm:text-3xl lg:text-4xl text-white/85 mt-3">

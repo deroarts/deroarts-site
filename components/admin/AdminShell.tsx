@@ -169,7 +169,7 @@ export default function AdminShell({
           drawerOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex items-center justify-between px-5 py-5 border-b border-white/10">
+        <div className="flex items-center justify-between px-5 py-5 border-b border-white/10 pt-safe">
           <Image
             src="/brand/logo-horizontal-on-dark.svg"
             alt="DeroArts"
@@ -179,7 +179,8 @@ export default function AdminShell({
           />
           <button
             onClick={() => setDrawerOpen(false)}
-            className="text-white/60 hover:text-white transition-colors"
+            aria-label="Chiudi menu"
+            className="p-2 -m-2 text-white/60 hover:text-white transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -192,7 +193,7 @@ export default function AdminShell({
           onNavigate={() => setDrawerOpen(false)}
         />
 
-        <div className="px-3 pb-4 border-t border-white/10 pt-4">
+        <div className="px-3 pb-safe border-t border-white/10 pt-4">
           {adminEmail && (
             <p className="text-xs text-white/40 px-3 mb-3 truncate">{adminEmail}</p>
           )}

@@ -17,7 +17,7 @@ export default function DeleteProjectButton({ id, title }: DeleteProjectButtonPr
     >
       <button
         type="submit"
-        className="text-red-500 hover:text-red-600 transition-colors p-1.5"
+        className="text-red-500 hover:text-red-600 transition-colors p-2.5"
         title="Elimina"
       >
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

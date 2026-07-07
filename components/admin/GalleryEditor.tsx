@@ -114,12 +114,12 @@ export default function GalleryEditor({ items, onChange }: GalleryEditorProps) {
                   Immagine {i + 1}
                 </span>
                 {/* Touch-friendly reorder arrows (work where drag doesn't) */}
-                <span className="flex items-center gap-0.5">
+                <span className="flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() => move(i, "up")}
                     disabled={i === 0}
-                    className="p-1.5 text-gray-400 hover:text-green-end disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    className="p-2.5 text-gray-400 hover:text-green-end disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     title="Sposta su"
                     aria-label="Sposta immagine su"
                   >
@@ -131,7 +131,7 @@ export default function GalleryEditor({ items, onChange }: GalleryEditorProps) {
                     type="button"
                     onClick={() => move(i, "down")}
                     disabled={i === items.length - 1}
-                    className="p-1.5 text-gray-400 hover:text-green-end disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    className="p-2.5 text-gray-400 hover:text-green-end disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     title="Sposta giù"
                     aria-label="Sposta immagine giù"
                   >
@@ -144,8 +144,9 @@ export default function GalleryEditor({ items, onChange }: GalleryEditorProps) {
               <button
                 type="button"
                 onClick={() => removeItem(i)}
-                className="text-gray-300 hover:text-red-500 transition-colors"
+                className="p-2 -m-2 text-gray-300 hover:text-red-500 transition-colors"
                 title="Rimuovi immagine"
+                aria-label="Rimuovi immagine"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

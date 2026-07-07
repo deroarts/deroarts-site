@@ -39,7 +39,7 @@ export default function CopyChatButton({ text }: { text: string }) {
       onClick={copy}
       title={copied ? "Copiato!" : "Copia tutta la conversazione"}
       aria-label="Copia tutta la conversazione"
-      className={`p-1.5 rounded-lg transition-colors ${
+      className={`p-2.5 rounded-lg transition-colors ${
         copied ? "text-green-end" : "text-gray-400 hover:text-graphite"
       }`}
     >

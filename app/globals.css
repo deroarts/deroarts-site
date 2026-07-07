@@ -25,6 +25,17 @@
     /* Safety net: never allow accidental horizontal scroll on mobile. */
     overflow-x: hidden;
   }
+
+  /* iOS Safari auto-zooms on any focused control whose font is < 16px.
+     Enforce 16px on form controls ONLY below the `sm` breakpoint (< 640px):
+     desktop keeps its designed text-sm/text-xs sizing untouched. */
+  @media (max-width: 639.98px) {
+    input,
+    textarea,
+    select {
+      font-size: 16px;
+    }
+  }
 }
 
 @layer base {

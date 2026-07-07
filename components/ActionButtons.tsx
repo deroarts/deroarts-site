@@ -116,7 +116,7 @@ function RequestInfoModal({
             </h2>
             <button
               onClick={onClose}
-              className="text-white/70 hover:text-white transition-colors"
+              className="p-2 -m-2 text-white/70 hover:text-white transition-colors"
               aria-label="Chiudi"
             >
               <svg
