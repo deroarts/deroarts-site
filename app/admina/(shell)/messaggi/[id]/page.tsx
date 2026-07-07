@@ -52,7 +52,7 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
   const hasConversation = thread.length > 1;
 
   return (
-    <div className="max-w-2xl flex flex-col h-[calc(100vh-var(--header-h,4rem)-3rem)]">
+    <div className="max-w-2xl flex flex-col h-[calc(100vh-var(--header-h,4rem))]">
       {/* Header consolidato: titolo + email mittente + azioni (contenuto fisso) */}
       <div className="flex items-start gap-3 mb-4 flex-shrink-0">
         <Link
@@ -64,13 +64,13 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
           </svg>
         </Link>
         <div className="min-w-0 flex-1">
-          <h1 className="text-2xl text-graphite truncate">
+          <h1 className="text-lg text-graphite truncate">
             <span className="font-normal">
               {isEmail ? "email" : "messaggio"} di{" "}
             </span>
             <span className="font-bold">{message.name}</span>
           </h1>
-          <p className="text-sm text-green-end mt-0.5 truncate">{fromAddress}</p>
+          <p className="text-xs text-green-end mt-0.5 truncate">{fromAddress}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
           {message.status !== "handled" && (
