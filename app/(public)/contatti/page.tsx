@@ -1,5 +1,6 @@
 import ContactForm from "@/components/ContactForm";
 import type { Metadata } from "next";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Contatti | DeroArts",
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Contatti | DeroArts",
     description: "Contatti DeroArts — per domande e nuovi progetti.",
-    images: [{ url: "/brand/og-image.png", width: 1200, height: 630, alt: "DeroArts" }],
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 

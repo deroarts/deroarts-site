@@ -1,10 +1,10 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/db/client";
+import { getSiteUrl } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://deroarts.com";
+  const baseUrl = getSiteUrl();
 
   const projects = await prisma.project.findMany({
     where: { published: true },

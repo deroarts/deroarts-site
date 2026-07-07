@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db/client";
 import ProjectCard from "@/components/ProjectCard";
 import type { Metadata } from "next";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo";
 
 // DB-backed page: render at request time, never prerender at build.
 export const dynamic = "force-dynamic";
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Progetti | DeroArts",
     description: "Esplora i software DeroArts — semplici, potenti, italiani.",
-    images: [{ url: "/brand/og-image.png", width: 1200, height: 630, alt: "DeroArts" }],
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 

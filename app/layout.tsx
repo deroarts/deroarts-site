@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Poppins, Fraunces } from "next/font/google";
 import "./globals.css";
 import ScrollToTop from "@/components/ScrollToTop";
+import { getSiteUrl, DEFAULT_OG_IMAGE } from "@/lib/seo";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -26,9 +27,7 @@ export const metadata: Metadata = {
   },
   description:
     "DeroArts progetta app, siti e software su misura. Prodotti curati dall'idea al rilascio.",
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://deroarts.com"
-  ),
+  metadataBase: new URL(getSiteUrl()),
   icons: {
     icon: [
       { url: "/brand/favicon.svg", type: "image/svg+xml" },
@@ -44,12 +43,7 @@ export const metadata: Metadata = {
     locale: "it_IT",
     type: "website",
     images: [
-      {
-        url: "/brand/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "DeroArts — Software che semplifica la vita",
-      },
+      { ...DEFAULT_OG_IMAGE, alt: "DeroArts — Software che semplifica la vita" },
     ],
   },
 };

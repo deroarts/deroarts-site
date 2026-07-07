@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db/client";
 import ProjectCard from "@/components/ProjectCard";
 import HeroFlow from "@/components/HeroFlow";
 import type { Metadata } from "next";
+import { getSiteUrl, DEFAULT_OG_IMAGE } from "@/lib/seo";
 
 // DB-backed page: render at request time, never prerender at build.
 export const dynamic = "force-dynamic";
@@ -15,15 +16,10 @@ export const metadata: Metadata = {
     title: "DeroArts — Software che semplifica la vita",
     description:
       "App, siti e software su misura, curati dall'idea al rilascio.",
-    url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://deroarts.com",
+    url: getSiteUrl(),
     siteName: "DeroArts",
     images: [
-      {
-        url: "/brand/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "DeroArts — Software che semplifica la vita",
-      },
+      { ...DEFAULT_OG_IMAGE, alt: "DeroArts — Software che semplifica la vita" },
     ],
   },
 };

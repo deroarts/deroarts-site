@@ -6,6 +6,7 @@ import ActionButtons from "@/components/ActionButtons";
 import { t, parseGallery } from "@/lib/i18n";
 import { verifyPreviewToken } from "@/lib/preview-token";
 import { sanitizeRichText, htmlToPlainText } from "@/lib/sanitize-html";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo";
 import type { Metadata } from "next";
 
 // DB-backed page: render at request time, never prerender at build.
@@ -44,7 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: desc,
       images: project.cover_image_url
         ? [{ url: project.cover_image_url, width: 1280, height: 800, alt: title }]
-        : [{ url: "/brand/og-image.png", width: 1200, height: 630, alt: "DeroArts" }],
+        : [DEFAULT_OG_IMAGE],
     },
   };
 }
