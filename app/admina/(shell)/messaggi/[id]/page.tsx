@@ -56,7 +56,7 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
   }
 
   const fromAddress = message.project?.from_email || DEFAULT_FROM;
-  // Per le email inoltrate rispondiamo al mittente reale (reply_to_email);
+  // Per le email ricevute rispondiamo al mittente reale (reply_to_email);
   // per i messaggi dal form l'indirizzo è lo stesso `email`.
   const replyTo = message.reply_to_email || message.email;
   const isEmail = message.source === "email";
@@ -83,7 +83,7 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
                   : "bg-green-end/10 text-green-end"
               }`}
             >
-              {isEmail ? "inoltrata" : "dal sito"}
+              {isEmail ? "ricevuta" : "dal sito"}
             </span>
           </h1>
           <p className="text-xs text-gray-400 mt-0.5">
