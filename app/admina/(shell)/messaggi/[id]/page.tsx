@@ -67,9 +67,11 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
           </svg>
         </Link>
         <div className="min-w-0">
-          <h1 className="text-2xl font-bold text-graphite truncate">
-            {isEmail ? "Email" : "Messaggio"}
-            {message.name ? ` di ${message.name}` : ""}
+          <h1 className="text-2xl text-graphite truncate">
+            <span className="font-normal">
+              {isEmail ? "Email" : "Messaggio"} di{" "}
+            </span>
+            <span className="font-bold">{message.name}</span>
           </h1>
         </div>
       </div>
@@ -143,26 +145,34 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
                   className={`flex ${outbound ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap ${
+                    className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
                       outbound
                         ? "bg-green-gradient text-white rounded-br-sm"
                         : "bg-gray-100 text-gray-700 rounded-bl-sm"
                     }`}
                   >
                     <div
-                      className={`text-[11px] font-medium mb-1 ${
+                      className={`text-[11px] font-medium mb-0.5 ${
                         outbound ? "text-white/80" : "text-gray-400"
                       }`}
                     >
-                      {outbound ? "Tu" : m.name} ·{" "}
-                      {m.created_at.toLocaleDateString("it-IT", {
-                        day: "numeric",
-                        month: "short",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {outbound ? "Tu" : m.name}
                     </div>
-                    {m.message}
+                    {/* Testo + orario in linea, stile WhatsApp: l'ora sta in basso
+                        a destra, e l'ultima riga di testo le lascia spazio. */}
+                    <div className="whitespace-pre-wrap">
+                      {m.message}
+                      <span
+                        className={`float-right ml-2 mt-1 text-[10px] leading-none translate-y-1 ${
+                          outbound ? "text-white/70" : "text-gray-400"
+                        }`}
+                      >
+                        {m.created_at.toLocaleTimeString("it-IT", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    </div>
                   </div>
                 </div>
               );
