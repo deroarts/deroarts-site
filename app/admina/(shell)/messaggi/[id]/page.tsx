@@ -52,89 +52,55 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
   const hasConversation = thread.length > 1;
 
   return (
-    <div className="max-w-2xl">
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
+    <div className="max-w-2xl flex flex-col h-[calc(100vh-var(--header-h,4rem)-3rem)]">
+      {/* Header consolidato: titolo + email mittente + azioni (contenuto fisso) */}
+      <div className="flex items-start gap-3 mb-4 flex-shrink-0">
         <Link
           href="/admina/messaggi"
-          className="text-gray-400 hover:text-graphite transition-colors p-1 -m-1"
+          className="text-gray-400 hover:text-graphite transition-colors p-1 -m-1 mt-1 flex-shrink-0"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </Link>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h1 className="text-2xl text-graphite truncate">
             <span className="font-normal">
               {isEmail ? "email" : "messaggio"} di{" "}
             </span>
             <span className="font-bold">{message.name}</span>
           </h1>
-          <p className="text-sm text-green-end mt-0.5">{fromAddress}</p>
+          <p className="text-sm text-green-end mt-0.5 truncate">{fromAddress}</p>
         </div>
-      </div>
-
-      {/* Sender info + quick actions (consolidati in un unico box) */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-4">
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-          <h2 className="text-sm font-semibold text-graphite uppercase tracking-wider">
-            Mittente
-          </h2>
-          <div className="flex flex-wrap items-center gap-2">
-            {message.status !== "handled" && (
-              <form action={updateRequestStatusAction.bind(null, message.id, "handled")}>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-sm font-medium rounded-xl bg-green-gradient text-white hover:opacity-90 transition-opacity"
-                >
-                  Segna come gestito
-                </button>
-              </form>
-            )}
-            {message.status === "handled" && (
-              <form action={updateRequestStatusAction.bind(null, message.id, "read")}>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-sm font-medium rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
-                >
-                  Riapri
-                </button>
-              </form>
-            )}
-            <DeleteMessageButton id={message.id} />
-          </div>
-        </div>
-        <dl className="space-y-3 text-sm">
-          <div className="flex items-center gap-3">
-            <dt className="text-gray-400 w-24 flex-shrink-0">Nome</dt>
-            <dd className="font-medium text-graphite">{message.name}</dd>
-          </div>
-          <div className="flex items-center gap-3">
-            <dt className="text-gray-400 w-24 flex-shrink-0">Email</dt>
-            <dd>
-              <a
-                href={`mailto:${message.email}`}
-                className="text-green-end hover:underline"
+        <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
+          {message.status !== "handled" && (
+            <form action={updateRequestStatusAction.bind(null, message.id, "handled")}>
+              <button
+                type="submit"
+                className="px-4 py-2 text-sm font-medium rounded-xl bg-green-gradient text-white hover:opacity-90 transition-opacity"
               >
-                {message.email}
-              </a>
-            </dd>
-          </div>
-          <div className="flex items-center gap-3">
-            <dt className="text-gray-400 w-24 flex-shrink-0">Casella</dt>
-            <dd className="text-gray-600">{fromAddress}</dd>
-          </div>
-        </dl>
+                Segna come gestito
+              </button>
+            </form>
+          )}
+          {message.status === "handled" && (
+            <form action={updateRequestStatusAction.bind(null, message.id, "read")}>
+              <button
+                type="submit"
+                className="px-4 py-2 text-sm font-medium rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+              >
+                Riapri
+              </button>
+            </form>
+          )}
+          <DeleteMessageButton id={message.id} />
+        </div>
       </div>
 
-      {/* Conversazione (thread) o messaggio singolo */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-4">
-        <h2 className="text-sm font-semibold text-graphite uppercase tracking-wider mb-4">
-          {hasConversation ? "Conversazione" : "Messaggio"}
-        </h2>
-
+      {/* Chat: riempie lo spazio rimanente, solo i messaggi scrollano */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col flex-1 min-h-0">
         {hasConversation ? (
-          <div className="space-y-3 max-h-[28rem] overflow-y-auto pr-1">
+          <div className="space-y-3 overflow-y-auto pr-1 flex-1 min-h-0">
             {thread.map((m) => {
               const outbound = m.direction === "outbound";
               return (
@@ -177,26 +143,28 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
             })}
           </div>
         ) : (
-          <div className="flex justify-start">
-            <div className="max-w-[80%] rounded-2xl rounded-bl-sm bg-gray-100 text-gray-700 px-3 py-2 text-sm leading-relaxed">
-              <div className="text-[11px] font-medium mb-0.5 text-gray-400">
-                {message.name}
-              </div>
-              <div className="whitespace-pre-wrap">
-                {message.message}
-                <span className="float-right ml-2 mt-1 text-[10px] leading-none translate-y-1 text-gray-400">
-                  {message.created_at.toLocaleTimeString("it-IT", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
+          <div className="overflow-y-auto flex-1 min-h-0">
+            <div className="flex justify-start">
+              <div className="max-w-[80%] rounded-2xl rounded-bl-sm bg-gray-100 text-gray-700 px-3 py-2 text-sm leading-relaxed">
+                <div className="text-[11px] font-medium mb-0.5 text-gray-400">
+                  {message.name}
+                </div>
+                <div className="whitespace-pre-wrap">
+                  {message.message}
+                  <span className="float-right ml-2 mt-1 text-[10px] leading-none translate-y-1 text-gray-400">
+                    {message.created_at.toLocaleTimeString("it-IT", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Barra di risposta, dentro lo stesso box: chat unica */}
-        <div className="border-t border-gray-100 mt-4 pt-1">
+        {/* Barra di risposta fissa in fondo (fuori dallo scroll) */}
+        <div className="border-t border-gray-100 mt-3 pt-1 flex-shrink-0">
           <ReplyForm requestId={message.id} />
         </div>
       </div>
