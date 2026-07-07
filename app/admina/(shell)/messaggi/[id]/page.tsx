@@ -69,10 +69,11 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
         <div className="min-w-0">
           <h1 className="text-2xl text-graphite truncate">
             <span className="font-normal">
-              {isEmail ? "Email" : "Messaggio"} di{" "}
+              {isEmail ? "email" : "messaggio"} di{" "}
             </span>
             <span className="font-bold">{message.name}</span>
           </h1>
+          <p className="text-sm text-green-end mt-0.5">{fromAddress}</p>
         </div>
       </div>
 
