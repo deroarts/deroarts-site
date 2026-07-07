@@ -7,6 +7,7 @@ import { getSession } from "@/lib/auth";
 import { getMailAdapter } from "@/lib/adapters";
 import { t } from "@/lib/i18n";
 import { adminReplyHtml, adminReplySubject } from "@/lib/mail/templates";
+import { threadKey } from "@/lib/inbound/thread";
 import { RequestStatus } from "@prisma/client";
 
 const DEFAULT_FROM = process.env.RESEND_FROM || "info@deroarts.com";
@@ -110,12 +111,33 @@ export async function replyToRequestAction(
     };
   }
 
+  // Marca il messaggio originale come risposto+gestito.
   await prisma.request.update({
     where: { id },
     data: {
       replied_at: new Date(),
       status: "handled",
       handled_at: request.handled_at ?? new Date(),
+    },
+  });
+
+  // Salva la risposta come messaggio OUTBOUND nello stesso thread, così la
+  // conversazione è visibile in app (non solo inviata via email). Il thread è
+  // quello dell'interlocutore (toAddress) + argomento normalizzato, coerente
+  // con la thread_key calcolata in ricezione.
+  await prisma.request.create({
+    data: {
+      name: "Tu",
+      email: toAddress,
+      reply_to_email: toAddress,
+      subject,
+      message: bodyText,
+      project_id: request.project_id,
+      source: request.source,
+      direction: "outbound",
+      thread_key: request.thread_key ?? threadKey(toAddress, request.subject),
+      status: "handled",
+      handled_at: new Date(),
     },
   });
 

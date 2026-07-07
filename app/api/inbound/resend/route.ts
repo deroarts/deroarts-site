@@ -3,6 +3,7 @@ import { Webhook } from "standardwebhooks";
 import { prisma } from "@/lib/db/client";
 import { sendPushToAll } from "@/lib/push/send";
 import { parseFrom, aliasLocalPart, bodyToText } from "@/lib/inbound/parse";
+import { threadKey } from "@/lib/inbound/thread";
 
 export const dynamic = "force-dynamic";
 
@@ -119,6 +120,8 @@ export async function POST(request: NextRequest) {
         message,
         project_id: projectId,
         source: "email",
+        direction: "inbound",
+        thread_key: threadKey(email, full.subject),
         status: "new",
         inbound_email_id: emailId,
       },

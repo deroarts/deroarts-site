@@ -50,7 +50,9 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
   const skip = (page - 1) * PAGE_SIZE;
 
   // Build the where clause from all active filters.
-  const where: Prisma.RequestWhereInput = {};
+  // La lista mostra solo i messaggi RICEVUTI (inbound): le risposte inviate
+  // dall'admin (outbound) vivono dentro il thread, non come righe a sé.
+  const where: Prisma.RequestWhereInput = { direction: "inbound" };
   if (statusFilter && ["new", "read", "handled"].includes(statusFilter)) {
     where.status = statusFilter as RequestStatus;
   }
@@ -66,9 +68,9 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
   const [total, newCount, readCount, handledCount, messages, projects] =
     await Promise.all([
       prisma.request.count({ where }),
-      prisma.request.count({ where: { status: "new" } }),
-      prisma.request.count({ where: { status: "read" } }),
-      prisma.request.count({ where: { status: "handled" } }),
+      prisma.request.count({ where: { status: "new", direction: "inbound" } }),
+      prisma.request.count({ where: { status: "read", direction: "inbound" } }),
+      prisma.request.count({ where: { status: "handled", direction: "inbound" } }),
       prisma.request.findMany({
         where,
         include: { project: { select: { slug: true, title: true, from_email: true } } },

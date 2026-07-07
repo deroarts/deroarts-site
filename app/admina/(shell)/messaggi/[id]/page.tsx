@@ -61,6 +61,24 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
   const replyTo = message.reply_to_email || message.email;
   const isEmail = message.source === "email";
 
+  // Carica l'intera conversazione (thread): tutti i messaggi con la stessa
+  // thread_key, in ordine cronologico. Se il thread ha più di un messaggio,
+  // mostriamo la vista chat; altrimenti resta il classico box "Messaggio".
+  const thread = message.thread_key
+    ? await prisma.request.findMany({
+        where: { thread_key: message.thread_key },
+        orderBy: { created_at: "asc" },
+        select: {
+          id: true,
+          message: true,
+          direction: true,
+          name: true,
+          created_at: true,
+        },
+      })
+    : [];
+  const hasConversation = thread.length > 1;
+
   return (
     <div className="max-w-2xl">
       {/* Header */}
@@ -188,14 +206,52 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
         </dl>
       </div>
 
-      {/* Message body */}
+      {/* Conversazione (thread) o messaggio singolo */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-4">
         <h2 className="text-sm font-semibold text-graphite uppercase tracking-wider mb-4">
-          Messaggio
+          {hasConversation ? "Conversazione" : "Messaggio"}
         </h2>
-        <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap border-l-4 border-green-end">
-          {message.message}
-        </div>
+
+        {hasConversation ? (
+          <div className="space-y-3 max-h-[28rem] overflow-y-auto pr-1">
+            {thread.map((m) => {
+              const outbound = m.direction === "outbound";
+              return (
+                <div
+                  key={m.id}
+                  className={`flex ${outbound ? "justify-end" : "justify-start"}`}
+                >
+                  <div
+                    className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap ${
+                      outbound
+                        ? "bg-green-gradient text-white rounded-br-sm"
+                        : "bg-gray-100 text-gray-700 rounded-bl-sm"
+                    }`}
+                  >
+                    <div
+                      className={`text-[11px] font-medium mb-1 ${
+                        outbound ? "text-white/80" : "text-gray-400"
+                      }`}
+                    >
+                      {outbound ? "Tu" : m.name} ·{" "}
+                      {m.created_at.toLocaleDateString("it-IT", {
+                        day: "numeric",
+                        month: "short",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </div>
+                    {m.message}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap border-l-4 border-green-end">
+            {message.message}
+          </div>
+        )}
       </div>
 
       {/* Reply */}

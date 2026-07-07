@@ -150,8 +150,13 @@ reale) con oggetto `Re: <subject>`, inviata via Resend dall'indirizzo `@deroarts
 **Limiti noti (Resend + MX diretto):**
 - Solo email **da quando l'MX punta a Resend** in poi (niente storico Zoho).
 - **Allegati** non importati (solo testo/HTML del corpo) — limite del codice, non di Resend.
-- Le risposte dall'app non sono raggruppate in thread con il messaggio originale
-  (ogni risposta in arrivo è un nuovo messaggio) — miglioria futura.
+- **Conversazioni (thread):** i messaggi con la stessa `thread_key` (interlocutore
+  + oggetto normalizzato senza "Re:") sono raggruppati e mostrati come chat nel
+  dettaglio (bolle: ricevuti a sinistra, risposte admin a destra). Le risposte
+  inviate dal pannello sono salvate come messaggi `direction=outbound` nello stesso
+  thread. La lista mostra solo i messaggi `inbound` (le risposte vivono nel thread).
+  La chat ha scroll interno (max-height) per non allungare la pagina. Vedi
+  `lib/inbound/thread.ts` (calcolo `thread_key`).
 
 **Variabili:** `RESEND_WEBHOOK_SECRET` (segreto, dal webhook Resend). Nessun
 indirizzo `.resend.app` intermedio: la ricezione è via MX diretto del dominio.

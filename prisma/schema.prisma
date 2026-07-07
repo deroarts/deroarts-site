@@ -38,10 +38,18 @@ enum RequestStatus {
   handled
 }
 
-// Come è entrato il messaggio: dal form del sito, o email inoltrata (Zoho→Resend).
+// Come è entrato il messaggio: dal form del sito, o email ricevuta (Resend).
 enum RequestSource {
   site
   email
+}
+
+// Direzione del messaggio in una conversazione:
+// - inbound  = ricevuto (dall'utente / dal form / da un'app)
+// - outbound = inviato dall'admin come risposta dal pannello Messaggi
+enum MessageDirection {
+  inbound
+  outbound
 }
 
 // ─── Models ───────────────────────────────────────────────────────────────────
@@ -119,10 +127,17 @@ model Request {
   reply_to_email String?
   // ID Resend della email ricevuta — evita doppioni se il webhook ritenta.
   inbound_email_id String? @unique
+  // Chiave di raggruppamento della conversazione: tutti i messaggi con lo stesso
+  // thread_key (stesso interlocutore + argomento) formano un unico thread in UI.
+  // Null = messaggio isolato (retrocompatibile con i dati esistenti).
+  thread_key String?
+  // Direzione: inbound = ricevuto, outbound = risposta inviata dall'admin.
+  direction  MessageDirection @default(inbound)
 
   @@index([project_id])
   @@index([status])
   @@index([source])
+  @@index([thread_key])
   @@map("requests")
 }
 
