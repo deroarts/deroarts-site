@@ -93,16 +93,23 @@ risposta automatica al cliente. In più scatta la **notifica push** (vedi §5).
 Percorso: `/admina/messaggi` (evoluzione della vecchia `/admina/richieste`, che
 resta come alias/redirect). Dati dalla tabella `requests` (nessun dato mock).
 
-Funzioni standard di gestione posta:
-- **Tabella** allo stile admin nuovo (griglia, head bar verde `green-deep`,
-  colonne centrate, riga cliccabile).
-- **Filtri:** per stato (Tutte / Nuove / Lette / Gestite) e per **progetto**.
-- **Ricerca** per nome, email, testo.
-- **Badge progetto** colorato su ogni riga (o "Generale").
-- **Stato letto/non-letto** evidenziato; badge conteggio "nuovi" nella nav.
-- **Dettaglio messaggio:** info mittente, testo, progetto, e **risposta da app**
-  (parte da `from_email` del progetto via Resend, con la mail del cliente in reply-to).
-- **Azioni:** segna letta/gestita, elimina.
+Funzioni di gestione posta:
+- **Tabella** stile admin (griglia, head bar `green-deep`, righe a colore
+  alternato, riga interamente cliccabile → apre la conversazione).
+- **Una riga per UTENTE (email):** tutti i messaggi inbound dello stesso indirizzo
+  sono raggruppati in una sola riga (rappresentata dal messaggio più recente).
+  Nessuna paginazione: si scorre. Colonne: Data · Nome · Email · Inviato a
+  (casella @deroarts destinataria) · Progetto (solo testo, "—" se assente).
+- **Pallino verde lampeggiante** (prima colonna) = ci sono messaggi non letti da
+  quell'utente; la riga è **in grassetto**. Aprendo la conversazione, tutti i
+  messaggi `new` di quell'email diventano `read` → pallino e grassetto spariscono.
+- **Filtri:** ricerca (nome/email/testo) + progetto, su una riga; pulsante reset.
+  La UI dei filtri per stato (Nuovi/Letti/Gestiti) è stata **rimossa**; il campo
+  `status` resta nel DB solo per pilotare il pallino non-letto.
+- **Dettaglio = chat:** conversazione a bolle (ricevuti sx, risposte dx) con orario
+  stile WhatsApp, barra di invio in fondo (Enter invia), pulsante "copia
+  conversazione". La risposta parte da `from_email` del progetto via Resend.
+- **Azioni:** segna gestito, elimina (icona cestino con conferma, anche in tabella).
 
 ---
 

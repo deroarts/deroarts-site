@@ -12,14 +12,12 @@ interface Props {
   projects: ProjectOption[];
   currentProjectId: string;
   currentQuery: string;
-  currentStatus: string;
 }
 
 export default function MessaggiFilters({
   projects,
   currentProjectId,
   currentQuery,
-  currentStatus,
 }: Props) {
   const router = useRouter();
   const [query, setQuery] = useState(currentQuery);
@@ -27,7 +25,6 @@ export default function MessaggiFilters({
   // Build a URL from the current filter set, resetting pagination.
   function navigate(next: { projectId?: string; q?: string }) {
     const p = new URLSearchParams();
-    if (currentStatus) p.set("status", currentStatus);
     const projectId =
       next.projectId !== undefined ? next.projectId : currentProjectId;
     const q = next.q !== undefined ? next.q : query;
@@ -45,7 +42,7 @@ export default function MessaggiFilters({
           e.preventDefault();
           navigate({ q: query });
         }}
-        className="relative flex-1 min-w-0 sm:max-w-xs"
+        className="relative w-full sm:max-w-xs"
       >
         <svg
           className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
@@ -64,7 +61,26 @@ export default function MessaggiFilters({
         />
       </form>
 
-      {/* Project filter */}
+      {/* Reset / aggiorna: azzera cerca + filtri e ricarica la lista */}
+      <button
+        type="button"
+        onClick={() => {
+          setQuery("");
+          router.push("/admina/messaggi");
+        }}
+        title="Azzera filtri e aggiorna"
+        aria-label="Azzera filtri e aggiorna"
+        className="flex-shrink-0 p-2 rounded-xl border border-gray-200 bg-white text-gray-500 hover:text-graphite hover:bg-gray-50 transition-colors"
+      >
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+      </button>
+
+      {/* Spazio flessibile → spinge il filtro progetti a destra */}
+      <div className="flex-1" />
+
+      {/* Project filter — allineato a destra con la tabella */}
       <div className="relative flex-shrink-0">
         <select
           value={currentProjectId}

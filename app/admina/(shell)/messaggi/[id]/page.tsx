@@ -22,14 +22,14 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
 
   if (!message) notFound();
 
-  // Auto-mark as read on first open (don't downgrade a handled message).
-  if (message.status === "new") {
-    await prisma.request.update({
-      where: { id: message.id },
-      data: { status: "read" },
-    });
-    message.status = "read";
-  }
+  // Aprendo la conversazione, segna come letti TUTTI i messaggi ancora "new"
+  // dello stesso utente (stessa email): così il pallino "nuovi messaggi" nella
+  // lista scompare per quella riga.
+  await prisma.request.updateMany({
+    where: { email: message.email, direction: "inbound", status: "new" },
+    data: { status: "read" },
+  });
+  if (message.status === "new") message.status = "read";
 
   const fromAddress = message.project?.from_email || DEFAULT_FROM;
   const isEmail = message.source === "email";
