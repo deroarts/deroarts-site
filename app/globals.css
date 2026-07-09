@@ -18,12 +18,14 @@
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Safety net contro lo scroll orizzontale accidentale su mobile.
+       Sta su <html> (non su <body>) così <body> non diventa uno scroll
+       container: altrimenti `position: sticky` sull'header si romperebbe. */
+    overflow-x: hidden;
   }
 
   body {
     @apply bg-light-surface text-graphite;
-    /* Safety net: never allow accidental horizontal scroll on mobile. */
-    overflow-x: hidden;
   }
 
   /* iOS Safari auto-zooms on any focused control whose font is < 16px.
