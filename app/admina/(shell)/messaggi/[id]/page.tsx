@@ -94,7 +94,7 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
             <form action={updateRequestStatusAction.bind(null, message.id, "handled")}>
               <button
                 type="submit"
-                className="px-4 py-2 text-sm font-medium rounded-xl bg-green-gradient text-white hover:opacity-90 transition-opacity"
+                className="px-4 py-2 text-sm font-medium rounded-xl bg-green-deep text-white hover:opacity-90 transition-opacity"
               >
                 Segna come gestito
               </button>

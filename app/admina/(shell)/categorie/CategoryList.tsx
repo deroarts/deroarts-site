@@ -121,7 +121,7 @@ export default function CategoryList({
           />
           <button
             type="submit"
-            className="px-4 py-2 rounded-lg bg-green-gradient text-white text-sm font-medium hover:opacity-90 transition-opacity"
+            className="px-4 py-2 rounded-lg bg-green-deep text-white text-sm font-medium hover:opacity-90 transition-opacity"
           >
             Aggiungi
           </button>
@@ -193,7 +193,7 @@ export default function CategoryList({
                       <button
                         onClick={() => submitRename(cat.id)}
                         disabled={isPending}
-                        className="text-xs px-3 py-1.5 rounded-lg bg-green-gradient text-white font-medium hover:opacity-90"
+                        className="text-xs px-3 py-1.5 rounded-lg bg-green-deep text-white font-medium hover:opacity-90"
                       >
                         Salva
                       </button>

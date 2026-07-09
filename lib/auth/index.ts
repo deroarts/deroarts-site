@@ -32,3 +32,14 @@ export async function logout() {
 export async function getSession() {
   return getAuthAdapter().getSession();
 }
+
+/**
+ * True se la richiesta è autorizzata come admin.
+ * In sviluppo con DEV_UA_SWITCH=true non esiste una sessione (accesso libero per
+ * il DevSwitcher): in quel caso l'admin è considerato autorizzato. In produzione
+ * (flag assente) la sessione resta obbligatoria.
+ */
+export async function requireAdmin(): Promise<boolean> {
+  if (process.env.DEV_UA_SWITCH === "true") return true;
+  return Boolean(await getSession());
+}

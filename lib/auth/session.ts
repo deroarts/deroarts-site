@@ -18,13 +18,16 @@ export function getSessionSecret(): string {
   return s;
 }
 
+/** Durata della sessione admin: 30 giorni. */
+export const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30;
+
 /** Cookie options for the session. */
-export function sessionCookieOptions(remember: boolean = true) {
+export function sessionCookieOptions() {
   return {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax" as const,
     path: "/",
-    maxAge: remember ? 60 * 60 * 24 * 30 : undefined, // 30 days or session-only
+    maxAge: SESSION_TTL_SECONDS, // sempre 30 giorni
   };
 }

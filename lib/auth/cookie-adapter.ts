@@ -7,6 +7,7 @@ import {
   SessionData,
   getSessionSecret,
   sessionCookieOptions,
+  SESSION_TTL_SECONDS,
 } from "./session";
 
 /**
@@ -16,7 +17,7 @@ import {
  * when NODE_ENV !== "production", a plain-text value.
  */
 export class CookieAuthAdapter implements AuthAdapter {
-  async login(email: string, password: string, remember = true): Promise<boolean> {
+  async login(email: string, password: string): Promise<boolean> {
     const adminEmail = process.env.ADMIN_EMAIL;
     const adminPassword = process.env.ADMIN_PASSWORD;
 
@@ -38,10 +39,10 @@ export class CookieAuthAdapter implements AuthAdapter {
     const data: SessionData = { email: adminEmail, loggedIn: true };
     const sealed = await sealData(data, {
       password: getSessionSecret(),
-      ttl: remember ? 60 * 60 * 24 * 30 : 60 * 60 * 8, // 30d / 8h
+      ttl: SESSION_TTL_SECONDS, // 30 giorni, uniforme
     });
 
-    cookies().set(SESSION_COOKIE, sealed, sessionCookieOptions(remember));
+    cookies().set(SESSION_COOKIE, sealed, sessionCookieOptions());
     return true;
   }
 

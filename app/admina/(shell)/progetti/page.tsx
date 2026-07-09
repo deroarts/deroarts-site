@@ -70,7 +70,7 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
         </div>
         <Link
           href="/admina/progetti/new"
-          className="px-4 py-2 rounded-xl bg-green-gradient text-white text-sm font-semibold hover:opacity-90 transition-opacity inline-flex items-center gap-2"
+          className="px-4 py-2 rounded-xl bg-green-deep text-white text-sm font-semibold hover:opacity-90 transition-opacity inline-flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

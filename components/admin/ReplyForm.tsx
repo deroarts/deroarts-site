@@ -13,7 +13,7 @@ function SendButton() {
       type="submit"
       disabled={pending}
       title="Invia risposta"
-      className="flex-shrink-0 w-10 h-10 rounded-full bg-green-gradient text-white grid place-items-center hover:opacity-90 transition-opacity disabled:opacity-60"
+      className="flex-shrink-0 w-10 h-10 rounded-full bg-green-deep text-white grid place-items-center hover:opacity-90 transition-opacity disabled:opacity-60"
     >
       {pending ? (
         <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">

@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { getStorageAdapter } from "@/lib/adapters";
 import { validateUpload, compressImage } from "@/lib/image";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
-  // Auth guard — only admin sessions may upload
-  const session = await getSession();
-  if (!session) {
+  // Auth guard — solo admin può caricare (in dev con DEV_UA_SWITCH è libero).
+  if (!(await requireAdmin())) {
     return NextResponse.json({ error: "Non autorizzato." }, { status: 401 });
   }
 
