@@ -7,13 +7,12 @@ export async function loginAction(
   _prev: { error: string | null },
   formData: FormData
 ): Promise<{ error: string | null }> {
-  const email = (formData.get("email") as string | null) ?? "";
-  const password = (formData.get("password") as string | null) ?? "";
-  const remember = formData.get("remember") === "on";
+  const nickname = (formData.get("nickname") as string | null) ?? "";
+  const pin = (formData.get("pin") as string | null) ?? "";
 
-  const ok = await login(email, password, remember);
+  const ok = await login(nickname, pin);
   if (!ok) {
-    return { error: "Email o password non corretti." };
+    return { error: "Nickname o PIN non corretti." };
   }
 
   redirect("/admina/progetti");

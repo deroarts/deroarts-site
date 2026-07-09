@@ -21,8 +21,8 @@ export function getAuthAdapter(): AuthAdapter {
 
 // ── Convenience helpers (used by server actions and layouts) ─────────────────
 
-export async function login(email: string, password: string, remember = true) {
-  return getAuthAdapter().login(email, password, remember);
+export async function login(nickname: string, pin: string, remember = true) {
+  return getAuthAdapter().login(nickname, pin, remember);
 }
 
 export async function logout() {

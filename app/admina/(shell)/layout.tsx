@@ -13,7 +13,7 @@ export default async function ShellLayout({
   ]);
 
   return (
-    <AdminShell adminEmail={session?.email} unreadCount={unreadCount}>
+    <AdminShell adminNickname={session?.nickname} unreadCount={unreadCount}>
       {children}
     </AdminShell>
   );

@@ -6,7 +6,8 @@ import type { ResponseCookies } from "next/dist/compiled/@edge-runtime/cookies";
 export const SESSION_COOKIE = "deroarts_admin";
 
 export interface SessionData {
-  email: string;
+  /** Nickname admin loggato (es. "dero"). */
+  nickname: string;
   loggedIn: boolean;
 }
 
@@ -18,8 +19,12 @@ export function getSessionSecret(): string {
   return s;
 }
 
-/** Durata della sessione admin: 30 giorni. */
-export const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30;
+/**
+ * Durata della sessione admin: 1 anno. Una volta effettuato l'accesso, il
+ * dispositivo resta autenticato "sempre" fino al logout esplicito (il cookie
+ * viene rinnovato a ogni accesso).
+ */
+export const SESSION_TTL_SECONDS = 60 * 60 * 24 * 365;
 
 /** Cookie options for the session. */
 export function sessionCookieOptions() {
@@ -28,6 +33,6 @@ export function sessionCookieOptions() {
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax" as const,
     path: "/",
-    maxAge: SESSION_TTL_SECONDS, // sempre 30 giorni
+    maxAge: SESSION_TTL_SECONDS, // 1 anno → resta loggato sul dispositivo
   };
 }

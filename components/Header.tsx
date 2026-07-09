@@ -55,6 +55,16 @@ export default function Header() {
             >
               Contatti
             </Link>
+            <Link
+              href="/admina"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-green-end/40 text-green-start text-sm font-semibold hover:bg-green-end/10 transition-colors"
+              title="Area amministratore"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 11c1.657 0 3-1.343 3-3S13.657 5 12 5 9 6.343 9 8s1.343 3 3 3zm0 0c-2.761 0-5 1.79-5 4v1h10v-1c0-2.21-2.239-4-5-4z" />
+              </svg>
+              Admin
+            </Link>
           </nav>
 
           {/* Mobile hamburger */}
@@ -86,7 +96,7 @@ export default function Header() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                className={`px-3 py-3 rounded-lg text-sm font-medium transition-colors duration-200 ${
                   isActive(link.href)
                     ? "bg-white/10 text-green-start"
                     : "text-gray-300 hover:bg-white/5 hover:text-white"
@@ -95,6 +105,16 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
+            <Link
+              href="/admina"
+              onClick={() => setMenuOpen(false)}
+              className="mt-1 flex items-center gap-2 px-3 py-3 rounded-lg text-sm font-semibold text-green-start border border-green-end/40 hover:bg-green-end/10 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 11c1.657 0 3-1.343 3-3S13.657 5 12 5 9 6.343 9 8s1.343 3 3 3zm0 0c-2.761 0-5 1.79-5 4v1h10v-1c0-2.21-2.239-4-5-4z" />
+              </svg>
+              Admin
+            </Link>
           </nav>
         </div>
       )}

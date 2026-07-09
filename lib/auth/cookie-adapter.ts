@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { sealData, unsealData } from "iron-session";
 import bcrypt from "bcryptjs";
+import { prisma } from "@/lib/db/client";
 import type { AuthAdapter } from "./adapter";
 import {
   SESSION_COOKIE,
@@ -10,36 +11,35 @@ import {
   SESSION_TTL_SECONDS,
 } from "./session";
 
+/** Chiave stabile della riga single-row delle credenziali admin. */
+export const ADMIN_CRED_KEY = "admin";
+
 /**
- * CookieAuthAdapter — stores the session as an iron-session sealed cookie.
- * Credentials are read from ADMIN_EMAIL / ADMIN_PASSWORD env vars.
- * ADMIN_PASSWORD may be a bcrypt hash (recommended for production) or, only
- * when NODE_ENV !== "production", a plain-text value.
+ * CookieAuthAdapter — sessione come cookie iron-session sigillato.
+ * Le credenziali (nickname + PIN) vivono nella tabella `admin_credentials`
+ * (PIN salvato come hash bcrypt) e sono modificabili da Impostazioni.
+ * Fallback di bootstrap: se la tabella è vuota o irraggiungibile, usa
+ * ADMIN_NICKNAME / ADMIN_PIN dall'ambiente (se presenti) così il primo
+ * accesso resta possibile.
  */
 export class CookieAuthAdapter implements AuthAdapter {
-  async login(email: string, password: string): Promise<boolean> {
-    const adminEmail = process.env.ADMIN_EMAIL;
-    const adminPassword = process.env.ADMIN_PASSWORD;
+  async login(identifier: string, secret: string): Promise<boolean> {
+    const nickname = identifier.trim();
+    const pin = secret.trim();
+    if (!nickname || !pin) return false;
 
-    if (!adminEmail || !adminPassword) return false;
-    if (email.trim().toLowerCase() !== adminEmail.trim().toLowerCase()) return false;
+    const cred = await getAdminCredential();
+    if (!cred) return false;
 
-    let passwordOk: boolean;
-    if (adminPassword.startsWith("$2")) {
-      // bcrypt hash (production-safe)
-      passwordOk = await bcrypt.compare(password, adminPassword);
-    } else {
-      // Plain text — only allowed outside production
-      if (process.env.NODE_ENV === "production") return false;
-      passwordOk = password === adminPassword;
-    }
+    if (nickname.toLowerCase() !== cred.nickname.trim().toLowerCase()) return false;
 
-    if (!passwordOk) return false;
+    const pinOk = await bcrypt.compare(pin, cred.pin_hash);
+    if (!pinOk) return false;
 
-    const data: SessionData = { email: adminEmail, loggedIn: true };
+    const data: SessionData = { nickname: cred.nickname, loggedIn: true };
     const sealed = await sealData(data, {
       password: getSessionSecret(),
-      ttl: SESSION_TTL_SECONDS, // 30 giorni, uniforme
+      ttl: SESSION_TTL_SECONDS,
     });
 
     cookies().set(SESSION_COOKIE, sealed, sessionCookieOptions());
@@ -62,4 +62,28 @@ export class CookieAuthAdapter implements AuthAdapter {
       return null;
     }
   }
+}
+
+/**
+ * Credenziali admin correnti: prima dal DB, poi (bootstrap) dall'ambiente.
+ * Restituisce sempre nickname + hash bcrypt del PIN, mai il PIN in chiaro.
+ */
+async function getAdminCredential(): Promise<{ nickname: string; pin_hash: string } | null> {
+  try {
+    const row = await prisma.adminCredential.findUnique({
+      where: { key: ADMIN_CRED_KEY },
+      select: { nickname: true, pin_hash: true },
+    });
+    if (row) return row;
+  } catch {
+    // DB non raggiungibile → prova il fallback d'ambiente sotto.
+  }
+
+  const envNick = process.env.ADMIN_NICKNAME;
+  const envPin = process.env.ADMIN_PIN;
+  if (envNick && envPin) {
+    const pin_hash = envPin.startsWith("$2") ? envPin : await bcrypt.hash(envPin, 10);
+    return { nickname: envNick, pin_hash };
+  }
+  return null;
 }

@@ -164,6 +164,19 @@ model NotificationSetting {
   @@map("notification_settings")
 }
 
+// Credenziali di accesso admin (nickname + PIN). Single-row keyed by una
+// stringa stabile ("admin"): permette di modificare il PIN da Impostazioni
+// senza toccare codice/deploy. Il PIN è salvato SOLO come hash bcrypt, mai in
+// chiaro. RLS abilitata (deny-by-default): l'app scrive via Prisma (owner).
+model AdminCredential {
+  key        String   @id // stringa stabile "admin"
+  nickname   String
+  pin_hash   String
+  updated_at DateTime @updatedAt
+
+  @@map("admin_credentials")
+}
+
 model DevOutbox {
   id         String   @id @default(cuid())
   to         String
