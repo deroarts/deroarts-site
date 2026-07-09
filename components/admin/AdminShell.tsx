@@ -163,13 +163,13 @@ export default function AdminShell({
         />
       )}
 
-      {/* ── Mobile drawer ────────────────────────────────────────────────── */}
+      {/* ── Mobile drawer (si apre da destra, dove sta il pulsante menu) ─── */}
       <aside
-        className={`md:hidden fixed inset-y-0 left-0 z-50 w-64 bg-dark-green-gradient flex flex-col shadow-2xl transition-transform duration-300 ${
-          drawerOpen ? "translate-x-0" : "-translate-x-full"
+        className={`md:hidden fixed inset-y-0 right-0 z-50 w-64 bg-dark-green-gradient flex flex-col shadow-2xl transition-transform duration-300 ${
+          drawerOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex items-center justify-between px-5 py-5 border-b border-white/10 pt-safe">
+        <div className="flex items-center justify-between gap-2 pl-5 pr-2 py-3 border-b border-white/10 pt-safe">
           <Image
             src="/brand/logo-horizontal-on-dark.svg"
             alt="DeroArts"
@@ -180,9 +180,9 @@ export default function AdminShell({
           <button
             onClick={() => setDrawerOpen(false)}
             aria-label="Chiudi menu"
-            className="p-2 -m-2 text-white/60 hover:text-white transition-colors"
+            className="flex items-center justify-center w-11 h-11 rounded-full text-white/70 hover:text-white active:bg-white/10 transition-colors flex-shrink-0"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -213,44 +213,49 @@ export default function AdminShell({
 
       {/* ── Main content ─────────────────────────────────────────────────── */}
       <div className="flex flex-col flex-1 min-w-0 overflow-auto">
-        {/* Mobile top bar */}
-        <header className="md:hidden flex items-center gap-3 px-4 py-3 bg-white border-b border-gray-100 shadow-sm pt-safe">
-          <button
-            onClick={() => setDrawerOpen(true)}
-            className="text-graphite hover:text-green-end transition-colors p-2 -m-1"
-            aria-label="Apri menu"
-          >
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-          <Image
-            src="/brand/symbol.svg"
-            alt="DeroArts"
-            width={28}
-            height={28}
-            className="h-7 w-7"
-          />
-          <span className="text-sm font-semibold text-graphite flex-1">Admin</span>
-
-          {/* Unread bell — mobile */}
-          {unreadCount > 0 && (
+        {/* Mobile top bar — fissa in cima allo scroll (feel nativo).
+            Campanella a sinistra · logo centrato · menu a destra. */}
+        <header className="md:hidden sticky top-0 z-30 grid grid-cols-[1fr_auto_1fr] items-center px-2 py-2 bg-white/95 backdrop-blur border-b border-gray-100 shadow-sm pt-safe">
+          {/* Sinistra: campanella notifiche */}
+          <div className="justify-self-start">
             <Link
               href="/admina/messaggi?status=new"
-              className="relative text-gray-400 hover:text-graphite transition-colors"
-              title={`${unreadCount} messaggio/i nuovi`}
+              className="relative flex items-center justify-center w-11 h-11 rounded-full text-gray-500 hover:text-graphite active:bg-gray-100 transition-colors"
+              title={unreadCount > 0 ? `${unreadCount} messaggio/i nuovi` : "Messaggi"}
+              aria-label="Notifiche"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
               </svg>
-              <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-0.5 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center leading-none">
-                {unreadCount > 99 ? "99+" : unreadCount}
-              </span>
+              {unreadCount > 0 && (
+                <span className="absolute top-1.5 right-1.5 min-w-[16px] h-[16px] px-0.5 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center leading-none">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              )}
             </Link>
-          )}
+          </div>
+
+          {/* Centro: logo + wordmark */}
+          <div className="justify-self-center flex items-center gap-2">
+            <Image src="/brand/symbol.svg" alt="DeroArts" width={28} height={28} className="h-7 w-7" />
+            <span className="text-sm font-semibold text-graphite">Admin</span>
+          </div>
+
+          {/* Destra: menu (drawer) */}
+          <div className="justify-self-end">
+            <button
+              onClick={() => setDrawerOpen(true)}
+              className="flex items-center justify-center w-11 h-11 rounded-full text-graphite hover:text-green-end active:bg-gray-100 transition-colors"
+              aria-label="Apri menu"
+            >
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
         </header>
 
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 p-4 md:p-6">{children}</main>
       </div>
     </div>
   );

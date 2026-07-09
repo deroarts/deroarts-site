@@ -62,11 +62,10 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Show the U/A pill everywhere (incl. prod) when the public flag is on, OR in
-  // local dev. It is navigation only — the auth bypass is a separate dev switch.
-  const showDevSwitcher =
-    process.env.NEXT_PUBLIC_SHOW_UA_SWITCH === "true" ||
-    process.env.DEV_UA_SWITCH === "true";
+  // Pill U/A: visibile SOLO quando NEXT_PUBLIC_SHOW_UA_SWITCH === "true".
+  // È navigazione soltanto — il bypass di login (DEV_UA_SWITCH) è uno switch
+  // separato: così si può nascondere la pill senza togliere l'accesso dev.
+  const showDevSwitcher = process.env.NEXT_PUBLIC_SHOW_UA_SWITCH === "true";
 
   return (
     <html lang="it" className={`${poppins.variable} ${fraunces.variable}`}>

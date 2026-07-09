@@ -2,9 +2,11 @@ import Link from "next/link";
 import { prisma } from "@/lib/db/client";
 import { t } from "@/lib/i18n";
 import { formatDateLong as formatDate } from "@/lib/dates";
+import { htmlToPlainText } from "@/lib/sanitize-html";
 import type { Prisma } from "@prisma/client";
 import MessaggiFilters from "@/components/admin/MessaggiFilters";
 import DeleteMessageButton from "@/components/admin/DeleteMessageButton";
+import MessageCardMobile from "@/components/admin/MessageCardMobile";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Messaggi | Admin DeroArts" };
@@ -81,7 +83,7 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
   return (
     <div className="flex flex-col h-[calc(100vh-var(--header-h,4rem))]">
       <div className="mb-4 flex-shrink-0">
-        <h1 className="text-2xl font-bold text-graphite">Messaggi</h1>
+        <h1 className="text-2xl font-bold text-graphite text-center md:text-left">Messaggi</h1>
       </div>
 
       {/* Filtri: cerca a sinistra + filtro progetti, su una sola riga */}
@@ -108,13 +110,12 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
           <ul className="md:hidden overflow-y-auto flex-1 min-h-0 space-y-2.5">
             {messages.map(({ rep, hasUnread }) => (
               <li key={rep.id}>
-                <Link
+                <MessageCardMobile
+                  id={rep.id}
                   href={`/admina/messaggi/${rep.id}`}
-                  className={`block bg-white rounded-2xl border shadow-sm p-4 active:scale-[0.99] transition-transform ${
-                    hasUnread ? "border-green-end/30" : "border-gray-100"
-                  }`}
+                  unread={hasUnread}
                 >
-                  <div className="flex items-center gap-2 min-w-0 mb-1.5">
+                  <div className="flex items-center gap-2 min-w-0">
                     {hasUnread && (
                       <span
                         className="w-2.5 h-2.5 rounded-full bg-green-end flex-shrink-0 animate-pulse"
@@ -122,30 +123,27 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                       />
                     )}
                     <span
-                      className={`truncate ${
+                      className={`truncate flex-1 ${
                         hasUnread ? "font-semibold text-graphite" : "font-medium text-gray-700"
                       }`}
                     >
                       {rep.name}
                     </span>
-                  </div>
-                  <p className="text-xs text-gray-400 truncate mb-0.5">{rep.email}</p>
-                  <p className="text-[11px] text-gray-400 truncate mb-2">
-                    <span className="text-gray-300">inviato a:</span> {mailboxFor(rep.project)}
-                  </p>
-                  <div className="flex items-center justify-between gap-2">
-                    {rep.project ? (
-                      <span className="text-xs font-medium text-green-end truncate max-w-[60%]">
-                        {t(rep.project.title)}
-                      </span>
-                    ) : (
-                      <span className="text-xs text-gray-400">—</span>
-                    )}
-                    <span className="text-[11px] text-gray-400 whitespace-nowrap">
+                    <span className="text-[11px] text-gray-400 whitespace-nowrap flex-shrink-0">
                       {formatDate(rep.created_at)}
                     </span>
                   </div>
-                </Link>
+                  {htmlToPlainText(rep.message) && (
+                    <p className="text-xs text-gray-500 truncate mt-1">
+                      {htmlToPlainText(rep.message)}
+                    </p>
+                  )}
+                  {rep.project && (
+                    <p className="text-xs font-medium text-green-end truncate mt-1">
+                      {t(rep.project.title)}
+                    </p>
+                  )}
+                </MessageCardMobile>
               </li>
             ))}
           </ul>

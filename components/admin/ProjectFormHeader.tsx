@@ -32,7 +32,7 @@ export default function ProjectFormHeader({
   previewIsSigned,
 }: Props) {
   return (
-    <div className="sticky top-0 z-20 -mx-6 -mt-6 px-6 py-4 mb-6 bg-light-surface/95 backdrop-blur border-b border-gray-200">
+    <div className="md:sticky md:top-0 z-20 -mx-4 -mt-4 px-4 md:-mx-6 md:-mt-6 md:px-6 py-4 mb-6 bg-light-surface/95 md:backdrop-blur border-b border-gray-200">
       <div className="flex items-center justify-between gap-4 max-w-3xl">
         <div className="flex items-center gap-3 min-w-0">
           <Link

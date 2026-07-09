@@ -153,7 +153,7 @@ export default function CategoryList({
               <span className="w-6" />
               <span className="flex-1">Nome</span>
               <span className="w-14 text-center">Ordine</span>
-              <span className="w-20 text-center">Progetti</span>
+              <span className="w-20 text-center hidden sm:block">Progetti</span>
               <span className="w-28" />
             </div>
             <ul className="divide-y divide-gray-50">
@@ -212,13 +212,13 @@ export default function CategoryList({
                       <span className="w-14 text-center text-xs font-mono text-gray-400 bg-gray-50 rounded px-1.5 py-0.5">
                         {cat.sort_order}
                       </span>
-                      <span className="w-20 text-center text-xs text-gray-400">
+                      <span className="w-20 text-center text-xs text-gray-400 hidden sm:block">
                         {cat._count.projects}
                       </span>
                       <div className="w-28 flex items-center justify-end gap-1">
                         <button
                           onClick={() => startEdit(cat)}
-                          className="text-xs text-gray-400 hover:text-green-end transition-colors px-2 py-1 rounded hover:bg-gray-50"
+                          className="text-xs text-gray-400 hover:text-green-end transition-colors px-2 py-1.5 rounded hover:bg-gray-50"
                         >
                           Rinomina
                         </button>
@@ -227,7 +227,7 @@ export default function CategoryList({
                             handleDelete(cat.id, cat._count.projects)
                           }
                           disabled={isPending}
-                          className="text-xs text-gray-400 hover:text-red-500 transition-colors px-2 py-1 rounded hover:bg-red-50"
+                          className="text-xs text-gray-400 hover:text-red-500 transition-colors px-2 py-1.5 rounded hover:bg-red-50"
                         >
                           Elimina
                         </button>

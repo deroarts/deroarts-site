@@ -187,7 +187,7 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
         )}
 
         {/* Barra di risposta fissa in fondo (fuori dallo scroll) */}
-        <div className="border-t border-gray-100 mt-3 pt-1 flex-shrink-0">
+        <div className="border-t border-gray-100 mt-3 pt-1 pb-safe flex-shrink-0">
           <ReplyForm requestId={message.id} />
         </div>
       </div>
