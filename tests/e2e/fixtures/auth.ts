@@ -12,8 +12,8 @@ export const test = base.extend<{ adminPage: import("@playwright/test").Page }>(
     if (!secret || secret.length < 32) {
       throw new Error("SESSION_SECRET (>=32 chars) required to seal the test session cookie");
     }
-    const email = process.env.ADMIN_EMAIL ?? "admin@deroarts.com";
-    const sealed = await sealData({ email, loggedIn: true }, { password: secret });
+    const nickname = process.env.ADMIN_NICKNAME ?? "dero";
+    const sealed = await sealData({ nickname, loggedIn: true }, { password: secret });
 
     const url = new URL(baseURL ?? "http://localhost:5001");
     await page.context().addCookies([

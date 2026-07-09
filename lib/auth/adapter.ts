@@ -8,8 +8,9 @@ export interface AuthAdapter {
   /**
    * Validate credentials and, on success, write the session cookie.
    * `identifier` = nickname admin, `secret` = PIN.
+   * La sessione è sempre persistente (vedi SESSION_TTL_SECONDS).
    */
-  login(identifier: string, secret: string, remember?: boolean): Promise<boolean>;
+  login(identifier: string, secret: string): Promise<boolean>;
   /** Destroy the session cookie. */
   logout(): Promise<void>;
   /** Read and validate the current session cookie. Returns null if absent or invalid. */
