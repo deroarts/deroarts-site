@@ -69,7 +69,7 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
       .join("\n\n");
 
   return (
-    <div className="max-w-2xl flex flex-col h-[calc(100vh-var(--header-h,4rem))]">
+    <div className="w-full max-w-2xl min-w-0 flex flex-col h-[calc(100vh-var(--header-h,4rem))]">
       {/* Header consolidato: titolo + email mittente + azioni (contenuto fisso) */}
       <div className="flex items-start gap-3 mb-4 flex-shrink-0">
         <Link
@@ -129,10 +129,10 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
               return (
                 <div
                   key={m.id}
-                  className={`flex ${outbound ? "justify-end" : "justify-start"}`}
+                  className={`flex min-w-0 ${outbound ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
+                    className={`max-w-[80%] min-w-0 rounded-2xl px-3 py-2 text-sm leading-relaxed ${
                       outbound
                         ? "bg-green-gradient text-white rounded-br-sm"
                         : "bg-gray-100 text-gray-700 rounded-bl-sm"
@@ -145,20 +145,20 @@ export default async function MessaggioDetailPage({ params }: PageProps) {
                     >
                       {outbound ? "Tu" : m.name}
                     </div>
-                    {/* Testo + orario in linea, stile WhatsApp: l'ora sta in basso
-                        a destra, e l'ultima riga di testo le lascia spazio. */}
-                    <div className="whitespace-pre-wrap">
+                    {/* Testo: rispetta a capo e spezza parole/URL lunghi
+                        (niente float, così il wrap agisce anche su mobile). */}
+                    <div className="whitespace-pre-wrap break-all">
                       {m.message}
-                      <span
-                        className={`float-right ml-2 mt-1 text-[10px] leading-none translate-y-1 ${
-                          outbound ? "text-white/70" : "text-gray-400"
-                        }`}
-                      >
-                        {m.created_at.toLocaleTimeString("it-IT", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
+                    </div>
+                    <div
+                      className={`text-right text-[10px] leading-none mt-1 ${
+                        outbound ? "text-white/70" : "text-gray-400"
+                      }`}
+                    >
+                      {m.created_at.toLocaleTimeString("it-IT", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </div>
                   </div>
                 </div>
