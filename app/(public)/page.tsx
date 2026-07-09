@@ -37,12 +37,19 @@ const CARD_SELECT = {
 } as const;
 
 async function getFeaturedProjects() {
-  return prisma.project.findMany({
-    where: { published: true },
-    select: CARD_SELECT,
-    orderBy: { sort_order: "asc" },
-    take: 3,
-  });
+  // ISR: al build (CI, senza DATABASE_URL) il DB non è raggiungibile → invece di
+  // rompere il prerender ritorna lista vuota. In produzione il DB c'è e la
+  // rigenerazione ISR popola la pagina con i progetti reali.
+  try {
+    return await prisma.project.findMany({
+      where: { published: true },
+      select: CARD_SELECT,
+      orderBy: { sort_order: "asc" },
+      take: 3,
+    });
+  } catch {
+    return [];
+  }
 }
 
 export default async function HomePage() {
