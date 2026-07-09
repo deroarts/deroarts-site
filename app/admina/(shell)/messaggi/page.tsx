@@ -108,7 +108,9 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
         <div className="flex-1 min-h-0 flex flex-col">
           {/* ── Mobile: card impilate (esperienza nativa) ────────────────── */}
           <ul className="md:hidden overflow-y-auto flex-1 min-h-0 space-y-2.5">
-            {messages.map(({ rep, hasUnread }) => (
+            {messages.map(({ rep, hasUnread }) => {
+              const preview = htmlToPlainText(rep.message);
+              return (
               <li key={rep.id}>
                 <MessageCardMobile
                   id={rep.id}
@@ -133,9 +135,9 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                       {formatDate(rep.created_at)}
                     </span>
                   </div>
-                  {htmlToPlainText(rep.message) && (
+                  {preview && (
                     <p className="text-xs text-gray-500 truncate mt-1">
-                      {htmlToPlainText(rep.message)}
+                      {preview}
                     </p>
                   )}
                   {rep.project && (
@@ -145,7 +147,8 @@ export default async function MessaggiAdminPage({ searchParams }: PageProps) {
                   )}
                 </MessageCardMobile>
               </li>
-            ))}
+              );
+            })}
           </ul>
 
           {/* ── Desktop: tabella (scroll interno, pagina fissa) ──────────── */}
