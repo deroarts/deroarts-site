@@ -112,8 +112,8 @@ export default async function HomePage() {
               Progetti realizzati
             </p>
             <h2 className="font-serif text-3xl sm:text-4xl text-graphite leading-tight">
-              Prodotti veri, curati nel dettaglio.
-              <span className="block italic text-green-end">Ad un prezzo alla portata di tutti.</span>
+              Prodotti curati nel dettaglio.
+              <span className="block italic text-green-end">Prezzi alla portata di tutti.</span>
             </h2>
           </div>
           <Link

@@ -15,7 +15,7 @@ const FEATHER_PATH =
 
 /* ────────────────────────────────────────────────────────────────────────────
  * GEOMETRIA — posizione BLINDATA della piuma (NON modificare senza motivo).
- * Tutto vive nello stesso viewBox 580×470: linee, nodo e piuma restano ancorati
+ * Tutto vive nello stesso viewBox 600×470: linee, nodo e piuma restano ancorati
  * tra loro a QUALSIASI dimensione schermo/finestra (l'SVG scala in blocco).
  * La posizione finale è definita QUI, in un unico punto:
  *   - TIP_X/TIP_Y : nodo di convergenza (dove le linee incontrano il pennino)
@@ -40,7 +40,7 @@ export default function HeroFlow() {
   return (
     <div className="relative w-full select-none">
       <svg
-        viewBox="0 0 580 470"
+        viewBox="0 0 600 470"
         fill="none"
         role="img"
         aria-label="Le strutture di software convergono nella punta della piuma di DeroArts, come se la scrivesse"
