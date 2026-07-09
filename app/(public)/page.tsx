@@ -74,7 +74,7 @@ export default async function HomePage() {
               <p className="text-base sm:text-lg text-white/70 mb-9 leading-relaxed max-w-lg">
                 Prodotti digitali su misura, curati dall&apos;idea al rilascio:
                 architettura solida sotto il cofano, esperienza pulita davanti agli
-                occhi. Qualità vera, a un prezzo alla portata di tutti.
+                occhi. Qualità vera, ad un prezzo alla portata di tutti.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <Link
@@ -113,7 +113,7 @@ export default async function HomePage() {
             </p>
             <h2 className="font-serif text-3xl sm:text-4xl text-graphite leading-tight">
               Prodotti veri, curati nel dettaglio.
-              <span className="block italic text-green-end">Non solo mockup.</span>
+              <span className="block italic text-green-end">Ad un prezzo alla portata di tutti.</span>
             </h2>
           </div>
           <Link
