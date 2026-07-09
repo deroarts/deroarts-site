@@ -1,5 +1,9 @@
 import { prisma } from "@/lib/db/client";
 import { formatDateTimeSeconds as formatDate } from "@/lib/dates";
+import {
+  DeleteDevOutboxButton,
+  ClearDevOutboxButton,
+} from "@/components/admin/DevOutboxActions";
 export const dynamic = "force-dynamic";
 
 export const metadata = { title: "Dev Outbox | Admin DeroArts" };
@@ -37,6 +41,7 @@ export default async function DevOutboxPage() {
             {messages.length} email finte — solo in sviluppo
           </p>
         </div>
+        {messages.length > 0 && <ClearDevOutboxButton />}
       </div>
 
       {messages.length === 0 ? (
@@ -92,6 +97,7 @@ export default async function DevOutboxPage() {
                     {formatDate(msg.created_at)}
                   </p>
                 </div>
+                <DeleteDevOutboxButton id={msg.id} />
                 <svg
                   className="w-4 h-4 text-gray-300 flex-shrink-0 group-open:rotate-90 transition-transform"
                   fill="none"
