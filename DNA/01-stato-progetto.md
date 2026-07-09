@@ -12,7 +12,7 @@ Next.js 14 (App Router, React 18, TS) · Tailwind · Prisma + PostgreSQL (Supaba
 - **Flusso richieste**: server action con Zod, salva su DB, invia 2 email (owner + auto-reply utente).
 - **Upload immagini**: `/api/upload` auth-gated, sharp comprime cover/gallery, editor canvas con crop/zoom.
 - **SEO/polish**: sitemap, robots, 404, error boundary — tutti presenti.
-- **DB**: 2 migrazioni applicate (init + enable_rls). RLS attiva su tutte le tabelle. Dati demo caricati (3 progetti, 2 categorie).
+- **DB**: 2 migrazioni applicate (init + enable_rls). RLS attiva su tutte le tabelle. Contenuti (progetti/categorie) gestiti dall'admin — il conteggio è volatile, non fissarlo qui.
 
 ## Deploy in produzione
 Email (invio + ricezione), storage Supabase e bucket sono già implementati e in uso.
