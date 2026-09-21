@@ -9,11 +9,18 @@ Scheda tecnica del dominio. Valori operativi reali — usarli, non reinventarli.
 > Cloudflare. Dettagli flusso e alert quota in `08-messaggi-notifiche.md`.
 
 ## Cloudflare (registrar + DNS)
+- **Account: `dero975@gmail.com`** — login con **email + password**, non con Google/Apple/GitHub.
+  **NON** è `info@deroarts.com`: l'account Cloudflare esiste da prima del dominio (registrato lì).
+  Account ID: `591f9a8436b44b62ee683962c35bccb3` (compare nell'URL del pannello).
+  Recupero password: il codice arriva su `dero975@gmail.com`, non su info@.
 - Registrar **e** DNS provider: **Cloudflare** (piano Free). DNSSEC **attivo**.
 - Nameserver: `michael.ns.cloudflare.com`, `ziggy.ns.cloudflare.com`.
 - Record DNS totali attuali: 10 (7 email + `www` + apex `@` verso Render + `stickers` progetto a parte).
 - SSL/TLS: mode **Full**, Universal + Wildcard `*.deroarts.com`, Always-Use-HTTPS on, TLS 1.2+ (1.3 on), HTTP/2+3 on, HSTS off, ACM non attivo.
 - Sicurezza: Managed Ruleset + DDoS + Browser Integrity + email obfuscation **on**; Bot Fight / Under Attack **off**. AI bots: ricerca+agente consenti, addestramento **blocca**.
+- **Accesso API (dal 2026-09-21):** token `Modifica DNS zona` (permesso `Zone:DNS:Edit`, solo zona `deroarts.com`)
+  in `CLOUDFLARE_API_TOKEN` (App Control, sensibile). Zone ID `569f762e3b48d8f7441bb4bf3e262f99`.
+  Consente lettura/scrittura dei soli record DNS: **non** copre WAF, regole cache o impostazioni zona.
 
 ## Email — Resend (invio + ricezione)
 - Provider unico: **Resend** (account `dero975@gmail.com`, region Ireland eu-west-1).
@@ -24,7 +31,7 @@ Scheda tecnica del dominio. Valori operativi reali — usarli, non reinventarli.
 - **Zoho dismesso** il 2026-07-07 (era solo posta di test). Non ripristinare Zoho
   né i suoi record; non usare Cloudflare Email Routing (superfluo, Resend basta).
 
-## Record DNS email (in Cloudflare, modalità "Solo DNS")
+## Record DNS email (in Cloudflare, modalità "Solo DNS" — i record email restano SEMPRE non proxiati)
 | Tipo | Nome | Valore | Prio |
 |---|---|---|---|
 | MX | @ | `inbound-smtp.eu-west-1.amazonaws.com` (ricezione Resend) | 9 |
@@ -37,8 +44,8 @@ Scheda tecnica del dominio. Valori operativi reali — usarli, non reinventarli.
 > e TXT di verifica rimossi il 2026-07-07).
 
 ## Sito web → Render (collegato 2026-07-06)
-- **`www.deroarts.com`** → CNAME `deroarts.onrender.com` (Cloudflare, **Solo DNS** / proxy off). Verificato su Render (servizio `deroarts`, id `srv-d92qjlok1i2s73d15n0g`), SSL emesso da Render. Live: `https://www.deroarts.com`.
-- **`deroarts.com`** (apex) → CNAME `@` → `deroarts.onrender.com`, **Solo DNS**. Cloudflare fa CNAME-flattening (risolve a IP Render 216.24.57.x). Verificato su Render → **301 redirect a `www.deroarts.com`**. Il flattening **non tocca gli MX/TXT Zoho** (email intatte, verificato).
+- **`www.deroarts.com`** → CNAME `deroarts.onrender.com` (Cloudflare, **PROXY ON** dal 2026-09-21; era Solo DNS). Verificato su Render (servizio `deroarts`, id `srv-d92qjlok1i2s73d15n0g`), SSL emesso da Render. Live: `https://www.deroarts.com`.
+- **`deroarts.com`** (apex) → CNAME `@` → `deroarts.onrender.com`, **PROXY ON** dal 2026-09-21 (era Solo DNS). Cloudflare fa CNAME-flattening (risolve a IP Render 216.24.57.x). Verificato su Render → **301 redirect a `www.deroarts.com`**. Il flattening **non tocca gli MX/TXT Zoho** (email intatte, verificato).
 - Entrambi i domini `verified` + certificato emesso su Render. Con o senza `www` → arrivi al sito.
 
 ## Struttura sottodomini (convenzione)
@@ -57,5 +64,7 @@ da creare. Per l'**invio** da un alias, basta impostare `from_email` sul progett
 - Prima di modificare email/DNS, documentare: tipo, nome/host, valore, TTL, priorità (se MX), motivo, piattaforma richiedente.
 
 ## Stato collegamento sito
-- Sito attuale su Render: `https://deroarts.onrender.com` (vedi [[04-infrastruttura]]).
-- **DA COMPLETARE:** collegare `deroarts.com` → Render (record web CNAME/A con i valori reali forniti da Render) + verifica in Cloud­flare. Poi Google Search Console.
+- Sito collegato dal 2026-07-06: `https://www.deroarts.com` (apex 301 → www). Origin `deroarts.onrender.com`.
+- Dal 2026-09-21 il traffico web passa da **Cloudflare proxy** (nuvoletta arancione) su `@` e `www`.
+  `stickers.deroarts.com` resta **Solo DNS**: è un altro progetto, non toccato.
+- **DA FARE:** Google Search Console + SEO (Google attribuisce al dominio identità di terzi).
