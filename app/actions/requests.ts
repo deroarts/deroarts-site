@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db/client";
 import { getMailAdapter } from "@/lib/adapters";
 import { sendPushToAll } from "@/lib/push/send";
+import { isRateLimited, looksLikeSpam } from "@/lib/security/spam";
 import {
   ownerNotificationHtml,
   ownerNotificationSubject,
@@ -61,6 +62,13 @@ export async function createRequestAction(
   }
 
   const { name, email, message, projectId } = result.data;
+
+  // Anti-spam: scartiamo prima di toccare DB, email e push. Al mittente
+  // rispondiamo come se fosse andata bene — un bot non deve capire di essere
+  // stato riconosciuto, e un utente vero non finisce qui (vedi lib/security/spam).
+  if (isRateLimited() || looksLikeSpam({ name, email, message })) {
+    return { ok: true, error: null, fieldErrors: {} };
+  }
 
   // Resolve project context
   let project: { title: unknown; from_email: string | null } | null = null;
