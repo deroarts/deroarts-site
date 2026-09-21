@@ -18,9 +18,20 @@ Scheda tecnica del dominio. Valori operativi reali — usarli, non reinventarli.
 - Record DNS totali attuali: 10 (7 email + `www` + apex `@` verso Render + `stickers` progetto a parte).
 - SSL/TLS: mode **Full**, Universal + Wildcard `*.deroarts.com`, Always-Use-HTTPS on, TLS 1.2+ (1.3 on), HTTP/2+3 on, HSTS off, ACM non attivo.
 - Sicurezza: Managed Ruleset + DDoS + Browser Integrity + email obfuscation **on**; Bot Fight / Under Attack **off**. AI bots: ricerca+agente consenti, addestramento **blocca**.
-- **Accesso API (dal 2026-09-21):** token `Modifica DNS zona` (permesso `Zone:DNS:Edit`, solo zona `deroarts.com`)
-  in `CLOUDFLARE_API_TOKEN` (App Control, sensibile). Zone ID `569f762e3b48d8f7441bb4bf3e262f99`.
-  Consente lettura/scrittura dei soli record DNS: **non** copre WAF, regole cache o impostazioni zona.
+- **Accesso API (dal 2026-09-21):** token **`deroarts-agent`** in `CLOUDFLARE_API_TOKEN` (App Control, sensibile).
+  Zone ID `569f762e3b48d8f7441bb4bf3e262f99`. Permessi (solo zona `deroarts.com`): `Zone:DNS:Edit`,
+  `Zone Settings:Edit`, `Zone WAF:Edit`, `Cache Rules:Edit`, `Analytics:Read`.
+  **Non** copre la gestione dei token stessi: per crearli/modificarli serve il pannello.
+  Nota: modificare i permessi di un token **esistente** dal pannello non viene salvato
+  (difetto noto Cloudflare) — creare sempre un token nuovo.
+
+## WAF — regola anti-bot (dal 2026-09-21)
+Ruleset `http_request_firewall_custom`, regola **"Blocca POST Server Action senza Origin valido"**:
+`http.request.method eq "POST" and len(http.request.headers["next-action"]) > 0 and not any(http.request.headers["origin"][*] contains "deroarts.com")` → **block**.
+Ferma su Cloudflare il bot attivo dal 2026-08-30 (vedi [[06-decision-log]]), prima che raggiunga Render.
+Verificato dal vivo: POST senza Origin → 403 da Cloudflare; POST con Origin corretto e visite normali → passano all'origin.
+Difesa ridondante con lo scudo in `middleware.ts`: se una cade, l'altra regge.
+**Bot Fight Mode** attivo (impostato a mano dall'owner).
 
 ## Email — Resend (invio + ricezione)
 - Provider unico: **Resend** (account `dero975@gmail.com`, region Ireland eu-west-1).
