@@ -21,7 +21,7 @@ Per aggiungere il prod adapter: implementa l'interfaccia, aggiungi il `case` nel
 
 ## Auth
 - `CookieAuthAdapter`: iron-session v8, cookie sigillato, scadenza 30gg. Credenziali da `ADMIN_EMAIL`/`ADMIN_PASSWORD` (plain in dev, hash bcrypt in prod).
-- `middleware.ts` protegge `/admina/**` (eccetto `/admina/login`) → redirect a login se cookie assente/invalido. **Ma** se `DEV_UA_SWITCH=true` bypassa tutto (vedi [[02-regole]]).
+- `middleware.ts` ha **due compiti**: (1) scudo anti-bot su tutto il sito — `isForgedServerAction()` chiude con 403 a 0 byte i POST con header `Next-Action` e `Origin` assente o estraneo (vedi [[07-dominio-email]]); (2) auth su `/admina/**` (eccetto `/admina/login`) → redirect a login se cookie assente/invalido. **Ma** se `DEV_UA_SWITCH=true` bypassa l'auth (vedi [[02-regole]]). Il `matcher` copre tutto tranne gli asset statici: fuori da `/admina` il middleware lascia passare dopo lo scudo.
 
 ## i18n
 Campi testo tradotti = JSON `{ "it": "...", "en": "" }` (JSONB). Ora si renderizza solo `it`. Helper in `lib/i18n.ts` (`t()`, `getIt()`, `parseGallery()`). La gallery è un array JSON `[{ url, alt: {it,en} }]`.
@@ -38,7 +38,7 @@ Campi testo tradotti = JSON `{ "it": "...", "en": "" }` (JSONB). Ora si renderiz
 Token HMAC-SHA256 firmato con `SESSION_SECRET`, scadenza 1h — `lib/preview-token.ts`. La pagina pubblica del progetto salta il guard `published:true` se il token è valido.
 
 ## Agent API (agenti esterni, es. Devin)
-Due endpoint sotto `app/api/agent/**` — permettono a un agent esterno di **leggere i contenuti pubblici**, **caricare immagini** e **creare bozze**, senza mai toccare layout né pubblicare. Entrambi: auth header `x-api-key` == `AGENT_API_KEY` (server-only, fuori dal matcher del `middleware.ts` → guard in-handler; chiave vuota = disabilitati).
+Due endpoint sotto `app/api/agent/**` — permettono a un agent esterno di **leggere i contenuti pubblici**, **caricare immagini** e **creare bozze**, senza mai toccare layout né pubblicare. Entrambi: auth header `x-api-key` == `AGENT_API_KEY` (server-only, guard in-handler; chiave vuota = disabilitati). Dal 2026-09-21 il matcher del `middleware.ts` include anche queste rotte, ma il middleware le lascia passare (non iniziano per `/admina`): l'unico guard resta quello in-handler.
 - **`GET /api/agent/projects`:** ritorna i soli progetti `published:true` con `select` esplicito + uno `style_guide` con le regole di copy. **Mai** dati cliente (requests/email) né bozze.
 - **`POST /api/agent/projects`:** crea sempre `published:false`. Valida/sanifica: `title` obbligatorio, i18n coerti a `{it,en}`, URL immagini solo `http(s)`/`/…` (scarta `data:`/`javascript:`), `status` da allowlist enum, categoria collegata solo se lo slug esiste già, slug da `title.it` de-duplicato.
 - **`PATCH /api/agent/projects`:** aggiorna un progetto ESISTENTE per `slug`, solo i campi passati (partial update); pulisce le immagini sostituite da Supabase (`storage.delete`, best-effort); 404 se lo slug non esiste (l'agent usa POST per i nuovi) → evita i doppioni.
