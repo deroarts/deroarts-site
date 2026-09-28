@@ -28,8 +28,9 @@
 | Passo | Stato |
 |---|---|
 | Codice: tolti Messaggi, push, ricezione, Dev Outbox, mittente per progetto | ✅ in locale, non ancora online |
-| iCloud: dominio + `info@` + "Consenti tutti" | ⬜ owner |
-| DNS Cloudflare: record iCloud al posto di Resend Inbound | ⬜ |
+| iCloud: dominio + `info@` (verificato) | ✅ 2026-09-29 — verifica dominio Apple in corso (fino a 24h) |
+| DNS Cloudflare: record iCloud al posto di Resend Inbound | ✅ 2026-09-29 (Domain Connect, verificato su 1.1.1.1 e 8.8.8.8) |
+| iCloud: "Consenti tutti" + "Usa su questo iPhone" | ⬜ owner, dopo la verifica |
 | Test ricezione/invio da iPhone | ⬜ |
 | Deploy (Render sospeso fino al 1/10; push solo su ok owner) | ⬜ |
 | Pulizia dopo il deploy: variabili su Render/App Control, Resend Receiving off, webhook eliminato | ⬜ |

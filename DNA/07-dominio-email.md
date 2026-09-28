@@ -15,7 +15,7 @@ Scheda tecnica del dominio. Valori operativi reali — usarli, non reinventarli.
   Recupero password: il codice arriva su `dero975@gmail.com`, non su info@.
 - Registrar **e** DNS provider: **Cloudflare** (piano Free). DNSSEC **attivo**.
 - Nameserver: `michael.ns.cloudflare.com`, `ziggy.ns.cloudflare.com`.
-- Record DNS totali attuali: 10 (7 email + `www` + apex `@` verso Render + `stickers` progetto a parte).
+- Record DNS totali attuali: 12 (9 email + `www` + apex `@` verso Render + `stickers` progetto a parte).
 - SSL/TLS: mode **Full**, Universal + Wildcard `*.deroarts.com`, Always-Use-HTTPS on, TLS 1.2+ (1.3 on), HTTP/2+3 on, HSTS off, ACM non attivo.
 - Sicurezza: Managed Ruleset + DDoS + Browser Integrity + email obfuscation **on**; Bot Fight / Under Attack **off**. AI bots: ricerca+agente consenti, addestramento **blocca**.
 - **Accesso API (dal 2026-09-21):** token **`deroarts-agent`** in `CLOUDFLARE_API_TOKEN` (App Control, sensibile).
@@ -33,30 +33,40 @@ Verificato dal vivo: POST senza Origin → 403 da Cloudflare; POST con Origin co
 Difesa ridondante con lo scudo in `middleware.ts`: se una cade, l'altra regge.
 **Bot Fight Mode** attivo (impostato a mano dall'owner).
 
-## Email — Resend (invio + ricezione)
-> ⚠️ **In migrazione dal 2026-09-29:** la ricezione passa a **iCloud Mail** (`info@` sull'iPhone),
-> Resend resta solo per l'invio del modulo contatti. Stato dei passi in [[08-messaggi-notifiche]].
-> Questa sezione e i record DNS sotto vanno riscritti a migrazione DNS completata.
-
-- Provider unico: **Resend** (account `dero975@gmail.com`, region Ireland eu-west-1).
-- Dominio `deroarts.com` **Verified**; **Enable Sending** + **Enable Receiving** ON.
-- Casella pubblica: **`info@deroarts.com`** (più alias per progetto, es. `stickers@`).
-- Invio: via API Resend (`ResendMailAdapter`). Ricezione: MX → Resend Inbound →
-  webhook `email.received` → `/api/inbound/resend`. Vedi [[08-messaggi-notifiche]].
-- **Zoho dismesso** il 2026-07-07 (era solo posta di test). Non ripristinare Zoho
-  né i suoi record; non usare Cloudflare Email Routing (superfluo, Resend basta).
+## Email — iCloud Mail (ricezione + casella) · Resend (solo invio dal sito)
+- **Casella:** `info@deroarts.com` su **iCloud Mail** (iCloud+ dell'owner, Apple ID personale),
+  "Dominio email personalizzato", dominio **Privato**. Si legge e si scrive dall'app Mail di
+  iPhone/Mac. Collegata il **2026-09-29** tramite Domain Connect (iCloud → Cloudflare).
+  Accesso web a iCloud dell'owner: normalmente **disattivato** (scelta di sicurezza); per
+  operazioni da icloud.com va riattivato dall'iPhone e poi rispento.
+- **Un solo indirizzo** (`info@`, 1 su 3 disponibili). Gli altri `@deroarts.com` (es.
+  `badgenode@`) arrivano in `info@` con **"Consenti tutti i messaggi in arrivo"**. Non creare
+  e poi eliminare indirizzi: per Apple un indirizzo eliminato rimbalza per sempre.
+- **Invio dal sito:** Resend (account `dero975@gmail.com`, region Ireland), solo per il modulo
+  contatti, tramite il sottodominio `send`. Ricezione su Resend **non più usata** (MX tolto).
+- **Zoho dismesso** il 2026-07-07. Non ripristinare Zoho; non usare Cloudflare Email Routing.
 
 ## Record DNS email (in Cloudflare, modalità "Solo DNS" — i record email restano SEMPRE non proxiati)
-| Tipo | Nome | Valore | Prio |
-|---|---|---|---|
-| MX | @ | `inbound-smtp.eu-west-1.amazonaws.com` (ricezione Resend) | 9 |
-| MX | `send` | `feedback-smtp.eu-west-1.amazonses.com` (invio Resend) | 10 |
-| TXT (SPF) | `send` | `v=spf1 include:amazonses.com ~all` | — |
-| TXT (DKIM) | `resend._domainkey` | `p=MIGf...IDAQAB` (chiave Resend, completa in Cloudflare) | — |
-| TXT (DMARC) | `_dmarc` | `v=DMARC1; p=none; rua=mailto:info@deroarts.com` (monitoraggio; irrigidire solo dopo) | — |
+| Tipo | Nome | Valore | Prio | Servizio |
+|---|---|---|---|---|
+| MX | @ | `mx01.mail.icloud.com` | 10 | iCloud (ricezione) |
+| MX | @ | `mx02.mail.icloud.com` | 10 | iCloud (ricezione) |
+| TXT | @ | `apple-domain=…` (verifica Apple, valore in Cloudflare) | — | iCloud |
+| TXT (SPF) | @ | `v=spf1 include:icloud.com ~all` | — | iCloud (invio da iPhone) |
+| CNAME (DKIM) | `sig1._domainkey` | `sig1.dkim.deroarts.com.at.icloudmailadmin.com` | — | iCloud |
+| MX | `send` | `feedback-smtp.eu-west-1.amazonses.com` | 10 | Resend (invio sito) |
+| TXT (SPF) | `send` | `v=spf1 include:amazonses.com ~all` | — | Resend |
+| TXT (DKIM) | `resend._domainkey` | `p=MIGf...IDAQAB` (chiave Resend, completa in Cloudflare) | — | Resend |
+| TXT (DMARC) | `_dmarc` | `v=DMARC1; p=none; rua=mailto:info@deroarts.com` (monitoraggio) | — | dominio |
 
-> Nota: nessun record Zoho residuo in Cloudflare (MX, SPF, DKIM `zmail._domainkey`
-> e TXT di verifica rimossi il 2026-07-07).
+> Il 2026-09-29 Domain Connect ha **rimosso** l'MX `@ → inbound-smtp.eu-west-1.amazonaws.com`
+> (prio 9, ricezione Resend). Copia dei record precedenti conservata fuori repo.
+> I rapporti DMARC (`rua`) arrivano in `info@`: valutare se toglierli.
+
+## Alias email
+Dal 2026-09-29 si usa **un solo indirizzo**: `info@deroarts.com` (anche come mittente).
+Gli altri indirizzi `@deroarts.com` non si creano: con iCloud "Consenti tutti" finiscono
+in `info@`. Il mittente per progetto (`from_email`) non è più usato.
 
 ## Sito web → Render (collegato 2026-07-06)
 - **`www.deroarts.com`** → CNAME `deroarts.onrender.com` (Cloudflare, **PROXY ON** dal 2026-09-21; era Solo DNS). Verificato su Render (servizio `deroarts`, id `srv-d92qjlok1i2s73d15n0g`), SSL emesso da Render. Live: `https://www.deroarts.com`.
@@ -67,13 +77,8 @@ Difesa ridondante con lo scudo in `middleware.ts`: se una cade, l'altra regge.
 `deroarts.com` (sito) · `demo.` · `docs.` · `status.` · `<app>.` (app/progetto) · `admin.<app>.` · `api.<app>.`
 Esempi futuri: `barnode.` `aquilanera.` `ccv.` `wine.` `stickers.`
 
-## Alias email
-Dal 2026-09-29 si usa **un solo indirizzo**: `info@deroarts.com` (anche come mittente).
-Gli altri indirizzi `@deroarts.com` non si creano: con iCloud "Consenti tutti" finiscono
-in `info@`. Il mittente per progetto (`from_email`) non è più usato.
-
 ## Regole per agent/dev (non negoziabili)
-- Non modificare registrar / nameserver; non disattivare DNSSEC; non eliminare i record email Resend (MX `@` e `send`, SPF `send`, DKIM `resend._domainkey`, DMARC).
+- Non modificare registrar / nameserver; non disattivare DNSSEC; non eliminare i record email: iCloud (MX `@` ×2, TXT `apple-domain`, SPF `@`, CNAME `sig1._domainkey`), invio Resend (MX `send`, SPF `send`, DKIM `resend._domainkey`), DMARC.
 - Aggiungere record DNS **solo** con valori precisi forniti dalla piattaforma (Render/Vercel/verifica dominio). Mai record inventati; nessun record web se non richiesto.
 - Prima di modificare email/DNS, documentare: tipo, nome/host, valore, TTL, priorità (se MX), motivo, piattaforma richiedente.
 
