@@ -30,7 +30,6 @@ interface ProjectFormProps {
     gallery: unknown;
     published: boolean;
     sort_order: number;
-    from_email: string | null;
     actions: Array<{
       id: string;
       type: string;
@@ -203,9 +202,6 @@ export default function ProjectForm({
         status={isEdit ? project!.status : "available"}
         categoryId={isEdit ? (project!.category_id ?? "") : ""}
         sortOrder={isEdit ? project!.sort_order : 0}
-        fromEmailLocal={
-          isEdit ? (project!.from_email ?? "").replace(/@deroarts\.com$/i, "") : ""
-        }
         published={isEdit ? project!.published : false}
         categories={categories.map((c) => ({ id: c.id, name: getIt(c.name) }))}
       />

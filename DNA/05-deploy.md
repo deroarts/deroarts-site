@@ -17,22 +17,19 @@ Da leggere solo al momento del deploy. L'app usa `output: "standalone"` (`next.c
 
 ## Flip adapter dev → prod
 - **Storage:** `STORAGE_MODE=supabase` (già implementato: `SupabaseStorageAdapter`).
-- **Mail:** `MAIL_MODE=resend` (già implementato: `ResendMailAdapter`, vedi [[08-messaggi-notifiche]]). In locale resta `fake` per non consumare invii; in prod va messo `resend`. Serve `RESEND_API_KEY` (+ `RESEND_FROM`, `RESEND_WEBHOOK_SECRET` per la ricezione). Resend fa **sia invio sia ricezione** (MX del dominio → Resend); il vecchio piano SMTP/Zoho è **dismesso** (2026-07-07).
-- **Push (notifiche):** richiede `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `NEXT_PUBLIC_VAPID_PUBLIC_KEY`. **Non rigenerare** le chiavi VAPID (invaliderebbe le iscrizioni). Usare gli stessi valori del `.env`.
+- **Mail:** `MAIL_MODE=resend` + `RESEND_API_KEY`. Resend serve **solo a spedire** le email del modulo contatti a `info@deroarts.com` (e la conferma al cliente). In locale resta `fake` (solo console). Dal 2026-09-29 niente ricezione via Resend, niente notifiche push: vedi [[08-messaggi-notifiche]].
 
 ## Checklist primo deploy
 - [ ] `npx prisma migrate deploy` sul DB Supabase (+ opzionale `db seed`)
 - [ ] `DATABASE_URL` in Session mode (porta 5432), non Transaction
 - [ ] `SESSION_SECRET` nuovo random (`openssl rand -base64 32`), diverso da dev
-- [ ] `ADMIN_PASSWORD` = hash bcrypt (`bcryptjs.hashSync('pass',12)`), non plain
-- [ ] `MAIL_MODE=resend` + `RESEND_API_KEY` (Secret) + `RESEND_FROM=info@deroarts.com`
-- [ ] `VAPID_*` + `NEXT_PUBLIC_VAPID_PUBLIC_KEY` (private key = Secret) — stessi valori del `.env`
+- [ ] `MAIL_MODE=resend` + `RESEND_API_KEY` (Secret)
 - [ ] `STORAGE_MODE=supabase` + credenziali Supabase
 - [ ] `NEXT_PUBLIC_SITE_URL=https://www.deroarts.com`
 - [ ] `DEV_UA_SWITCH` assente o `false` (rimuovere il DevSwitcher)
 - [ ] Verifica `/robots.txt` blocca `/admina`, `/sitemap.xml` lista i progetti pubblicati
-- [ ] Test: login admin, form richieste (email reale arriva via Resend), upload immagine (bucket)
+- [ ] Test: login admin, form contatti (la email arriva in `info@` sull'iPhone), upload immagine (bucket)
 - [ ] DNS deroarts.com → Render; aggiornare `LINK_DEPLOY` / `LINK_DEPLOY ADMIN` in App Control
 
 ## Variabili produzione
-Elenco completo con descrizioni in `.env.example`. Regola `NEXT_PUBLIC_` in [[02-regole]]. Segreti (Secret in Render): `DATABASE_URL`, `SESSION_SECRET`, `ADMIN_PASSWORD`, `RESEND_API_KEY`, `VAPID_PRIVATE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`.
+Elenco completo con descrizioni in `.env.example`. Regola `NEXT_PUBLIC_` in [[02-regole]]. Segreti (Secret in Render): `DATABASE_URL`, `DIRECT_URL`, `SESSION_SECRET`, `RESEND_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `AGENT_API_KEY`.

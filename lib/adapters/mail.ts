@@ -14,26 +14,16 @@ export interface MailAdapter {
 }
 
 // ─── Fake implementation (dev) ────────────────────────────────────────────────
-// Logs to console and writes to the dev_outbox table for inspection in the admin.
+// Logs to the console only: nothing is sent and nothing is written to the DB.
 
 export class FakeMailAdapter implements MailAdapter {
   async sendMail(message: MailMessage): Promise<void> {
     console.log("[FAKE MAIL] ─────────────────────────────────");
-    console.log("  To     :", message.to);
-    console.log("  From   :", message.from);
-    console.log("  Subject:", message.subject);
+    console.log("  To      :", message.to);
+    console.log("  From    :", message.from);
+    console.log("  Reply-To:", message.replyTo ?? "—");
+    console.log("  Subject :", message.subject);
     console.log("─────────────────────────────────────────────");
-
-    // Lazy-import to avoid circular dep issues in non-Next.js contexts (e.g. seed).
-    const { prisma } = await import("@/lib/db/client");
-    await prisma.devOutbox.create({
-      data: {
-        to: message.to,
-        from: message.from,
-        subject: message.subject,
-        body: message.html,
-      },
-    });
   }
 }
 
@@ -66,9 +56,5 @@ export class ResendMailAdapter implements MailAdapter {
       throw new Error(`Resend: ${error.name} — ${error.message}`);
     }
     console.log("[RESEND] inviata:", data?.id, "→", message.to);
-
-    // Conteggio per l'alert di quota (non blocca mai l'invio già andato a buon fine).
-    const { recordEmail } = await import("@/lib/mail/quota");
-    await recordEmail("sent");
   }
 }

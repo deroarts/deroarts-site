@@ -37,28 +37,6 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
     skip,
     take: PAGE_SIZE,
   });
-  const projectIds = projects.map((p) => p.id);
-
-  // Per-project request counts for the current page
-  const [totalReqStats, newReqStats] = await Promise.all([
-    prisma.request.groupBy({
-      by: ["project_id"],
-      where: { project_id: { in: projectIds } },
-      _count: { _all: true },
-    }),
-    prisma.request.groupBy({
-      by: ["project_id"],
-      where: { project_id: { in: projectIds }, status: "new" },
-      _count: { _all: true },
-    }),
-  ]);
-
-  const totalReqMap = new Map(
-    totalReqStats.map((r) => [r.project_id as string, r._count._all])
-  );
-  const newReqMap = new Map(
-    newReqStats.map((r) => [r.project_id as string, r._count._all])
-  );
 
   return (
     <div>
@@ -110,8 +88,6 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
                   categoryName={project.category ? t(project.category.name) : null}
                   status={project.status}
                   published={project.published}
-                  totalReq={totalReqMap.get(project.id) ?? 0}
-                  newReq={newReqMap.get(project.id) ?? 0}
                   isFirst={idx === 0 && page === 1}
                   isLast={idx === projects.length - 1 && page === totalPages}
                 />
@@ -122,8 +98,6 @@ export default async function ProgettiAdminPage({ searchParams }: PageProps) {
           {/* ── Desktop: tabella ──────────────────────────────────────────── */}
           <ProjectTableDesktop
             projects={projects}
-            totalReqMap={totalReqMap}
-            newReqMap={newReqMap}
             page={page}
             totalPages={totalPages}
           />

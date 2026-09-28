@@ -34,6 +34,10 @@ Difesa ridondante con lo scudo in `middleware.ts`: se una cade, l'altra regge.
 **Bot Fight Mode** attivo (impostato a mano dall'owner).
 
 ## Email — Resend (invio + ricezione)
+> ⚠️ **In migrazione dal 2026-09-29:** la ricezione passa a **iCloud Mail** (`info@` sull'iPhone),
+> Resend resta solo per l'invio del modulo contatti. Stato dei passi in [[08-messaggi-notifiche]].
+> Questa sezione e i record DNS sotto vanno riscritti a migrazione DNS completata.
+
 - Provider unico: **Resend** (account `dero975@gmail.com`, region Ireland eu-west-1).
 - Dominio `deroarts.com` **Verified**; **Enable Sending** + **Enable Receiving** ON.
 - Casella pubblica: **`info@deroarts.com`** (più alias per progetto, es. `stickers@`).
@@ -63,11 +67,10 @@ Difesa ridondante con lo scudo in `middleware.ts`: se una cade, l'altra regge.
 `deroarts.com` (sito) · `demo.` · `docs.` · `status.` · `<app>.` (app/progetto) · `admin.<app>.` · `api.<app>.`
 Esempi futuri: `barnode.` `aquilanera.` `ccv.` `wine.` `stickers.`
 
-## Alias email (per progetto)
-Con Resend Inbound **qualsiasi** indirizzo `@deroarts.com` è già ricevibile senza
-crearlo (catch-all): es. `stickers@`, `barnode@`, ecc. arrivano tutti al webhook,
-che collega il messaggio al progetto tramite `from_email`. Nessuna casella separata
-da creare. Per l'**invio** da un alias, basta impostare `from_email` sul progetto.
+## Alias email
+Dal 2026-09-29 si usa **un solo indirizzo**: `info@deroarts.com` (anche come mittente).
+Gli altri indirizzi `@deroarts.com` non si creano: con iCloud "Consenti tutti" finiscono
+in `info@`. Il mittente per progetto (`from_email`) non è più usato.
 
 ## Regole per agent/dev (non negoziabili)
 - Non modificare registrar / nameserver; non disattivare DNSSEC; non eliminare i record email Resend (MX `@` e `send`, SPF `send`, DKIM `resend._domainkey`, DMARC).

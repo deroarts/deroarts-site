@@ -12,8 +12,6 @@ interface Props {
   categoryName: string | null;
   status: string;
   published: boolean;
-  totalReq: number;
-  newReq: number;
   isFirst: boolean;
   isLast: boolean;
 }
@@ -30,8 +28,6 @@ export default function ProjectCardMobile({
   categoryName,
   status,
   published,
-  totalReq,
-  newReq,
   isFirst,
   isLast,
 }: Props) {
@@ -82,14 +78,6 @@ export default function ProjectCardMobile({
                 <span className="text-xs text-gray-400 truncate">{categoryName}</span>
               )}
             </div>
-            {totalReq > 0 && (
-              <p className="text-[11px] text-gray-400 mt-1">
-                {newReq > 0 && (
-                  <span className="font-semibold text-red-600">{newReq} nuovo/i · </span>
-                )}
-                {totalReq} messaggio/i
-              </p>
-            )}
           </div>
         </Link>
       </div>

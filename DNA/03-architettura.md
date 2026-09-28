@@ -5,10 +5,10 @@ La struttura cartelle e lo schema sono nel repo (`app/`, `lib/`, `prisma/schema.
 ## Pattern adapter (chiave del progetto)
 Tre servizi swappabili dev↔prod via env var, stesso schema: `interface → classe concreta → factory` in `lib/`.
 
-| Servizio | File | Env var | Dev (attivo) | Prod (da implementare) |
+| Servizio | File | Env var | Dev | Prod |
 |----------|------|---------|--------------|------------------------|
 | Storage | `lib/adapters/storage.ts` + `index.ts` | `STORAGE_MODE` | `LocalStorageAdapter` → `public/uploads/` | `SupabaseStorageAdapter` |
-| Mail | `lib/adapters/mail.ts` + `index.ts` | `MAIL_MODE` | `FakeMailAdapter` → tabella `dev_outbox` | `ResendMailAdapter` (Resend) |
+| Mail | `lib/adapters/mail.ts` + `index.ts` | `MAIL_MODE` | `FakeMailAdapter` → solo console | `ResendMailAdapter` (Resend, solo invio) |
 | Auth | `lib/auth/` (`adapter.ts`, `cookie-adapter.ts`, `index.ts`) | — | `CookieAuthAdapter` (iron-session) | eventuale Supabase Auth |
 
 Per aggiungere il prod adapter: implementa l'interfaccia, aggiungi il `case` nella factory, setta le env. Dettaglio in [[05-deploy]].

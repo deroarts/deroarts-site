@@ -85,5 +85,5 @@ export async function middleware(request: NextRequest) {
 export const config = {
   // Ogni pagina/azione tranne gli asset statici: lo scudo deve vedere i POST
   // verso le Server Actions pubbliche (form contatti), non solo /admina.
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|brand/|sw.js|manifest.webmanifest).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|brand/|manifest.webmanifest).*)"],
 };

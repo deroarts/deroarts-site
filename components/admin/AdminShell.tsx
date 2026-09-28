@@ -26,16 +26,6 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: "/admina/messaggi",
-    label: "Messaggi",
-    badge: true, // receives unreadCount
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-      </svg>
-    ),
-  },
-  {
     href: "/admina/impostazioni",
     label: "Impostazioni",
     icon: (
@@ -46,21 +36,13 @@ const NAV_ITEMS = [
   },
 ];
 
-function NavLinks({
-  onNavigate,
-  unreadCount,
-}: {
-  onNavigate?: () => void;
-  unreadCount: number;
-}) {
+function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
-  const isDev = process.env.NODE_ENV !== "production";
 
   return (
     <nav className="flex-1 px-3 py-4 space-y-1">
       {NAV_ITEMS.map((item) => {
         const active = pathname.startsWith(item.href);
-        const showBadge = item.badge && unreadCount > 0;
 
         return (
           <Link
@@ -75,35 +57,10 @@ function NavLinks({
           >
             <span className={active ? "text-green-start" : ""}>{item.icon}</span>
             <span className="flex-1">{item.label}</span>
-            {showBadge && (
-              <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center leading-none">
-                {unreadCount > 99 ? "99+" : unreadCount}
-              </span>
-            )}
           </Link>
         );
       })}
 
-      {/* Dev Outbox — only in development */}
-      {isDev && (
-        <Link
-          href="/admina/dev-outbox"
-          onClick={onNavigate}
-          className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-            pathname.startsWith("/admina/dev-outbox")
-              ? "bg-green-start/20 text-green-start"
-              : "text-white/40 hover:text-white/80 hover:bg-white/10"
-          }`}
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-          </svg>
-          <span className="flex-1">Dev Outbox</span>
-          <span className="text-[10px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded font-mono">
-            DEV
-          </span>
-        </Link>
-      )}
     </nav>
   );
 }
@@ -111,13 +68,11 @@ function NavLinks({
 interface AdminShellProps {
   children: React.ReactNode;
   adminNickname?: string;
-  unreadCount?: number;
 }
 
 export default function AdminShell({
   children,
   adminNickname,
-  unreadCount = 0,
 }: AdminShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -135,7 +90,7 @@ export default function AdminShell({
           />
         </div>
 
-        <NavLinks unreadCount={unreadCount} />
+        <NavLinks />
 
         <div className="px-3 pb-4 border-t border-white/10 pt-4">
           {adminNickname && (
@@ -197,10 +152,7 @@ export default function AdminShell({
           </button>
         </div>
 
-        <NavLinks
-          unreadCount={unreadCount}
-          onNavigate={() => setDrawerOpen(false)}
-        />
+        <NavLinks onNavigate={() => setDrawerOpen(false)} />
 
         <div className="px-3 pb-safe border-t border-white/10 pt-4">
           {adminNickname && (
@@ -233,26 +185,10 @@ export default function AdminShell({
       {/* ── Main content ─────────────────────────────────────────────────── */}
       <div className="flex flex-col flex-1 min-w-0 overflow-auto">
         {/* Mobile top bar — fissa in cima allo scroll (feel nativo).
-            Campanella a sinistra · logo centrato · menu a destra. */}
+            Logo centrato · menu a destra. */}
         <header className="md:hidden sticky top-0 z-30 grid grid-cols-[1fr_auto_1fr] items-center px-2 py-2 bg-white/95 backdrop-blur border-b border-gray-100 shadow-sm pt-safe">
-          {/* Sinistra: campanella notifiche */}
-          <div className="justify-self-start">
-            <Link
-              href="/admina/messaggi?status=new"
-              className="relative flex items-center justify-center w-11 h-11 rounded-full text-gray-500 hover:text-graphite active:bg-gray-100 transition-colors"
-              title={unreadCount > 0 ? `${unreadCount} messaggio/i nuovi` : "Messaggi"}
-              aria-label="Notifiche"
-            >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-              {unreadCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 min-w-[16px] h-[16px] px-0.5 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center leading-none">
-                  {unreadCount > 99 ? "99+" : unreadCount}
-                </span>
-              )}
-            </Link>
-          </div>
+          {/* Sinistra: spazio vuoto (tiene il logo centrato) */}
+          <div />
 
           {/* Centro: logo + wordmark */}
           <div className="justify-self-center flex items-center gap-2">

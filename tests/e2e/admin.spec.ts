@@ -71,5 +71,5 @@ test("email sending is isolated: contact submit is intercepted (no real mail)", 
   await adminPage.locator('textarea[name="message"]').fill("Test isolato invio email.");
   await adminPage.locator('button[type="submit"]').first().click();
   await adminPage.waitForTimeout(400);
-  expect(sent).toBe(true); // intercepted → no FakeMail/SMTP, no dev_outbox write
+  expect(sent).toBe(true); // intercepted → no email sent
 });

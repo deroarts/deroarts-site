@@ -79,7 +79,7 @@ model Project {
   gallery           Json            @default("[]")
   published         Boolean         @default(false)
   sort_order        Int             @default(0)
-  from_email        String?
+  from_email        String? // non più usato (2026-09-29): tutte le email partono da info@
   created_at        DateTime        @default(now())
   updated_at        DateTime        @updatedAt
   actions           ProjectAction[]
@@ -106,6 +106,9 @@ model ProjectAction {
   @@map("project_actions")
 }
 
+// ⚠️ Non più usata dal codice dal 2026-09-29 (i contatti arrivano solo via email
+// a info@deroarts.com). La tabella resta nel DB: eliminarla richiede una
+// migrazione dedicata e un ok esplicito (DB mai distruttivo).
 model Request {
   id         String        @id @default(cuid())
   project    Project?      @relation(fields: [project_id], references: [id], onDelete: SetNull)
@@ -118,7 +121,7 @@ model Request {
   handled_at DateTime?
   // Timestamp of the last reply sent from the admin Messaggi panel (null = mai risposto).
   replied_at DateTime?
-  // Origine del messaggio: "site" (form) o "email" (posta inoltrata da Zoho via Resend).
+  // Origine del messaggio: "site" (form) o "email" (ricevuta via Resend Inbound).
   source     RequestSource @default(site)
   // Subject della email inoltrata (null per i messaggi dal form).
   subject    String?
@@ -141,6 +144,9 @@ model Request {
   @@map("requests")
 }
 
+// ⚠️ Non più usata dal codice dal 2026-09-29 (i contatti arrivano solo via email
+// a info@deroarts.com). La tabella resta nel DB: eliminarla richiede una
+// migrazione dedicata e un ok esplicito (DB mai distruttivo).
 // Web-push subscription for one device/browser of the admin. One row per
 // endpoint; deleting the row unsubscribes that device.
 model PushSubscription {
@@ -154,6 +160,9 @@ model PushSubscription {
   @@map("push_subscriptions")
 }
 
+// ⚠️ Non più usata dal codice dal 2026-09-29 (i contatti arrivano solo via email
+// a info@deroarts.com). La tabella resta nel DB: eliminarla richiede una
+// migrazione dedicata e un ok esplicito (DB mai distruttivo).
 // Global on/off flags for admin notifications. Single-row table keyed by a
 // stable string ("global"); keeps push preferences server-side.
 model NotificationSetting {
@@ -177,6 +186,9 @@ model AdminCredential {
   @@map("admin_credentials")
 }
 
+// ⚠️ Non più usata dal codice dal 2026-09-29 (i contatti arrivano solo via email
+// a info@deroarts.com). La tabella resta nel DB: eliminarla richiede una
+// migrazione dedicata e un ok esplicito (DB mai distruttivo).
 model DevOutbox {
   id         String   @id @default(cuid())
   to         String
@@ -188,6 +200,9 @@ model DevOutbox {
   @@map("dev_outbox")
 }
 
+// ⚠️ Non più usata dal codice dal 2026-09-29 (i contatti arrivano solo via email
+// a info@deroarts.com). La tabella resta nel DB: eliminarla richiede una
+// migrazione dedicata e un ok esplicito (DB mai distruttivo).
 // Conteggio giornaliero delle email che passano da Resend (inviate + ricevute).
 // Serve solo per l'alert di quota: il free Resend è 100/giorno e 3.000/mese,
 // invio e ricezione condivisi. Una riga per giorno (chiave = data "YYYY-MM-DD").

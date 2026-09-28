@@ -3,7 +3,6 @@
 import { z } from "zod";
 import { prisma } from "@/lib/db/client";
 import { getMailAdapter } from "@/lib/adapters";
-import { sendPushToAll } from "@/lib/push/send";
 import { isRateLimited, looksLikeSpam } from "@/lib/security/spam";
 import {
   ownerNotificationHtml,
@@ -35,7 +34,13 @@ export interface RequestFormState {
   fieldErrors: Partial<Record<"name" | "email" | "message", string>>;
 }
 
-const DEFAULT_FROM = "info@deroarts.com";
+// Unica casella del sito: le richieste arrivano qui come email normali (letta
+// dall'app Mail) e le risposte partono da qui. Il modulo serve solo per il
+// primo contatto: il dialogo prosegue via email, fuori dal sito.
+const INBOX = "info@deroarts.com";
+
+const SEND_ERROR =
+  "Invio non riuscito. Riprova tra qualche istante oppure scrivi a info@deroarts.com.";
 
 // ─── Server action ────────────────────────────────────────────────────────────
 
@@ -63,78 +68,62 @@ export async function createRequestAction(
 
   const { name, email, message, projectId } = result.data;
 
-  // Anti-spam: scartiamo prima di toccare DB, email e push. Al mittente
+  // Anti-spam: scartiamo prima di inviare qualsiasi email. Al mittente
   // rispondiamo come se fosse andata bene — un bot non deve capire di essere
   // stato riconosciuto, e un utente vero non finisce qui (vedi lib/security/spam).
   if (isRateLimited() || looksLikeSpam({ name, email, message })) {
     return { ok: true, error: null, fieldErrors: {} };
   }
 
-  // Resolve project context
-  let project: { title: unknown; from_email: string | null } | null = null;
+  // Titolo del progetto (solo per l'oggetto della email). Se il DB non
+  // risponde, la richiesta parte comunque come contatto generico.
+  let projectTitle: string | undefined;
   if (projectId) {
-    project = await prisma.project.findUnique({
-      where: { id: projectId },
-      select: { title: true, from_email: true },
-    });
+    try {
+      const project = await prisma.project.findUnique({
+        where: { id: projectId },
+        select: { title: true },
+      });
+      projectTitle = (project?.title as Record<string, string> | undefined)?.it || undefined;
+    } catch (e) {
+      console.error("[createRequestAction] Project lookup error:", e);
+    }
   }
 
-  const projectTitle = project
-    ? ((project.title as Record<string, string>)?.it ?? "")
-    : undefined;
-  const fromEmail = project?.from_email || DEFAULT_FROM;
-  const adminEmail = process.env.ADMIN_EMAIL || DEFAULT_FROM;
+  const mail = getMailAdapter();
 
-  // Persist request
+  // La richiesta NON viene salvata nel DB: questa email è l'unica copia.
+  // Se l'invio fallisce lo diciamo al visitatore, così il messaggio non si perde.
   try {
-    await prisma.request.create({
-      data: { name, email, message, project_id: projectId ?? null },
+    await mail.sendMail({
+      to: INBOX,
+      from: INBOX,
+      replyTo: email, // "Rispondi" dall'app Mail scrive direttamente al cliente
+      subject: ownerNotificationSubject(projectTitle),
+      html: ownerNotificationHtml({
+        projectTitle,
+        requesterName: name,
+        requesterEmail: email,
+        message,
+      }),
     });
-  } catch {
-    return {
-      ok: false,
-      error: "Errore durante il salvataggio. Riprova tra qualche istante.",
-      fieldErrors: {},
-    };
-  }
-
-  // Send emails (fire-and-forget — don't fail user on mail issues)
-  try {
-    const mail = getMailAdapter();
-    await Promise.all([
-      mail.sendMail({
-        to: adminEmail,
-        from: fromEmail,
-        replyTo: email,
-        subject: ownerNotificationSubject(projectTitle),
-        html: ownerNotificationHtml({
-          projectTitle,
-          requesterName: name,
-          requesterEmail: email,
-          message,
-        }),
-      }),
-      mail.sendMail({
-        to: email,
-        from: fromEmail,
-        subject: autoReplySubject(projectTitle),
-        html: autoReplyHtml({ projectTitle, requesterName: name }),
-      }),
-    ]);
   } catch (e) {
     console.error("[createRequestAction] Mail error:", e);
-    // Don't surface mail errors to the user
+    return { ok: false, error: SEND_ERROR, fieldErrors: {} };
   }
 
-  // Push notification to admin devices (also fire-and-forget & self-guarding).
-  await sendPushToAll({
-    title: projectTitle
-      ? `Nuovo messaggio — ${projectTitle}`
-      : "Nuovo messaggio dal sito",
-    body: `${name}: ${message.slice(0, 90)}${message.length > 90 ? "…" : ""}`,
-    url: "/admina/messaggi",
-    tag: "deroarts-messaggio",
-  });
+  // Conferma automatica al cliente: utile ma non essenziale, un errore qui
+  // non annulla l'invio già riuscito.
+  try {
+    await mail.sendMail({
+      to: email,
+      from: INBOX,
+      subject: autoReplySubject(projectTitle),
+      html: autoReplyHtml({ projectTitle, requesterName: name }),
+    });
+  } catch (e) {
+    console.error("[createRequestAction] Auto-reply error:", e);
+  }
 
   return { ok: true, error: null, fieldErrors: {} };
 }

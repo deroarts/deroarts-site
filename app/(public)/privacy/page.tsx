@@ -36,9 +36,10 @@ export default function PrivacyPage() {
           <h2 className="text-lg font-semibold mb-2">Perché e come li usiamo</h2>
           <p>
             Usiamo questi dati esclusivamente per rispondere alla tua richiesta. La base
-            giuridica è il tuo consenso e l&apos;esecuzione di misure precontrattuali. I dati sono
-            conservati su <strong>Supabase</strong> (infrastruttura in UE) e le email gestite tramite
-            <strong> Resend</strong> (elaborazione su server UE, Irlanda). Non vendiamo né cediamo i tuoi dati a terzi.
+            giuridica è il tuo consenso e l&apos;esecuzione di misure precontrattuali. Il messaggio
+            inviato con il modulo non viene salvato sul sito: ci arriva come email, spedita tramite
+            <strong> Resend</strong> (server UE, Irlanda), nella nostra casella di posta su
+            <strong> iCloud Mail</strong> (Apple). Non vendiamo né cediamo i tuoi dati a terzi.
           </p>
         </div>
 
@@ -65,8 +66,8 @@ export default function PrivacyPage() {
         <div>
           <h2 className="text-lg font-semibold mb-2">Conservazione</h2>
           <p>
-            I dati delle richieste sono conservati per il tempo necessario a gestire la
-            conversazione e successivi adempimenti, e rimossi su richiesta.
+            Le email ricevute sono conservate nella nostra casella per il tempo necessario a
+            gestire la conversazione e i successivi adempimenti, e cancellate su richiesta.
           </p>
         </div>
       </section>

@@ -17,8 +17,6 @@ interface ProjectRow {
 
 interface Props {
   projects: ProjectRow[];
-  totalReqMap: Map<string, number>;
-  newReqMap: Map<string, number>;
   page: number;
   totalPages: number;
 }
@@ -26,8 +24,6 @@ interface Props {
 /** Tabella progetti per desktop (su mobile si usa ProjectCardMobile). */
 export default function ProjectTableDesktop({
   projects,
-  totalReqMap,
-  newReqMap,
   page,
   totalPages,
 }: Props) {
@@ -46,9 +42,6 @@ export default function ProjectTableDesktop({
             <th className="text-center px-4 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider hidden md:table-cell border-l border-white/10">
               Stato
             </th>
-            <th className="text-center px-4 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider hidden lg:table-cell border-l border-white/10">
-              Richieste
-            </th>
             <th className="text-center px-4 py-3 text-xs font-semibold text-white/80 uppercase tracking-wider border-l border-white/10">
               Pubbl.
             </th>
@@ -59,9 +52,6 @@ export default function ProjectTableDesktop({
         </thead>
         <tbody className="divide-y divide-gray-50">
           {projects.map((project, idx) => {
-            const totalReq = totalReqMap.get(project.id) ?? 0;
-            const newReq = newReqMap.get(project.id) ?? 0;
-
             return (
               <tr key={project.id} className="hover:bg-gray-50/50 transition-colors">
                 {/* Sort handle */}
@@ -122,26 +112,6 @@ export default function ProjectTableDesktop({
 
                 <td className="px-4 py-3 hidden md:table-cell border-l border-gray-100 text-center">
                   <StatusBadge status={project.status} />
-                </td>
-
-                {/* Request counts */}
-                <td className="px-4 py-3 hidden lg:table-cell border-l border-gray-100 text-center">
-                  {totalReq === 0 ? (
-                    <span className="text-gray-300 text-xs">—</span>
-                  ) : (
-                    <Link
-                      href={`/admina/messaggi?projectId=${project.id}`}
-                      className="inline-flex items-center gap-1.5 hover:opacity-80 transition-opacity"
-                      title={`${totalReq} messaggio/i (${newReq} nuovo/i)`}
-                    >
-                      {newReq > 0 && (
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-700">
-                          {newReq} nuova/e
-                        </span>
-                      )}
-                      <span className="text-xs text-gray-400">{totalReq} tot.</span>
-                    </Link>
-                  )}
                 </td>
 
                 <td className="px-4 py-3 text-center border-l border-gray-100">

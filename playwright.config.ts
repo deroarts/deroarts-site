@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
-// Load .env into process.env for tests (SESSION_SECRET, ADMIN_EMAIL) without an
+// Load .env into process.env for tests (SESSION_SECRET) without an
 // extra dependency. Values already set in the environment win.
 try {
   for (const line of readFileSync(".env", "utf8").split("\n")) {
