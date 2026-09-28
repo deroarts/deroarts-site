@@ -38,6 +38,8 @@ export interface RequestFormState {
 // dall'app Mail) e le risposte partono da qui. Il modulo serve solo per il
 // primo contatto: il dialogo prosegue via email, fuori dal sito.
 const INBOX = "info@deroarts.com";
+// Mittente con nome: il cliente vede "DeroArts", non solo l'indirizzo.
+const FROM = `DeroArts <${INBOX}>`;
 
 const SEND_ERROR =
   "Invio non riuscito. Riprova tra qualche istante oppure scrivi a info@deroarts.com.";
@@ -97,7 +99,7 @@ export async function createRequestAction(
   try {
     await mail.sendMail({
       to: INBOX,
-      from: INBOX,
+      from: FROM,
       replyTo: email, // "Rispondi" dall'app Mail scrive direttamente al cliente
       subject: ownerNotificationSubject(projectTitle),
       html: ownerNotificationHtml({
@@ -117,7 +119,7 @@ export async function createRequestAction(
   try {
     await mail.sendMail({
       to: email,
-      from: INBOX,
+      from: FROM,
       subject: autoReplySubject(projectTitle),
       html: autoReplyHtml({ projectTitle, requesterName: name }),
     });
