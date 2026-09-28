@@ -10,8 +10,13 @@ function escapeHtml(str: string): string {
     .replace(/'/g, "&#039;");
 }
 
-const BRAND_DARK = "#0d2e22";
-const BRAND_GREEN = "#1a7a5e";
+// Stessa palette del sito (tailwind.config.ts).
+const BRAND_DARK = "#1A3A26";
+const BRAND_DARKER = "#0F2419";
+const BRAND_LIME = "#8FC603";
+const BRAND_GREEN = "#1E9E3D";
+const SURFACE = "#ECEAE8";
+const SURFACE_LIGHT = "#F8F6F6";
 
 // Shared outer shell for every email: doctype/head/body + the white card
 // wrapper. `inner` is the card content (coloured header + body + footer).
@@ -19,12 +24,23 @@ function emailShell(inner: string): string {
   return `<!DOCTYPE html>
 <html lang="it">
 <head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:20px;background:#f5f5f5;font-family:system-ui,sans-serif;">
-  <div style="max-width:580px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
+<body style="margin:0;padding:20px;background:${SURFACE};font-family:Poppins,system-ui,-apple-system,'Segoe UI',sans-serif;">
+  <div style="max-width:580px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
 ${inner}
   </div>
 </body>
 </html>`;
+}
+
+// Intestazione verde come la hero del sito: sfumatura scura con un alone
+// verde morbido, chiusa da una sottile linea del gradiente dei pulsanti.
+// Il colore pieno resta come ripiego per i client che ignorano i gradienti.
+function emailHeader(content: string): string {
+  return `
+    <div style="background-color:${BRAND_DARK};background-image:radial-gradient(circle at 0% 100%,rgba(30,158,61,.30) 0%,rgba(30,158,61,0) 60%),linear-gradient(135deg,${BRAND_DARK} 0%,${BRAND_DARKER} 100%);padding:30px 28px;">
+${content}
+    </div>
+    <div style="height:3px;line-height:3px;font-size:0;background-color:${BRAND_GREEN};background-image:linear-gradient(90deg,${BRAND_LIME},${BRAND_GREEN});">&nbsp;</div>`;
 }
 
 // ─── Owner notification ───────────────────────────────────────────────────────
@@ -47,11 +63,9 @@ export function ownerNotificationHtml(data: OwnerNotificationData): string {
     ? `Nuova richiesta per &ldquo;${escapeHtml(data.projectTitle)}&rdquo;`
     : "Nuova richiesta di contatto";
 
-  return emailShell(`
-    <div style="background:${BRAND_DARK};padding:24px 28px;">
-      <p style="margin:0;color:rgba(255,255,255,.5);font-size:12px;text-transform:uppercase;letter-spacing:1px;">DeroArts &middot; Modulo contatti</p>
-      <h1 style="margin:6px 0 0;color:#fff;font-size:18px;font-weight:700;">${heading}</h1>
-    </div>
+  return emailShell(`${emailHeader(`
+      <p style="margin:0;color:${BRAND_LIME};font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:2px;">DeroArts &middot; Modulo contatti</p>
+      <h1 style="margin:8px 0 0;color:#fff;font-size:18px;font-weight:700;">${heading}</h1>`)}
     <div style="padding:28px;">
       <table style="width:100%;border-collapse:collapse;font-size:14px;color:#444;">
         ${data.projectTitle ? `
@@ -73,12 +87,12 @@ export function ownerNotificationHtml(data: OwnerNotificationData): string {
         </tr>
       </table>
 
-      <div style="margin-top:20px;padding:16px 20px;background:#f8f8f8;border-radius:8px;border-left:3px solid ${BRAND_GREEN};">
+      <div style="margin-top:20px;padding:16px 20px;background:${SURFACE_LIGHT};border-radius:8px;border-left:3px solid ${BRAND_GREEN};">
         <p style="margin:0 0 8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#999;">Messaggio</p>
         <p style="margin:0;color:#1a1a1a;font-size:14px;line-height:1.6;white-space:pre-wrap;">${escapeHtml(data.message)}</p>
       </div>
     </div>
-    <div style="padding:14px 28px;background:#f5f5f5;font-size:12px;color:#aaa;text-align:center;">
+    <div style="padding:14px 28px;background:${SURFACE_LIGHT};font-size:12px;color:#aaa;text-align:center;">
       Messaggio inviato dal modulo contatti di deroarts.com
     </div>`);
 }
@@ -101,11 +115,9 @@ export function autoReplyHtml(data: AutoReplyData): string {
     ? ` riguardo a <strong>${escapeHtml(data.projectTitle)}</strong>`
     : "";
 
-  return emailShell(`
-    <div style="background:linear-gradient(135deg,${BRAND_DARK} 0%,#1a4a35 100%);padding:32px 28px;">
+  return emailShell(`${emailHeader(`
       <h1 style="margin:0;color:#fff;font-size:24px;font-weight:800;letter-spacing:-.3px;">DeroArts</h1>
-      <p style="margin:8px 0 0;color:rgba(255,255,255,.65);font-size:14px;">Conferma ricezione richiesta</p>
-    </div>
+      <p style="margin:8px 0 0;color:rgba(255,255,255,.7);font-size:14px;">Conferma ricezione richiesta</p>`)}
     <div style="padding:32px 28px;">
       <p style="margin:0 0 16px;color:#1a1a1a;font-size:16px;">
         Ciao <strong>${escapeHtml(data.requesterName)}</strong>,
@@ -121,7 +133,7 @@ export function autoReplyHtml(data: AutoReplyData): string {
         <strong style="color:${BRAND_GREEN};">Il team DeroArts</strong>
       </p>
     </div>
-    <div style="padding:14px 28px;background:#f5f5f5;font-size:12px;color:#aaa;text-align:center;">
+    <div style="padding:14px 28px;background:${SURFACE_LIGHT};font-size:12px;color:#aaa;text-align:center;">
       Questo &egrave; un messaggio automatico &mdash; non rispondere a questa email.
     </div>`);
 }
