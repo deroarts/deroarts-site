@@ -49,7 +49,7 @@ export function ownerNotificationHtml(data: OwnerNotificationData): string {
 
   return emailShell(`
     <div style="background:${BRAND_DARK};padding:24px 28px;">
-      <p style="margin:0;color:rgba(255,255,255,.5);font-size:12px;text-transform:uppercase;letter-spacing:1px;">DeroArts Admin</p>
+      <p style="margin:0;color:rgba(255,255,255,.5);font-size:12px;text-transform:uppercase;letter-spacing:1px;">DeroArts &middot; Modulo contatti</p>
       <h1 style="margin:6px 0 0;color:#fff;font-size:18px;font-weight:700;">${heading}</h1>
     </div>
     <div style="padding:28px;">
@@ -79,7 +79,7 @@ export function ownerNotificationHtml(data: OwnerNotificationData): string {
       </div>
     </div>
     <div style="padding:14px 28px;background:#f5f5f5;font-size:12px;color:#aaa;text-align:center;">
-      DeroArts &middot; Gestisci le richieste nell&rsquo;area amministrativa
+      Messaggio inviato dal modulo contatti di deroarts.com
     </div>`);
 }
 
