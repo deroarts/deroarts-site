@@ -11,16 +11,16 @@ test("admin dashboard is reachable when authenticated", async ({ adminPage }) =>
   await expect(adminPage).not.toHaveURL(/\/admina\/login/);
 });
 
-test("admin projects list shows seeded projects", async ({ adminPage }) => {
+test("admin projects list shows the DB projects", async ({ adminPage }) => {
   await adminPage.goto("/admina/progetti");
-  await expect(adminPage.getByText(/MoneyBox|Gestionale|Scanner/i).first()).toBeVisible();
+  await expect(adminPage.locator('a[href$="/edit"]:visible').first()).toBeVisible();
 });
 
-test("admin sections load (categorie, richieste)", async ({ adminPage }) => {
+test("admin sections load (categorie, impostazioni)", async ({ adminPage }) => {
   await adminPage.goto("/admina/categorie");
   await expect(adminPage).toHaveURL(/\/admina\/categorie/);
-  await adminPage.goto("/admina/richieste");
-  await expect(adminPage).toHaveURL(/\/admina\/richieste/);
+  await adminPage.goto("/admina/impostazioni");
+  await expect(adminPage).toHaveURL(/\/admina\/impostazioni/);
 });
 
 test("image upload is intercepted — no real file stored", async ({ adminPage }) => {

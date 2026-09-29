@@ -5,15 +5,15 @@ import { test, expect } from "@playwright/test";
 test("home renders hero and featured projects", async ({ page }) => {
   await page.goto("/");
   await expect(page).toHaveTitle(/DeroArts/i);
-  // Seeded demo projects must be visible.
-  await expect(page.getByText("MoneyBox").first()).toBeVisible();
+  // Almeno un progetto in evidenza (dati reali del DB, non nomi fissi).
+  await expect(page.locator('a[href^="/progetti/"]:visible').first()).toBeVisible();
 });
 
 test("home → progetti list", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("link", { name: /progetti/i }).first().click();
   await expect(page).toHaveURL(/\/progetti/);
-  await expect(page.getByText(/Gestionale per Agenzie|MoneyBox|Scanner/i).first()).toBeVisible();
+  await expect(page.locator('a[href^="/progetti/"]:visible').first()).toBeVisible();
 });
 
 test("progetti → project detail", async ({ page }) => {
