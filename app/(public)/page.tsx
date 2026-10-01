@@ -4,6 +4,7 @@ import ProjectCard from "@/components/ProjectCard";
 import HeroFlow from "@/components/HeroFlow";
 import type { Metadata } from "next";
 import { getSiteUrl, DEFAULT_OG_IMAGE } from "@/lib/seo";
+import { PROJECT_CARD_SELECT } from "@/lib/project-card";
 
 // ISR: servita da cache statica, rigenerata quando un'azione admin chiama
 // revalidatePath("/") o dopo 1h. Niente SSR ad ogni navigazione.
@@ -25,17 +26,6 @@ export const metadata: Metadata = {
   },
 };
 
-// select mirato: le card non usano long_description/gallery (JSONB pesanti).
-const CARD_SELECT = {
-  id: true,
-  slug: true,
-  title: true,
-  short_description: true,
-  cover_image_url: true,
-  status: true,
-  category: { select: { name: true } },
-} as const;
-
 async function getFeaturedProjects() {
   // ISR: al build (CI, senza DATABASE_URL) il DB non è raggiungibile → invece di
   // rompere il prerender ritorna lista vuota. In produzione il DB c'è e la
@@ -43,7 +33,7 @@ async function getFeaturedProjects() {
   try {
     return await prisma.project.findMany({
       where: { published: true },
-      select: CARD_SELECT,
+      select: PROJECT_CARD_SELECT,
       orderBy: { sort_order: "asc" },
       take: 3,
     });

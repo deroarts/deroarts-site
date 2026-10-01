@@ -3,23 +3,28 @@ import AspectImage from "@/components/AspectImage";
 import { t } from "@/lib/i18n";
 import { htmlToPlainText } from "@/lib/sanitize-html";
 
-interface ProjectCardProps {
-  project: {
-    id: string;
-    slug: string;
-    title: unknown;
-    short_description: unknown;
-    cover_image_url: string | null;
-    status: string;
-    category: { name: unknown } | null;
-  };
+export interface ProjectCardData {
+  id: string;
+  slug: string;
+  title: unknown;
+  short_description: unknown;
+  cover_image_url: string | null;
+  status: string;
+  category: { name: unknown } | null;
 }
 
-export default function ProjectCard({ project }: ProjectCardProps) {
+interface ProjectCardProps {
+  project: ProjectCardData;
+  /** Etichetta categoria sotto il titolo (nascosta dove la sezione la dice già). */
+  showCategory?: boolean;
+}
+
+export default function ProjectCard({ project, showCategory = true }: ProjectCardProps) {
   const title = t(project.title);
   // Card preview: strip rich-text tags so line-clamp works cleanly.
   const shortDesc = htmlToPlainText(t(project.short_description));
-  const categoryName = project.category ? t(project.category.name) : null;
+  const categoryName =
+    showCategory && project.category ? t(project.category.name) : null;
 
   return (
     <Link

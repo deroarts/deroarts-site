@@ -16,6 +16,7 @@ Per aggiungere il prod adapter: implementa l'interfaccia, aggiungi il `case` nel
 ## Layout / UI — standard di progetto (vincolante per pagine future)
 - **Hero a schermo pieno:** ogni sezione hero usa la utility **`.hero-screen`** (`app/globals.css`), non padding "a occhio". Riempie la prima schermata sotto l'header sticky e centra il contenuto → hero + CTA **sempre visibili senza scroll** su ogni desktop/laptop. L'altezza header è la variabile CSS `--header-h` (unica fonte di verità: se cambia l'header, si aggiorna solo lì).
 - **Scroll:** `ScrollToTop` (nel `layout.tsx`) forza ogni pagina/refresh a partire dall'inizio in tutta l'app.
+- **Pagina `/progetti` a sezioni:** una sezione per categoria (nomi e ordine da `/admina/categorie`); una categoria senza progetti pubblicati resta nascosta e compare da sola al primo pubblicato; i progetti senza categoria finiscono in "Altri progetti". Scorciatoie alle sezioni = `CategoryNav` (ancore, niente JS); dentro le sezioni la card non ripete la categoria (`showCategory={false}`). Campi delle card condivisi in `lib/project-card.ts` (home + `/progetti`).
 - **Font:** sans = Poppins (`font-sans`), serif editoriale titoli = Fraunces (`font-serif`).
 - **Hero illustrazione:** `components/HeroFlow.tsx` (griglia tecnica → piuma-brand vettoriale, path inline da `public/brand/deroarts-piuma-nera.svg`). Posizione blindata via costanti `F_*`/`TIP_*`.
 
