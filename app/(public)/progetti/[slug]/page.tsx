@@ -8,6 +8,7 @@ import { t, parseGallery } from "@/lib/i18n";
 import { verifyPreviewToken } from "@/lib/preview-token";
 import { sanitizeRichText, htmlToPlainText } from "@/lib/sanitize-html";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo";
+import { DEV_DRAFTS } from "@/lib/project-card";
 import { cache } from "react";
 import type { Metadata } from "next";
 
@@ -36,7 +37,7 @@ const getProject = cache(async (slug: string, allowUnpublished = false) => {
 });
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const project = await getProject(params.slug);
+  const project = await getProject(params.slug, DEV_DRAFTS);
   if (!project) return { title: "Progetto non trovato | DeroArts" };
 
   const title = t(project.title);
@@ -62,7 +63,8 @@ export default async function ProjectDetailPage({ params, searchParams }: PagePr
     previewToken != null &&
     verifyPreviewToken(previewToken) === params.slug;
 
-  const project = await getProject(params.slug, isValidPreview);
+  // In locale (DEV_DRAFTS) si aprono anche le bozze, per l'anteprima di /progetti?bozze=1.
+  const project = await getProject(params.slug, isValidPreview || DEV_DRAFTS);
   if (!project) notFound();
 
   const title = t(project.title);

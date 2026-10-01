@@ -10,6 +10,8 @@ export interface ProjectCardData {
   short_description: unknown;
   cover_image_url: string | null;
   status: string;
+  /** false = bozza (visibile solo nell'anteprima locale /progetti?bozze=1). */
+  published?: boolean;
   category: { name: unknown } | null;
 }
 
@@ -29,8 +31,13 @@ export default function ProjectCard({ project, showCategory = true }: ProjectCar
   return (
     <Link
       href={`/progetti/${project.slug}`}
-      className="group block bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100"
+      className="group relative block bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100"
     >
+      {project.published === false && (
+        <span className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full bg-graphite/85 text-white text-xs font-semibold">
+          Bozza
+        </span>
+      )}
       <AspectImage
         src={project.cover_image_url}
         alt={title}

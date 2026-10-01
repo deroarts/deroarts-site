@@ -2,7 +2,7 @@ import { prisma } from "@/lib/db/client";
 import type { Metadata } from "next";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo";
 import { t } from "@/lib/i18n";
-import { PROJECT_CARD_ORDER, PROJECT_CARD_SELECT } from "@/lib/project-card";
+import { DEV_DRAFTS, PROJECT_CARD_ORDER, PROJECT_CARD_SELECT } from "@/lib/project-card";
 import ProjectSection from "@/components/ProjectSection";
 
 // ISR: cache statica rigenerata da revalidatePath("/progetti") (chiamato dalle
@@ -22,29 +22,30 @@ export const metadata: Metadata = {
 };
 
 interface PageProps {
-  searchParams: { categoria?: string };
+  searchParams: { categoria?: string; bozze?: string };
 }
 
 // Una sezione per categoria: nomi e ordine li decide l'admin (/admina/categorie).
 // Una categoria senza progetti pubblicati resta nascosta e compare da sola al
 // primo progetto pubblicato. I progetti senza categoria vanno in fondo.
-async function getSections() {
+async function getSections(showDrafts: boolean) {
+  const visible = showDrafts ? {} : { published: true };
   const [categories, uncategorized] = await Promise.all([
     prisma.category.findMany({
-      where: { projects: { some: { published: true } } },
+      where: { projects: { some: visible } },
       orderBy: [{ sort_order: "asc" }, { created_at: "asc" }],
       select: {
         slug: true,
         name: true,
         projects: {
-          where: { published: true },
+          where: visible,
           select: PROJECT_CARD_SELECT,
           orderBy: PROJECT_CARD_ORDER,
         },
       },
     }),
     prisma.project.findMany({
-      where: { published: true, category_id: null },
+      where: { ...visible, category_id: null },
       select: PROJECT_CARD_SELECT,
       orderBy: PROJECT_CARD_ORDER,
     }),
@@ -62,7 +63,8 @@ async function getSections() {
 }
 
 export default async function ProgettiPage({ searchParams }: PageProps) {
-  const all = await getSections();
+  // Bozze comprese solo in locale con /progetti?bozze=1 (vedi DEV_DRAFTS).
+  const all = await getSections(DEV_DRAFTS && searchParams.bozze === "1");
   // ?categoria=<slug> mostra solo quella sezione (link diretti); slug sconosciuto → tutte.
   const only = all.filter((s) => s.slug === searchParams.categoria);
   const sections = only.length > 0 ? only : all;
