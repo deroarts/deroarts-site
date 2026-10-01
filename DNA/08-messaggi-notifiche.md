@@ -27,12 +27,12 @@
 ## Stato migrazione (aggiornare a ogni passo)
 | Passo | Stato |
 |---|---|
-| Codice: tolti Messaggi, push, ricezione, Dev Outbox, mittente per progetto | ✅ in locale, non ancora online |
+| Codice: tolti Messaggi, push, ricezione, Dev Outbox, mittente per progetto | ✅ online dal 2026-10-01 |
 | iCloud: dominio + `info@` (verificato) | ✅ 2026-09-29 — verifica dominio Apple in corso (fino a 24h) |
 | DNS Cloudflare: record iCloud al posto di Resend Inbound | ✅ 2026-09-29 (Domain Connect, verificato su 1.1.1.1 e 8.8.8.8) |
 | iCloud: "Consenti tutti" + "Usa su questo iPhone" | ✅ 2026-09-29 (predefinito iCloud resta `dero975@icloud.com`; `@me.com` escluso dall'invio) |
 | Test ricezione/invio da iPhone | ✅ 2026-09-29: sito (invio reale da locale) → `info@` consegnata; risposta da iPhone come "DeroArts" con SPF/DKIM/DMARC PASS; catch-all verificato (`badgenode@` arriva in iCloud) |
-| Deploy (Render sospeso fino al 1/10; push solo su ok owner) | ⬜ |
+| Deploy | ✅ 2026-10-01 (commit `9b82e69`, deploy manuale via API Render dopo la fine della sospensione) |
 | Pulizia dopo il deploy: variabili su Render/App Control, Resend Receiving off, webhook eliminato | ⬜ |
 
 ## Rimasto nel DB (non più usato)

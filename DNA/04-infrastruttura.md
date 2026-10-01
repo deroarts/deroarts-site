@@ -2,7 +2,7 @@
 
 ## Repository
 - **GitHub:** `github.com/deroarts/deroarts-site` (branch operativa: `main`).
-- Il remote `origin` locale usa il token del progetto (da App Control). Esiste anche un remote `gitsafe-backup` (backup locale).
+- Il remote `origin` è pulito (`https://github.com/deroarts/deroarts-site.git`, nessun token): autenticazione via CLI `gh`, account `deroarts`.
 - **Un push su `main` = deploy in produzione** (vedi [[02-regole]]).
 
 ## Database — Supabase
@@ -34,6 +34,7 @@
 - Segnalare prima di implementare funzioni che avvicinano questi limiti.
 
 ## Keepalive Supabase
-- Workflow `.github/workflows/supabase-keepalive.yml`: ogni 2 giorni legge la tabella `public.ping` (RLS SELECT-only per anon) con la anon key. Nessuna scrittura, impatto trascurabile.
+- **cron-job.org** (via App Control, job `DeroArts — Supabase keepalive`): ogni giorno alle 07:13 legge `/rest/v1/ping?limit=1` con la anon key. Creato il 2026-10-01.
+- Workflow `.github/workflows/supabase-keepalive.yml` (riserva): ogni 2 giorni legge la tabella `public.ping` (RLS SELECT-only per anon) con la anon key. Nessuna scrittura, impatto trascurabile.
 - Secret GitHub richiesti: `SUPABASE_URL`, `SUPABASE_ANON_KEY` (mai service_role).
 - Rischio residuo: GitHub disabilita i workflow schedulati dopo 60gg di inattività del repo; il job si ri-abilita da solo ad ogni run (step "Re-arm schedule"). Disattivazione: elimina il file o disabilita dalla tab Actions.
