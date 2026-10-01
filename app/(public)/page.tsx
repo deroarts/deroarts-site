@@ -62,16 +62,17 @@ export default async function HomePage() {
                 App · Siti · Software
               </span>
               <h1 className="font-serif max-[359px]:text-3xl text-4xl sm:text-5xl lg:text-[3.4rem] text-white leading-[1.08] mb-6">
-                Applicazioni, siti e software{" "}
-                <span className="text-gradient-green">costruiti ad hoc.</span>
+                Applicazioni, siti e&nbsp;software{" "}
+                <span className="text-gradient-green whitespace-nowrap">costruiti ad hoc.</span>
                 <span className="block text-2xl sm:text-3xl lg:text-4xl text-white/85 mt-3">
                   E semplici da usare.
                 </span>
               </h1>
-              <p className="text-base sm:text-lg text-white/70 mb-9 leading-relaxed max-w-lg">
-                Prodotti digitali su misura, curati dall&apos;idea al rilascio:
-                architettura solida sotto il cofano, esperienza pulita davanti agli
-                occhi. Qualità vera, ad un prezzo alla portata di tutti.
+              <p className="text-base sm:text-lg text-white/70 mb-9 leading-relaxed max-w-lg text-pretty">
+                Prodotti digitali su misura, curati dall&apos;idea al&nbsp;rilascio:
+                architettura solida sotto il&nbsp;cofano, esperienza pulita davanti
+                agli&nbsp;occhi. Qualità vera, a&nbsp;un&nbsp;prezzo alla&nbsp;portata
+                di&nbsp;tutti.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <Link
@@ -108,9 +109,9 @@ export default async function HomePage() {
             <p className="text-green-end text-xs sm:text-sm font-semibold uppercase tracking-[0.15em] mb-2">
               Progetti realizzati
             </p>
-            <h2 className="font-serif text-3xl sm:text-4xl text-graphite leading-tight">
-              Prodotti curati nel dettaglio.
-              <span className="block italic text-green-end">Prezzi alla portata di tutti.</span>
+            <h2 className="font-serif text-3xl sm:text-4xl text-graphite leading-tight text-balance">
+              Prodotti curati nel&nbsp;dettaglio.
+              <span className="block italic text-green-end">Prezzi alla&nbsp;portata di&nbsp;tutti.</span>
             </h2>
           </div>
           <Link
@@ -152,12 +153,16 @@ export default async function HomePage() {
       {/* ── CTA strip ────────────────────────────────────────────────────── */}
       <section className="bg-graphite py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="font-serif text-2xl md:text-3xl text-white mb-4">
-            Hai un&apos;app, un sito o un software da realizzare?
+          <h2 className="font-serif text-2xl md:text-3xl text-white mb-4 text-balance">
+            Hai un&apos;app, un&nbsp;sito o&nbsp;un&nbsp;software da&nbsp;realizzare?
           </h2>
-          <p className="text-gray-400 mb-8">
-            Descrivi il progetto: verrà valutata la soluzione più adatta, con un
-            preventivo onesto e su misura del budget.
+          <p className="text-gray-400 mb-8 text-balance">
+            <span className="sm:block">
+              Descrivi il&nbsp;progetto: verrà valutata la&nbsp;soluzione più&nbsp;adatta,
+            </span>{" "}
+            <span className="sm:block">
+              con&nbsp;un preventivo onesto e&nbsp;su&nbsp;misura del&nbsp;budget.
+            </span>
           </p>
           <Link
             href="/contatti"

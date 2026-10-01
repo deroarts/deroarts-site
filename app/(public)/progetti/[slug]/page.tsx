@@ -3,6 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/db/client";
 import AspectImage from "@/components/AspectImage";
 import ActionButtons from "@/components/ActionButtons";
+import ProjectGallery from "@/components/ProjectGallery";
 import { t, parseGallery } from "@/lib/i18n";
 import { verifyPreviewToken } from "@/lib/preview-token";
 import { sanitizeRichText, htmlToPlainText } from "@/lib/sanitize-html";
@@ -103,13 +104,13 @@ export default async function ProjectDetailPage({ params, searchParams }: PagePr
           </span>
         )}
 
-        <h1 className="text-3xl md:text-4xl font-bold text-graphite mb-3 leading-tight">
+        <h1 className="text-3xl md:text-4xl font-bold text-graphite mb-3 leading-tight text-balance">
           {title}
         </h1>
 
         {shortDesc && (
           <div
-            className="prose prose-gray max-w-none text-lg text-gray-500 leading-relaxed"
+            className="prose prose-gray max-w-none text-lg text-gray-500 leading-relaxed text-pretty"
             dangerouslySetInnerHTML={{ __html: sanitizeRichText(shortDesc) }}
           />
         )}
@@ -147,17 +148,9 @@ export default async function ProjectDetailPage({ params, searchParams }: PagePr
           <h2 className="text-xl font-semibold text-graphite mb-5">
             Galleria
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {gallery.map((item, i) => (
-              <AspectImage
-                key={i}
-                src={item.url}
-                alt={t(item.alt)}
-                ratio="gallery"
-                className="shadow-sm"
-              />
-            ))}
-          </div>
+          <ProjectGallery
+            images={gallery.map((item) => ({ url: item.url, alt: t(item.alt) }))}
+          />
         </section>
       )}
 

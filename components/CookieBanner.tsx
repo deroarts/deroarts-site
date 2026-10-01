@@ -36,13 +36,17 @@ export default function CookieBanner() {
       aria-label="Avviso privacy"
       className="fixed bottom-safe inset-x-4 sm:inset-x-auto sm:right-4 sm:max-w-sm z-[9998] rounded-xl bg-graphite text-gray-200 shadow-lg border border-white/10 p-4 text-sm"
     >
-      <p className="leading-relaxed">
-        Usiamo solo dati tecnici essenziali e nessun cookie di tracciamento.
-        Dettagli nella{" "}
-        <Link href="/privacy" className="underline text-white">
-          informativa privacy
-        </Link>
-        .
+      <p className="leading-relaxed text-balance">
+        <span className="block">
+          Usiamo solo dati tecnici essenziali e&nbsp;nessun cookie di&nbsp;tracciamento.
+        </span>
+        <span className="block">
+          Dettagli nell&apos;
+          <Link href="/privacy" className="underline text-white">
+            informativa privacy
+          </Link>
+          .
+        </span>
       </p>
       <button
         onClick={dismiss}

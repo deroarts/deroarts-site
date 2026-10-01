@@ -23,20 +23,25 @@ export default function ContattiPage() {
             Mettiti in contatto
           </p>
           <h1 className="font-serif text-3xl md:text-4xl text-graphite mb-6 leading-tight">
-            Parliamo del
+            Parliamo
             <br />
-            tuo progetto.
+            del&nbsp;tuo progetto.
           </h1>
 
-          <p className="text-gray-500 leading-relaxed mb-6">
-            DeroArts nasce dalla passione per il software ben fatto: strumenti
-            digitali pensati per le persone, semplici da usare e affidabili nel
-            tempo.
+          <p className="text-gray-500 leading-relaxed mb-6 text-pretty">
+            DeroArts nasce dalla&nbsp;passione per&nbsp;il&nbsp;software ben fatto: strumenti
+            digitali pensati per&nbsp;le&nbsp;persone, semplici da&nbsp;usare
+            e&nbsp;affidabili&nbsp;nel&nbsp;tempo.
           </p>
 
-          <p className="text-gray-500 leading-relaxed mb-10">
-            Una domanda su un prodotto o un progetto da avviare? Basta scrivere:
-            ogni messaggio viene letto con attenzione e riceve una risposta.
+          <p className="text-gray-500 leading-relaxed mb-10 text-pretty">
+            <span className="block">
+              Una domanda su&nbsp;un&nbsp;prodotto o&nbsp;un&nbsp;progetto da&nbsp;avviare?
+            </span>
+            <span className="block">
+              Basta scrivere: ogni&nbsp;messaggio viene letto con&nbsp;attenzione
+              e&nbsp;riceve&nbsp;una&nbsp;risposta.
+            </span>
           </p>
         </div>
 

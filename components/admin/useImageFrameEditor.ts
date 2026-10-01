@@ -5,9 +5,11 @@ import { useRef, useState, useEffect, useCallback } from "react";
 // ─── Canvas output dimensions ─────────────────────────────────────────────────
 // These match the visual ratios: cover = 16:10, gallery = 4:3.
 // The canvas is drawn at this resolution, then uploaded & stored.
+// Gallery a 1920px: le immagini si aprono a schermo intero (Lightbox) e devono
+// restare nitide anche su schermi grandi e retina.
 export const DIMS = {
   cover: { w: 1280, h: 800 },
-  gallery: { w: 960, h: 720 },
+  gallery: { w: 1920, h: 1440 },
 } as const;
 
 export type FrameRatio = "cover" | "gallery";

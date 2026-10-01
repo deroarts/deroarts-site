@@ -6,31 +6,37 @@ interface ProjectSectionProps {
   projects: ProjectCardData[];
 }
 
-// Una sezione di /progetti (= una categoria). Il titolo della sezione dice già
-// la categoria, quindi le card non la ripetono.
+// Colonne occupate nella griglia di /progetti: tante quanti i progetti, fino a
+// riempire la riga. Così le sezioni piccole stanno affiancate e quelle grandi
+// prendono la riga intera. Nomi di classe completi: Tailwind li deve vedere.
+const SPAN = [
+  "col-span-1",
+  "col-span-1",
+  "col-span-1 sm:col-span-2",
+  "col-span-1 sm:col-span-2 lg:col-span-3",
+];
+
+// Una sezione di /progetti (= una categoria). Usa le colonne della griglia
+// esterna (subgrid): le card di tutte le sezioni restano allineate. Il titolo
+// della sezione dice già la categoria, quindi le card non la ripetono.
 export default function ProjectSection({ slug, title, projects }: ProjectSectionProps) {
-  const count = projects.length;
+  const span = SPAN[Math.min(projects.length, SPAN.length - 1)];
 
   return (
     <section
       id={slug}
       aria-labelledby={`${slug}-title`}
-      className="scroll-mt-[calc(var(--header-h)+1.5rem)]"
+      className={`${span} grid grid-cols-subgrid content-start gap-y-6`}
     >
-      <div className="flex items-end justify-between gap-4 mb-6 pb-4 border-b border-graphite/10">
-        <h2 id={`${slug}-title`} className="font-serif text-2xl md:text-3xl text-graphite leading-tight">
-          {title}
-        </h2>
-        <span className="text-sm text-gray-400 shrink-0 pb-0.5">
-          {count === 1 ? "1 progetto" : `${count} progetti`}
-        </span>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((project) => (
-          <ProjectCard key={project.id} project={project} showCategory={false} />
-        ))}
-      </div>
+      <h2
+        id={`${slug}-title`}
+        className="col-span-full font-serif text-2xl text-graphite leading-tight pb-3 border-b border-graphite/10"
+      >
+        {title}
+      </h2>
+      {projects.map((project) => (
+        <ProjectCard key={project.id} project={project} showCategory={false} />
+      ))}
     </section>
   );
 }

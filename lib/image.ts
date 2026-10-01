@@ -4,10 +4,10 @@
 
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
-// cover = larger (hero), gallery = standard.
+// cover = hero del dettaglio; gallery = si apre a schermo intero (Lightbox).
 const PURPOSE_CONFIG = {
   cover: { maxWidth: 1920, quality: 82 },
-  gallery: { maxWidth: 1280, quality: 80 },
+  gallery: { maxWidth: 1920, quality: 80 },
 } as const;
 
 const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15 MB hard cap

@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo";
 import { t } from "@/lib/i18n";
 import { PROJECT_CARD_ORDER, PROJECT_CARD_SELECT } from "@/lib/project-card";
-import CategoryNav from "@/components/CategoryNav";
 import ProjectSection from "@/components/ProjectSection";
 
 // ISR: cache statica rigenerata da revalidatePath("/progetti") (chiamato dalle
@@ -71,16 +70,19 @@ export default async function ProgettiPage({ searchParams }: PageProps) {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
       {/* Page header */}
-      <div className="mb-8">
+      <div className="mb-10">
         <p className="text-green-end text-sm font-semibold uppercase tracking-wider mb-1">
           Il lavoro
         </p>
         <h1 className="font-serif text-3xl md:text-4xl text-graphite mb-3">
           Progetti realizzati
         </h1>
-        <p className="text-gray-500 max-w-xl">
-          Software pensato per le persone. Ogni strumento nasce da una necessità
-          reale e viene affinato nel tempo.
+        <p className="text-gray-500 max-w-2xl text-balance">
+          <span className="block">Software pensato per le&nbsp;persone.</span>
+          <span className="block">
+            Ogni&nbsp;strumento nasce da&nbsp;una&nbsp;necessità&nbsp;reale e&nbsp;viene affinato
+            nel&nbsp;tempo.
+          </span>
         </p>
       </div>
 
@@ -103,16 +105,13 @@ export default async function ProgettiPage({ searchParams }: PageProps) {
           <p className="text-sm mt-1">Torna presto!</p>
         </div>
       ) : (
-        <>
-          {sections.length > 1 && (
-            <CategoryNav items={sections.map(({ slug, title }) => ({ slug, title }))} />
-          )}
-          <div className="space-y-16">
-            {sections.map((s) => (
-              <ProjectSection key={s.slug} slug={s.slug} title={s.title} projects={s.projects} />
-            ))}
-          </div>
-        </>
+        // Griglia unica a 3 colonne: ogni sezione ne occupa quante gliene servono
+        // (vedi ProjectSection) e le sezioni piccole si affiancano sulla stessa riga.
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-14">
+          {sections.map((s) => (
+            <ProjectSection key={s.slug} slug={s.slug} title={s.title} projects={s.projects} />
+          ))}
+        </div>
       )}
     </div>
   );

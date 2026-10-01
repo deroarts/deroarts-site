@@ -5,6 +5,20 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
+// Sagoma utente (Heroicons "user", contorno): icona discreta per l'area admin.
+function UserIcon({ className }: { className: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.5}
+        d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+      />
+    </svg>
+  );
+}
+
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/progetti", label: "Progetti" },
@@ -57,10 +71,11 @@ export default function Header() {
             </Link>
             <Link
               href="/admina"
-              className="px-3 py-1.5 rounded-full border border-green-end/40 text-green-start text-sm font-semibold hover:bg-green-end/10 transition-colors"
-              title="Area amministratore"
+              aria-label="Area admin"
+              title="Area admin"
+              className="-ml-2 -mr-3 w-11 h-11 flex items-center justify-center rounded-full text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
             >
-              Admin
+              <UserIcon className="w-5 h-5" />
             </Link>
           </nav>
 
@@ -105,9 +120,10 @@ export default function Header() {
             <Link
               href="/admina"
               onClick={() => setMenuOpen(false)}
-              className="mt-1 px-3 py-3 rounded-lg text-sm font-semibold text-green-start border border-green-end/40 hover:bg-green-end/10 transition-colors"
+              className="mt-1 px-3 py-3 rounded-lg text-sm font-medium text-gray-400 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-2"
             >
-              Admin
+              <UserIcon className="w-5 h-5" />
+              Area admin
             </Link>
           </nav>
         </div>

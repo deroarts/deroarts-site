@@ -44,3 +44,21 @@ test("request-info modal opens on a project detail page", async ({ page }) => {
     await expect(page.locator('input[name="email"]').first()).toBeVisible();
   }
 });
+
+test("gallery image opens full screen, arrows change it, Esc closes it", async ({ page }) => {
+  await page.goto("/progetti");
+  await page.locator('a[href^="/progetti/"]').first().click();
+  await expect(page).toHaveURL(/\/progetti\/.+/);
+  const thumbs = page.locator('button[aria-label^="Apri immagine"]');
+  if (!(await thumbs.count())) return; // progetto senza galleria
+  await thumbs.first().click();
+  const viewer = page.getByRole("dialog", { name: /Immagine/ });
+  await expect(viewer).toBeVisible();
+  await expect(viewer.locator("img")).toBeVisible();
+  if ((await thumbs.count()) > 1) {
+    await page.keyboard.press("ArrowRight");
+    await expect(viewer).toHaveAttribute("aria-label", /Immagine 2 di/);
+  }
+  await page.keyboard.press("Escape");
+  await expect(viewer).toBeHidden();
+});

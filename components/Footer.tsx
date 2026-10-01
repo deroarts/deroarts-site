@@ -16,11 +16,11 @@ export default function Footer() {
           className="h-8 w-auto mb-4"
         />
 
-        {/* Tagline — a capo controllato tra le due frasi su mobile */}
-        <p className="text-sm leading-relaxed max-w-md mb-6">
-          App, siti e software su misura.
-          <br className="sm:hidden" />{" "}
-          Qualità e prezzi, alla portata di tutti.
+        {/* Tagline — una frase per riga a ogni larghezza; se lo schermo è
+            troppo stretto, text-balance divide la frase in parti equilibrate */}
+        <p className="text-sm leading-relaxed max-w-md mb-6 text-balance">
+          <span className="block">App, siti e software su misura.</span>
+          <span className="block">Qualità e prezzi, alla portata di tutti.</span>
         </p>
 
         {/* Privacy link */}

@@ -18,9 +18,11 @@ export default function NotFound() {
           Pagina non trovata
         </h1>
 
-        <p className="text-gray-500 mb-8 leading-relaxed">
-          La pagina che stai cercando non esiste o è stata spostata.
-          Torna alla home o esplora i nostri progetti.
+        <p className="text-gray-500 mb-8 leading-relaxed text-balance">
+          <span className="block">
+            La pagina che stai cercando non&nbsp;esiste o&nbsp;è&nbsp;stata spostata.
+          </span>
+          <span className="block">Torna alla&nbsp;home o&nbsp;esplora i&nbsp;nostri&nbsp;progetti.</span>
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
