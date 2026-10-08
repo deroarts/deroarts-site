@@ -29,7 +29,8 @@
 ## Limiti free tier
 - **Supabase:** DB 500MB (uso attuale ~10MB), Storage 1GB, banda 5GB/mese. **Pausa dopo ~1 settimana di inattività** → keepalive attivo (sotto). Usare sempre l'URL pooler.
 - **Render:** workspace **Hobby** → **5GB di banda in uscita/mese** (NON 100GB), spegnimento dopo 15min
-  inattività (cold start ~30s), 500 build-min/mese. Superati i 5GB il workspace viene **sospeso**
+  inattività (cold start ~30s) → tenuto sveglio 24/7 da un monitor UptimeRobot (verificato 2026-10-08: nessun
+  riavvio in 7 giorni; il monitor non risulta collegato al progetto in App Control, `app_control_uptimerobot_list` vuoto), 500 build-min/mese. Superati i 5GB il workspace viene **sospeso**
   fino al mese successivo (o serve una carta, $0.15/GB). Vedi [[06-decision-log]] 2026-09-21.
 - Segnalare prima di implementare funzioni che avvicinano questi limiti.
 
